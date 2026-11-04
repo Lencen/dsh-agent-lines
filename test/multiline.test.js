@@ -19,6 +19,18 @@ test('legacy single-line config still normalizes', () => {
   assert.equal(config.maxReplyDepth, 8)
 })
 
+test('zero config bootstraps one unbound manager', () => {
+  const config = normalizeConfig({})
+  assert.equal(config.agentId, 'agent-lines')
+  assert.equal(config.lines.length, 1)
+  assert.equal(config.lines[0].label, 'manager')
+  assert.equal(config.lines[0].sessionId, '')
+  assert.equal(config.createFrom, 'manager')
+  assert.equal(config.allowCreate, true)
+  assert.equal(config.allowClaim, true)
+  assert.equal(config.maxLines, 16)
+})
+
 test('multi-line config carries roles and allowCreate', () => {
   const config = normalizeConfig({
     agentId: 'agent-demo',

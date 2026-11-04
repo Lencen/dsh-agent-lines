@@ -2,6 +2,13 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.3.2 (2026-11-04)
+
+- 零配置启动：没有 plugin config 时自动启动一条未绑定 manager，根会话可调用 line_claim_manager 自己绑定。
+- 默认 DB 路径跟随 DSH_HOME；未设置时仍为 ~/.dsh/agent-lines/lines.db。
+- README 明确：安装或更新后必须重启 DSH Web；显式 manager/worker 配置变为可选。
+- 无 schema 变化，仍为 v6。
+
 ## 0.3.1 (2026-11-04)
 
 - README 改为用户优先：先场景、安装和首次使用，技术细节后置；安装/快速开始不再要求手填 profile。

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { LineStore } from '../lib/store.js'
+import { LineStore, defaultDbPath } from '../lib/store.js'
 
 function tempStore() {
   const dir = mkdtempSync(join(tmpdir(), 'agent-lines-'))
@@ -101,6 +101,17 @@ test('noReply and maxReplyDepth stop echo chains', () => {
     assert.equal(reply.hop, 1)
     assert.throws(() => store.send({ agentId: 'agent-demo', fromLine: 'manager', to: 'frontend', text: 'r2', replyTo: reply.id, maxReplyDepth: 1 }), /maxReplyDepth/)
   } finally { cleanup() }
+})
+
+test('default DB path honors DSH_HOME', () => {
+  const old = process.env.DSH_HOME
+  try {
+    process.env.DSH_HOME = '/tmp/dsh-home-test'
+    assert.equal(defaultDbPath(), '/tmp/dsh-home-test/agent-lines/lines.db')
+  } finally {
+    if (old === undefined) delete process.env.DSH_HOME
+    else process.env.DSH_HOME = old
+  }
 })
 
 test('lease conflict is explicit', () => {
