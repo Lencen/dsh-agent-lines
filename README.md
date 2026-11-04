@@ -6,77 +6,36 @@
 
 > **100% Vibe Coding。** 架构、代码、测试、文档都在 AI agent 会话中完成。它是实验性项目：生产使用前请审阅代码并跑一遍集成测试。
 
-DSH agent 的 super agent 平替插件。给 DSH agent 线（line）用的、可寻址的持久消息层。一条线是一个普通 DSH Session 加一个稳定 label；一个 DSH 进程可以承载多条线，管理线还可以通过 `line_create` 在对话里创建新线。
+DSH 的 super agent 平替插件。
+
+你不用每次新开会话、手动把背景复制给几个 agent。让一个负责人 agent 带一支长期协作的团队：每个成员有名字、各负责一块，任务和消息不会丢，结果由负责人汇总给你。
 
 ## 什么时候用
 
-如果所有 worker 都是同一个 DSH 进程里、同一个父 Agent 的子任务，**优先用内置 subagent / Agent Teams**；更简单，不需要插件。
+如果你遇到这些情况，再考虑安装：
 
-需要下面这些时再用 **dsh-agent-lines**：
+- 你有一个长期项目，不想每次都从头解释背景；
+- 你希望几个 agent 长期分工，比如调研、架构、开发、测试、发布、运维；
+- 你需要给每个角色一个固定名字，能直接点名派任务；
+- 任务做到一半关掉窗口、重启 DSH，消息和上下文还要在；
+- 你希望一个负责人 agent 自己拆任务、建团队、追进度、收结果，最后向你汇报。
 
-- 线要能按 `agent#line` 寻址；
-- 线是独立 DSH Session，有自己的上下文和生命周期；
-- 收件箱要能跨接收方重启存活；
-- 同机多个 DSH 进程共享一个线数据库；
-- 管理线通过自然语言让模型创建 worker 线。
-
-插件只做传输 + 轻量建线，不做任务编排。**交接（handover）没有实现**。
-
-## 传输
-
-`transport` 默认 `sqlite`（local-first），也是 0.3 唯一发布的 transport；安装插件不需要 Postgres 或 Python 服务。
-
-## 架构
-
-~~~mermaid
-flowchart LR
-  U[用户] --> M[管理线 DSH Session]
-  M -->|line_create / line_send| P[dsh-agent-lines]
-  P --> Q[(SQLite lines.db)]
-  P -->|prompt requestId| W1[前端线 Session]
-  P -->|prompt requestId| W2[后端线 Session]
-  W1 -->|line_inbox / line_ack| P
-  W2 -->|line_inbox / line_ack| P
-~~~
-
-DSH 适配层负责线身份和“把消息送进 Session”；transport 负责持久消息和跨进程存储。默认是本地 SQLite。公开架构说明：[English](docs/ARCHITECTURE.en.md) | [中文](docs/ARCHITECTURE.md)。
-
-## 要求
-
-- DSH `>=0.2.1-rc.5 <0.3.0`
-- Node.js `^22.19.0 || >=24.0.0`
-- 本地文件系统（NFS/CIFS/SMB/FUSE 会被拒绝）
+如果只是同一次会话里的临时子任务，直接用 DSH 内置的 subagent / Agent Teams，不需要这个插件。
 
 ## 安装
 
-```bash
-dsh plugin --profile <profile> add dsh-agent-lines@0.3.0
-```
+一条命令安装（推荐，不需要自己找 profile）：
 
-离线或 npm 不可用时，用本地 tarball 安装：
+    curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh
+    bash install.sh
 
-```bash
-dsh plugin --profile <profile> add ./dsh-agent-lines-0.3.0.tgz
-```
+脚本会自动选择 DSH Web 使用的 profile，安装后检查 agent-lines 是否可用；如果判断不了，会列出已有配置并提示你怎么指定。
 
-不知道 `<profile>` 是什么，可以直接用一键脚本（自动选 `web`，没有 web 时选唯一 profile）：
+离线或 npm 不可用时，用本地 tarball：
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh
-bash install.sh
-# npm 未发布时：bash install.sh ./dsh-agent-lines-0.3.0.tgz
-```
+    bash install.sh ./dsh-agent-lines-0.3.0.tgz
 
-手动安装时，`<profile>` 是 **DSH profile 名**（对应 `~/.dsh/profiles/<profile>`），不是线名，也不是 agent 名。
-
-- 已有 profile：先 `ls ~/.dsh/profiles`，填实际目录名，例如 `web`、`headless`；
-- 想隔离安装：用新名字，例如 `agent-lines`，命令会自动初始化：
-
-```bash
-dsh plugin --profile agent-lines add dsh-agent-lines@0.3.0
-```
-
-不要把 `manager-line`、`research` 这类线名填进 `--profile`。
+安装完成后，脚本会打印管理线配置文件的路径。把下面“管理线配置”整段粘贴进去一次即可。
 
 ### 管理线配置
 
@@ -102,35 +61,13 @@ dsh plugin --profile agent-lines add dsh-agent-lines@0.3.0
 
 只有 `createFrom` 指定的线能调用 `line_create`。worker profile 不要开 `allowCreate`。
 
-### Worker profile
-
-```yaml
-- id: agent-lines
-  name: dsh-agent-lines
-  config:
-    agentId: agent-demo
-    dbPath: /home/me/.dsh/agent-lines/lines.db
-    lines:
-      - label: frontend-line
-        sessionId: session-lines-frontend
-        role: 前端
-```
-
-旧的单线写法 `line: frontend-line` + `sessionId: ...` 仍然兼容。
-
 ## 快速开始
 
-1. 安装：<code>dsh plugin --profile &lt;profile&gt; add dsh-agent-lines@0.3.0</code>，或用本地 tarball（见“安装”）。
-2. 配置一条管理线：<code>allowCreate: true</code>、<code>allowClaim: true</code>、<code>createFrom: manager-line</code>。
-3. 启动 profile，打开任意根 Session。
-4. 先调用 <code>line_status</code>。如果当前会话未绑定，调用 <code>line_claim_manager({ confirm: "bind-manager" })</code>；CLI 兜底：
-   ~~~bash
-   dsh-agent-lines claim --agent agent-demo --line manager-line --session "$DSH_SESSION_ID"
-   ~~~
-5. 对管理线说：“创建 frontend-line、backend-line、ops-line，然后分别发一条 hello。”
-6. worker 可以是独立 profile（共享同一个 <code>dbPath</code>），也可以是管理线进程内创建的线。
-
-任何新会话先看 <code>line_status</code>：它会告诉你是否绑定、manager 是谁、下一步怎么修。
+1. 运行上面的安装脚本。
+2. 按脚本提示打开配置文件，把“管理线配置”整段粘贴进去（只做一次）。
+3. 启动 DSH Web，打开任意根会话。
+4. 先调用 line_status；如果当前会话未绑定，调用 line_claim_manager({ confirm: "bind-manager" })。
+5. 直接说“按首次使用创建团队”，然后等它建好成员线；第一个任务再单独发。
 
 ## 首次使用：组建开发团队
 
@@ -165,30 +102,18 @@ line_create({ label: "ops", role: "运维" })
 
 真实 DSH Web 演示 profile、通用 label；不含内部数据。
 
-
 ## 场景：一个管理线 + 多条执行线
 
-只要 profile 里有管理线配置，Session 不必预先绑定。打开任意根 Session，直接说：
+负责人先建好团队，后面才是具体任务。
 
-> 你是管理线。先用 line_claim_manager 把自己绑定为管理线，然后负责任务拆分与调度。需要建几个任务执行线，由你安排分配任务；你负责协调执行线中的工作内容、裁决纠纷、回收任务结果、汇总、总结、汇报。
+1. 负责人按角色建立成员：调研、架构、UIUX、开发、测试、验收、发布、运维。
+2. 你给负责人一个具体任务，例如“给报表页加 CSV 导出，带测试和一页 runbook”。
+3. 负责人把任务拆开，派给对应的成员；每条消息都会留在本地。
+4. 成员收到任务、执行、确认收到，需要时回复负责人。
+5. 负责人收集结果，处理成员之间的分歧，统一口径。
+6. 你看到负责人的汇总；每个成员保留自己的上下文和消息记录。
 
-接下来会发生：
-
-1. 管理线调用 <code>line_create</code> 创建前端线、后端线、运维线、数据线，再用 <code>line_list</code> 确认。
-2. 用户给一个具体任务，例如：“给报表页加 CSV 导出，带测试和一页 runbook。”
-3. 管理线拆解后，用 <code>line_send</code> 发给对应执行线；消息落 SQLite。
-4. 执行线用 <code>line_inbox</code> 收任务、执行、<code>line_ack</code> 确认，需要时用 <code>line_send</code> 回复。
-5. 管理线收集结果；如果前端和后端对接口结构有分歧，管理线裁决并统一口径。
-6. 管理线汇总、总结、汇报；各执行线保留自己的上下文和消息历史。
-
-这是一个“提示词组织模式”，不是插件内置的组织架构：怎么拆任务由管理线模型决定。插件提供的是持久传输和硬约束：
-
-- <code>maxLines</code> 限制建线数量；
-- <code>noReply</code>、<code>maxReplyDepth</code> 和默认 self-send 禁止，防止自动回声；
-- <code>line_status</code> 诊断 manager 绑定；
-- 一个 Session 只能有一个 writer。
-
-如果管理线没绑定，<code>line_status</code> 会给出修复命令；先调用 <code>line_claim_manager</code>（或 CLI）再跑这个场景。
+这只是“用提示词组织团队”的方式，不是插件内置的组织架构；怎么拆任务由负责人模型决定。技术细节（消息、状态、工具）在下面的“使用”和“投递语义”。
 
 ## 使用
 
@@ -227,6 +152,31 @@ dsh-agent-lines doctor
 ```
 
 用 `--db` 或 `DSH_AGENT_LINES_DB` 指向插件同一个数据库。
+
+## 传输
+
+`transport` 默认 `sqlite`（local-first），也是 0.3 唯一发布的 transport；安装插件不需要 Postgres 或 Python 服务。
+
+## 架构
+
+~~~mermaid
+flowchart LR
+  U[用户] --> M[管理线 DSH Session]
+  M -->|line_create / line_send| P[dsh-agent-lines]
+  P --> Q[(SQLite lines.db)]
+  P -->|prompt requestId| W1[前端线 Session]
+  P -->|prompt requestId| W2[后端线 Session]
+  W1 -->|line_inbox / line_ack| P
+  W2 -->|line_inbox / line_ack| P
+~~~
+
+DSH 适配层负责线身份和“把消息送进 Session”；transport 负责持久消息和跨进程存储。默认是本地 SQLite。公开架构说明：[English](docs/ARCHITECTURE.en.md) | [中文](docs/ARCHITECTURE.md)。
+
+## 要求
+
+- DSH `>=0.2.1-rc.5 <0.3.0`
+- Node.js `^22.19.0 || >=24.0.0`
+- 本地文件系统（NFS/CIFS/SMB/FUSE 会被拒绝）
 
 ## 工作区
 
