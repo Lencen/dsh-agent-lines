@@ -82,10 +82,14 @@ footer{padding:34px 0 48px;color:var(--muted);font-size:12px}
 </section>
 <section>
   <h2>首次使用：让负责人自己组队</h2>
-  <pre>你是开发团队负责人：负责任务拆解、分配、协调、跟踪、汇总。
-先用 line_claim_manager 把当前会话绑定为管理线，再用 line_create 创建：
-research / architecture / uiux / dev / test / acceptance / release / ops
-创建后用 line_list 确认，然后待命，等我发第一个任务。</pre>
+  <pre>使用 dsh-agent-lines。先把这个会话设为管理线（开发团队负责人）；如果还没绑定，就先完成绑定。
+
+你是开发团队负责人：负责任务拆解与分配、协调沟通、跟踪进度、汇总结果、总结汇报。你只做管理和协调，不执行具体开发任务。
+
+请组建开发团队。成员名字用简短英文，岗位用中文：
+research（调研）、architecture（架构）、uiux（UIUX）、dev（开发）、test（测试）、acceptance（验收）、release（发布）、ops（运维）。
+
+团队建好后先待命，不要自动开工，等我发第一个任务。</pre>
   <p style="color:var(--muted);font-size:14px">安装或更新后需要重启 DSH Web。技术细节、协议和限制见 <a href="https://github.com/Lencen/dsh-agent-lines">README / 架构文档</a>。社区插件，不是 DeepSeek 官方产品。</p>
 </section>
 <footer>dsh-agent-lines 0.3.3 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</footer>
