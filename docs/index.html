@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>dsh-agent-lines — DSH Agent 的持久消息线</title>
-<meta name="description" content="DSH Agent 的持久、可寻址消息线：一个管理线，多条执行线，本地 SQLite，社区插件。">
+<title>dsh-agent-lines — 让 AI 负责人带一支 AI 团队</title>
+<meta name="description" content="你说目标，AI 负责人拆任务、建团队、盯进度、收结果；每条成员线有独立会话和持久消息，重启不丢。">
 <meta property="og:image" content="https://lencen.github.io/dsh-agent-lines/assets/social-preview.png">
 <style>
 :root{--bg:#080b10;--panel:#0d1117;--line:#263241;--text:#e6edf3;--muted:#8b949e;--cyan:#58a6ff;--green:#7ee787}
@@ -49,8 +49,8 @@ footer{padding:34px 0 48px;color:var(--muted);font-size:12px}
 <section class="hero" style="border:0;padding-bottom:22px">
   <div>
     <div class="kicker">Community plugin · Apache-2.0</div>
-    <h1>给 DSH Agent 的<br><span>持久消息线</span></h1>
-    <p class="lead">一个管理线，多条执行线。每条线是普通 DSH Session，有独立上下文和持久收件箱；消息落本地 SQLite，跨进程共享，不依赖网络服务。</p>
+    <h1>让一个 AI 负责人<br><span>替你带一支 AI 团队</span></h1>
+    <p class="lead">你只管说目标。负责人会拆任务、建调研 / 架构 / 开发 / 测试等成员线、分配工作、追进度、收结果，最后给你一份汇总。关掉窗口或重启 DSH，任务和消息还在。</p>
     <div class="install">curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh &amp;&amp; bash install.sh</div>
     <div class="actions">
       <a class="btn primary" href="https://github.com/Lencen/dsh-agent-lines">GitHub 仓库</a>
@@ -63,20 +63,30 @@ footer{padding:34px 0 48px;color:var(--muted);font-size:12px}
   </div>
 </section>
 <section>
-  <h2>为什么不是再做一个聊天框</h2>
+  <h2>它替你省掉什么</h2>
   <div class="cards">
-    <div class="card"><b>线是可寻址的</b><p>agent#line 是稳定身份；管理线可以按角色建线、发任务、收结果。</p></div>
-    <div class="card"><b>消息是持久的</b><p>接收方重启后消息仍在；至少一次投递，Session 日志用 requestId 做幂等。</p></div>
-    <div class="card"><b>边界是清楚的</b><p>0.3 只做本地 SQLite；不做 handover、不做进程隔离、不内置团队 UI。</p></div>
+    <div class="card"><b>不用反复讲背景</b><p>每条成员线是一个独立的 DSH 会话，长期保留自己的上下文；新任务直接派给对应角色。</p></div>
+    <div class="card"><b>不用自己当调度</b><p>负责人拆任务、分配、协调、处理分歧、收结果；你只需要看最后的汇总。</p></div>
+    <div class="card"><b>不用怕关窗口</b><p>任务和消息保存在本地；重启 DSH 后还能接着做，成员状态和未处理消息都在。</p></div>
+  </div>
+  <p style="color:var(--muted);font-size:14px;margin-top:14px">适合长期项目、多角色协作；一次性的临时子任务，直接用 DSH 内置 subagent / Agent Teams 更简单。</p>
+</section>
+<section>
+  <h2>一个真实用法</h2>
+  <div class="cards">
+    <div class="card"><b>1. 你说目标</b><p>“给报表页加 CSV 导出，带测试和一页 runbook。”</p></div>
+    <div class="card"><b>2. 负责人组队</b><p>拆成调研、架构、UIUX、开发、测试、验收、发布、运维，按角色建线。</p></div>
+    <div class="card"><b>3. 团队并行</b><p>成员各自做事；负责人追进度、处理接口分歧，必要时重新分配。</p></div>
+    <div class="card"><b>4. 你收结果</b><p>负责人汇总结论、文件路径、风险和遗留问题；不用自己挨个问。</p></div>
   </div>
 </section>
 <section>
-  <h2>首次使用：一个管理线 + 8 条成员线</h2>
+  <h2>首次使用：让负责人自己组队</h2>
   <pre>你是开发团队负责人：负责任务拆解、分配、协调、跟踪、汇总。
-请用 line_create 创建：
+先用 line_claim_manager 把当前会话绑定为管理线，再用 line_create 创建：
 research / architecture / uiux / dev / test / acceptance / release / ops
-创建后用 line_list 确认，然后待命。</pre>
-  <p style="color:var(--muted);font-size:14px">完整说明、协议和限制见 <a href="https://github.com/Lencen/dsh-agent-lines">README</a>。社区插件，不是 DeepSeek 官方产品。</p>
+创建后用 line_list 确认，然后待命，等我发第一个任务。</pre>
+  <p style="color:var(--muted);font-size:14px">安装或更新后需要重启 DSH Web。技术细节、协议和限制见 <a href="https://github.com/Lencen/dsh-agent-lines">README / 架构文档</a>。社区插件，不是 DeepSeek 官方产品。</p>
 </section>
 <footer>dsh-agent-lines 0.3.2 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</footer>
 </main>
