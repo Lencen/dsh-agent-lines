@@ -10,6 +10,12 @@ PKG="${1:-dsh-agent-lines@0.3.0}"
 DSH_HOME="${DSH_HOME:-$HOME/.dsh}"
 PROFILES="$DSH_HOME/profiles"
 
+# Common user-level install locations; SSH shells often do not source the
+# same PATH as the desktop session or systemd service.
+for dir in "$HOME/.npm-global/bin" "$HOME/nodejs/bin" "$HOME/.local/bin"; do
+  [ -d "$dir" ] && PATH="$dir:$PATH"
+done
+
 if [ "$PKG" = "dsh-agent-lines@0.3.0" ] && [ -f ./dsh-agent-lines-0.3.0.tgz ]; then
   PKG=./dsh-agent-lines-0.3.0.tgz
 fi
