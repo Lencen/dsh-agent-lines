@@ -2,6 +2,12 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.3.3 (2026-11-04)
+
+- 落地页改为场景化：hero、三张卡、一个真实用法四步、首次使用含 line_claim_manager、重启提示。
+- 落地页与 social-preview 同步进入 npm 包和 GitHub Release 制品。
+- 无运行时行为变化；schema 仍为 v6。
+
 ## 0.3.2 (2026-11-04)
 
 - 零配置启动：没有 plugin config 时自动启动一条未绑定 manager，根会话可调用 line_claim_manager 自己绑定。

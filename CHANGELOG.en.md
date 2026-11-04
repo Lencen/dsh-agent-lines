@@ -2,6 +2,12 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.3.3 (2026-11-04)
+
+- Scenario-first landing page: hero, three cards, four-step real usage, first-use claim prompt, restart note.
+- Landing page and social-preview are now included in the npm package and GitHub Release artifact.
+- No runtime behavior change; schema remains v6.
+
 ## 0.3.2 (2026-11-04)
 
 - Zero-config bootstrap: with no plugin config, start one unbound manager line; a root Session can call line_claim_manager to bind itself.
