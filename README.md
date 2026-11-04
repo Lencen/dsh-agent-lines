@@ -6,7 +6,7 @@
 
 > **100% Vibe Coding。** 架构、代码、测试、文档都在 AI agent 会话中完成。它是实验性项目：生产使用前请审阅代码并跑一遍集成测试。
 
-DSH agent的super agent平替插件。给 DSH agent 线（line）用的、可寻址的持久消息层。一条线是一个普通 DSH Session 加一个稳定 label；一个 DSH 进程可以承载多条线，管理线还可以通过 `line_create` 在对话里创建新线。
+给 DSH agent 线（line）用的、可寻址的持久消息层。一条线是一个普通 DSH Session 加一个稳定 label；一个 DSH 进程可以承载多条线，管理线还可以通过 `line_create` 在对话里创建新线。
 
 ## 什么时候用
 
@@ -59,7 +59,18 @@ dsh plugin --profile <profile> add dsh-agent-lines@0.3.0
 dsh plugin --profile <profile> add ./dsh-agent-lines-0.3.0.tgz
 ```
 
-### 管理线 profile
+`<profile>` 是 **DSH profile 名**（对应 `~/.dsh/profiles/<profile>`），不是线名，也不是 agent 名。
+
+- 已有 profile：先 `ls ~/.dsh/profiles`，填实际目录名，例如 `web`、`headless`；
+- 想隔离安装：用新名字，例如 `agent-lines`，命令会自动初始化：
+
+```bash
+dsh plugin --profile agent-lines add dsh-agent-lines@0.3.0
+```
+
+不要把 `manager-line`、`research` 这类线名填进 `--profile`。
+
+### 管理线配置
 
 ```yaml
 - id: agent-lines
