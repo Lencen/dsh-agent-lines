@@ -6,7 +6,7 @@
 
 > **100% Vibe Coding。** 架构、代码、测试、文档都在 AI agent 会话中完成。它是实验性项目：生产使用前请审阅代码并跑一遍集成测试。
 
-给 DSH agent 线（line）用的、可寻址的持久消息层。一条线是一个普通 DSH Session 加一个稳定 label；一个 DSH 进程可以承载多条线，管理线还可以通过 `line_create` 在对话里创建新线。
+DSH agent 的 super agent 平替插件。给 DSH agent 线（line）用的、可寻址的持久消息层。一条线是一个普通 DSH Session 加一个稳定 label；一个 DSH 进程可以承载多条线，管理线还可以通过 `line_create` 在对话里创建新线。
 
 ## 什么时候用
 

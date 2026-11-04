@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 > **100% vibe-coded.** The architecture, code, tests, and docs were produced in AI agent sessions. It is experimental: review the code and run the integration test before production use.
 
-Durable, addressable peer messaging between DSH agent lines. A line is an ordinary DSH Session with a stable label; a DSH process can host one or more lines, and a manager line can create more lines by conversation with `line_create`.
+A drop-in super-agent alternative for DSH agents. Durable, addressable peer messaging between DSH agent lines. A line is an ordinary DSH Session with a stable label; a DSH process can host one or more lines, and a manager line can create more lines by conversation with `line_create`.
 
 ## When to use it
 
