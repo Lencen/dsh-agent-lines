@@ -59,7 +59,15 @@ Until the package is published, install the local tarball:
 dsh plugin --profile <profile> add ./dsh-agent-lines-0.3.0.tgz
 ```
 
-`<profile>` is the **DSH profile name** (the directory under `~/.dsh/profiles/<profile>`), not a line or agent name.
+If you do not know the `<profile>`, use the one-command installer (it picks `web`, or the only profile):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh
+bash install.sh
+# if npm is not published: bash install.sh ./dsh-agent-lines-0.3.0.tgz
+```
+
+For a manual install, `<profile>` is the **DSH profile name** (the directory under `~/.dsh/profiles/<profile>`), not a line or agent name.
 
 - Existing profile: run `ls ~/.dsh/profiles` and use the real directory name, such as `web` or `headless`.
 - Isolated install: use a new name such as `agent-lines`; the command initializes it:

@@ -59,7 +59,15 @@ dsh plugin --profile <profile> add dsh-agent-lines@0.3.0
 dsh plugin --profile <profile> add ./dsh-agent-lines-0.3.0.tgz
 ```
 
-`<profile>` 是 **DSH profile 名**（对应 `~/.dsh/profiles/<profile>`），不是线名，也不是 agent 名。
+不知道 `<profile>` 是什么，可以直接用一键脚本（自动选 `web`，没有 web 时选唯一 profile）：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh
+bash install.sh
+# npm 未发布时：bash install.sh ./dsh-agent-lines-0.3.0.tgz
+```
+
+手动安装时，`<profile>` 是 **DSH profile 名**（对应 `~/.dsh/profiles/<profile>`），不是线名，也不是 agent 名。
 
 - 已有 profile：先 `ls ~/.dsh/profiles`，填实际目录名，例如 `web`、`headless`；
 - 想隔离安装：用新名字，例如 `agent-lines`，命令会自动初始化：
