@@ -53,7 +53,7 @@ The DSH adapter owns line identity and delivery into a Session; the transport ow
 dsh plugin --profile <profile> add dsh-agent-lines@0.3.0
 ```
 
-Until the package is published, install the local tarball:
+Offline or when npm is unavailable, install the local tarball:
 
 ```bash
 dsh plugin --profile <profile> add ./dsh-agent-lines-0.3.0.tgz
