@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dsh-agent-lines — DSH Agent 的持久消息线</title>
+<meta name="description" content="DSH Agent 的持久、可寻址消息线：一个管理线，多条执行线，本地 SQLite，社区插件。">
+<meta property="og:image" content="https://lencen.github.io/dsh-agent-lines/assets/social-preview.png">
+<style>
+:root{--bg:#080b10;--panel:#0d1117;--line:#263241;--text:#e6edf3;--muted:#8b949e;--cyan:#58a6ff;--green:#7ee787}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 80% 0%,#12314a 0,#080b10 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif;line-height:1.7}
+a{color:var(--cyan);text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+header{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid #1f2937}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text);font-weight:700}
+.mark{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#58a6ff,#7ee787)}
+nav a{color:var(--muted);margin-left:18px;font-size:14px}
+.hero{padding:72px 0 48px;display:grid;grid-template-columns:1.05fr .95fr;gap:42px;align-items:center}
+.kicker{color:var(--green);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+h1{font-size:48px;line-height:1.15;margin:14px 0 18px;letter-spacing:-.03em}
+h1 span{color:var(--cyan)}
+.lead{color:#b7c3cf;font-size:17px;max-width:560px}
+.install{margin:26px 0;background:#0a0f16;border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-family:"DejaVu Sans Mono",monospace;font-size:13px;color:#c9d1d9;overflow:auto}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;padding:10px 16px;border-radius:9px;border:1px solid var(--line);color:var(--text);font-size:14px}
+.btn.primary{background:var(--cyan);color:#06111f;border-color:var(--cyan);font-weight:700}
+.shot{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);box-shadow:0 22px 60px rgba(0,0,0,.35)}
+.shot img{display:block;width:100%;height:auto}
+.caption{font-size:12px;color:var(--muted);padding:10px 14px;border-top:1px solid #1f2937}
+section{padding:36px 0;border-top:1px solid #161d27}
+h2{font-size:22px;margin:0 0 18px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:rgba(13,17,23,.8);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card b{display:block;margin-bottom:6px}
+.card p{color:var(--muted);font-size:14px;margin:0}
+pre{background:#0a0f16;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#c9d1d9;font-size:13px}
+footer{padding:34px 0 48px;color:var(--muted);font-size:12px}
+@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:44px}h1{font-size:36px}.cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="brand" href="./"><span class="mark"></span>dsh-agent-lines</a>
+  <nav><a href="en/index.html">English</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/tag/v0.3.0">Release</a></nav>
+</header>
+<main>
+<section class="hero" style="border:0;padding-bottom:22px">
+  <div>
+    <div class="kicker">Community plugin · Apache-2.0</div>
+    <h1>给 DSH Agent 的<br><span>持久消息线</span></h1>
+    <p class="lead">一个管理线，多条执行线。每条线是普通 DSH Session，有独立上下文和持久收件箱；消息落本地 SQLite，跨进程共享，不依赖网络服务。</p>
+    <div class="install">dsh plugin --profile &lt;profile&gt; add dsh-agent-lines@0.3.0</div>
+    <div class="actions">
+      <a class="btn primary" href="https://github.com/Lencen/dsh-agent-lines">GitHub 仓库</a>
+      <a class="btn" href="https://github.com/Lencen/dsh-agent-lines/releases/tag/v0.3.0">下载 0.3.0</a>
+    </div>
+  </div>
+  <div class="shot">
+    <img src="assets/first-use.gif" alt="首次使用：创建管理线、8 条成员线并收到 ack">
+    <div class="caption">demo profile · 通用 label · 不含内部数据</div>
+  </div>
+</section>
+<section>
+  <h2>为什么不是再做一个聊天框</h2>
+  <div class="cards">
+    <div class="card"><b>线是可寻址的</b><p>agent#line 是稳定身份；管理线可以按角色建线、发任务、收结果。</p></div>
+    <div class="card"><b>消息是持久的</b><p>接收方重启后消息仍在；至少一次投递，Session 日志用 requestId 做幂等。</p></div>
+    <div class="card"><b>边界是清楚的</b><p>0.3 只做本地 SQLite；不做 handover、不做进程隔离、不内置团队 UI。</p></div>
+  </div>
+</section>
+<section>
+  <h2>首次使用：一个管理线 + 8 条成员线</h2>
+  <pre>你是开发团队负责人：负责任务拆解、分配、协调、跟踪、汇总。
+请用 line_create 创建：
+research / architecture / uiux / dev / test / acceptance / release / ops
+创建后用 line_list 确认，然后待命。</pre>
+  <p style="color:var(--muted);font-size:14px">完整说明、协议和限制见 <a href="https://github.com/Lencen/dsh-agent-lines">README</a>。社区插件，不是 DeepSeek 官方产品。</p>
+</section>
+<footer>dsh-agent-lines 0.3.0 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</footer>
+</main>
+</div>
+</body>
+</html>
