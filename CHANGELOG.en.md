@@ -2,6 +2,13 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.3.1 (2026-11-04)
+
+- README is now user-first: scenarios and install come first; technical details are later.
+- Added install.sh, which picks the DSH Web profile automatically and verifies agent-lines.
+- The npm 0.3.1 package now carries the same bilingual README and install docs as the public repo.
+- No runtime behavior change; schema remains v6.
+
 ## 0.3.0 (2026-11-04)
 
 - Transport seam (`transport: sqlite` default).
