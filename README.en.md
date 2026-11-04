@@ -59,7 +59,18 @@ Until the package is published, install the local tarball:
 dsh plugin --profile <profile> add ./dsh-agent-lines-0.3.0.tgz
 ```
 
-### Manager profile
+`<profile>` is the **DSH profile name** (the directory under `~/.dsh/profiles/<profile>`), not a line or agent name.
+
+- Existing profile: run `ls ~/.dsh/profiles` and use the real directory name, such as `web` or `headless`.
+- Isolated install: use a new name such as `agent-lines`; the command initializes it:
+
+```bash
+dsh plugin --profile agent-lines add dsh-agent-lines@0.3.0
+```
+
+Do not put a line label such as `manager-line` or `research` in `--profile`.
+
+### Manager config
 
 ```yaml
 - id: agent-lines
