@@ -4,79 +4,38 @@ English | [中文](README.md)
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
-> **100% vibe-coded.** The architecture, code, tests, and docs were produced in AI agent sessions. It is experimental: review the code and run the integration test before production use.
+> **100% Vibe Coding.** The architecture, code, tests, and docs were produced in AI agent sessions. It is experimental: review the code and run an integration test before production use.
 
-A drop-in super-agent alternative for DSH agents. Durable, addressable peer messaging between DSH agent lines. A line is an ordinary DSH Session with a stable label; a DSH process can host one or more lines, and a manager line can create more lines by conversation with `line_create`.
+A drop-in super-agent alternative for DSH.
+
+Stop reopening sessions and copying context by hand. Give one lead agent a long-lived team: each member has a name and a role, messages survive restarts, and the lead collects and reports the results.
 
 ## When to use it
 
-Use built-in **subagents / Agent Teams** when all workers are children of one session in one DSH process. That is simpler and needs no plugin.
+Use it when:
 
-Use **dsh-agent-lines** when you need:
+- You have a long-running project and do not want to re-explain the background every time.
+- You want several agents to keep stable roles: research, architecture, UI/UX, development, testing, release, and operations.
+- You need a fixed name for each role, so you can assign work directly.
+- Work must survive closing a window or restarting DSH: messages and context should still be there.
+- You want one lead agent to decompose work, create the team, track progress, collect results, and report back.
 
-- named lines that are addressable as `agent#line`;
-- lines that can be independent DSH Sessions with their own context and lifetime;
-- a durable inbox that survives a receiver restart;
-- several DSH processes on one machine sharing one line database;
-- a manager line that creates worker lines by natural-language request.
-
-The plugin is a transport + light provisioning layer, not a task orchestrator. Handover (moving a line to a new Session and switching routing) is **not** implemented.
-
-## Transports
-
-`transport` defaults to `sqlite` (local-first) and is the only transport shipped in 0.3. Installing the plugin never requires Postgres or a Python service.
-
-## Architecture
-
-~~~mermaid
-flowchart LR
-  U[User] --> M[Manager DSH Session]
-  M -->|line_create / line_send| P[dsh-agent-lines]
-  P --> Q[(SQLite lines.db)]
-  P -->|prompt requestId| W1[Worker line Session A]
-  P -->|prompt requestId| W2[Worker line Session B]
-  W1 -->|line_inbox / line_ack| P
-  W2 -->|line_inbox / line_ack| P
-~~~
-
-The DSH adapter owns line identity and delivery into a Session; the transport owns durable messages and cross-process storage. The default transport is local SQLite. Public architecture: [English](docs/ARCHITECTURE.en.md) | [中文](docs/ARCHITECTURE.md).
-
-## Requirements
-
-- DSH `>=0.2.1-rc.5 <0.3.0`
-- Node.js `^22.19.0 || >=24.0.0`
-- A local filesystem for the SQLite database (NFS/CIFS/SMB/FUSE are refused)
+If you only need temporary child tasks inside one session, use DSH subagents / Agent Teams; you do not need this plugin.
 
 ## Install
 
-```bash
-dsh plugin --profile <profile> add dsh-agent-lines@0.3.0
-```
+One-command install (recommended; no need to find a profile):
 
-Offline or when npm is unavailable, install the local tarball:
+    curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh
+    bash install.sh
 
-```bash
-dsh plugin --profile <profile> add ./dsh-agent-lines-0.3.0.tgz
-```
+The script picks the DSH Web profile, installs the plugin, and verifies agent-lines. If it cannot decide, it lists existing profiles and tells you how to specify one.
 
-If you do not know the `<profile>`, use the one-command installer (it picks `web`, or the only profile):
+Offline or when npm is unavailable, use the local tarball:
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh
-bash install.sh
-# if npm is not published: bash install.sh ./dsh-agent-lines-0.3.0.tgz
-```
+    bash install.sh ./dsh-agent-lines-0.3.0.tgz
 
-For a manual install, `<profile>` is the **DSH profile name** (the directory under `~/.dsh/profiles/<profile>`), not a line or agent name.
-
-- Existing profile: run `ls ~/.dsh/profiles` and use the real directory name, such as `web` or `headless`.
-- Isolated install: use a new name such as `agent-lines`; the command initializes it:
-
-```bash
-dsh plugin --profile agent-lines add dsh-agent-lines@0.3.0
-```
-
-Do not put a line label such as `manager-line` or `research` in `--profile`.
+When it finishes, the script prints the path to the manager config file. Paste the "Manager config" block below into that file once.
 
 ### Manager config
 
@@ -102,35 +61,13 @@ Do not put a line label such as `manager-line` or `research` in `--profile`.
 
 Only `createFrom` may call `line_create`. Worker profiles should leave `allowCreate` false.
 
-### Worker profile
-
-```yaml
-- id: agent-lines
-  name: dsh-agent-lines
-  config:
-    agentId: agent-demo
-    dbPath: /home/me/.dsh/agent-lines/lines.db
-    lines:
-      - label: frontend-line
-        sessionId: session-lines-frontend
-        role: 前端
-```
-
-The legacy single-line form `line: frontend-line` + `sessionId: ...` is still accepted.
-
 ## Quick start
 
-1. Install the bundle with <code>dsh plugin --profile &lt;profile&gt; add dsh-agent-lines@0.3.0</code>, or the local tarball (see Install).
-2. Configure one manager line with <code>allowCreate: true</code>, <code>allowClaim: true</code>, and <code>createFrom: manager-line</code>.
-3. Start that profile and open any root Session.
-4. Call <code>line_status</code>. If the current Session is not bound, call <code>line_claim_manager({ confirm: "bind-manager" })</code>; the CLI fallback is:
-   ~~~bash
-   dsh-agent-lines claim --agent agent-demo --line manager-line --session "$DSH_SESSION_ID"
-   ~~~
-5. Tell the manager: "Create frontend-line, backend-line and ops-line, then send each a short hello."
-6. Worker lines can be separate profiles pointing at the same <code>dbPath</code>, or lines created inside the manager process.
-
-The first thing to check on any new Session is <code>line_status</code>: it explains whether the Session is bound, who the manager is, and what to do next.
+1. Run the installer above.
+2. Open the config file printed by the installer and paste the "Manager config" block once.
+3. Start DSH Web and open any root Session.
+4. Call line_status; if the Session is not bound, call line_claim_manager({ confirm: "bind-manager" }).
+5. Say "create the first-use team"; wait for the member lines, then send the first task separately.
 
 ## First use: build a development team
 
@@ -164,30 +101,18 @@ After creation, call line_list to confirm.
 
 Actual DSH Web demo profile, generic labels; no internal data.
 
-
 ## Scenario: one manager, several execution lines
 
-A manager profile exists, but the Session does not have to be pre-bound. Open any root Session and say:
+The lead creates the team first; the work comes next.
 
-> You are the manager line. First bind yourself with line_claim_manager, then own task decomposition and scheduling. Create execution lines for frontend, backend, ops, and data; assign work, coordinate them, resolve conflicts, collect results, and summarize.
+1. The lead creates members by role: research, architecture, UI/UX, development, testing, acceptance, release, operations.
+2. You give the lead one concrete task, for example "add CSV export to the reports page, with tests and a one-page runbook."
+3. The lead decomposes it and sends each part to the right member; every message stays local.
+4. Members receive the task, execute it, acknowledge it, and reply to the lead when needed.
+5. The lead collects results, resolves disagreements, and aligns the answer.
+6. You see the lead's summary; each member keeps its own context and message history.
 
-What happens next:
-
-1. The manager calls <code>line_create</code> for each execution line and <code>line_list</code> to confirm them.
-2. The user gives a task, for example: "Add CSV export to the reports page, with tests and a short runbook."
-3. The manager decomposes it and calls <code>line_send</code> to the relevant lines. Each message is persisted in SQLite.
-4. Each worker calls <code>line_inbox</code>, does its part, calls <code>line_ack</code>, and may reply with <code>line_send</code>.
-5. The manager collects results, resolves a disagreement (for example, frontend and backend disagree on the response shape), and writes the summary.
-6. The user sees the manager summary; the worker Sessions keep their own context and message history.
-
-This is a prompt pattern, not a built-in org chart: the manager model decides how to split work. The plugin supplies the durable transport and hard guards:
-
-- <code>maxLines</code> bounds creation;
-- <code>noReply</code>, <code>maxReplyDepth</code>, and self-send blocking stop automatic echo;
-- <code>line_status</code> diagnoses a missing manager binding;
-- one Session has one writer.
-
-If the manager is not bound, <code>line_status</code> returns the repair command; call <code>line_claim_manager</code> (or the CLI) before the scenario.
+This is a prompt-driven team pattern, not a built-in org chart: the lead model decides how to split work. Technical details are in "Use" and "Delivery semantics" below.
 
 ## Use
 
@@ -226,6 +151,31 @@ dsh-agent-lines doctor
 ```
 
 Use `--db` or `DSH_AGENT_LINES_DB` to point the CLI at the plugin's database.
+
+## Transports
+
+`transport` defaults to `sqlite` (local-first) and is the only transport shipped in 0.3. Installing the plugin never requires Postgres or a Python service.
+
+## Architecture
+
+~~~mermaid
+flowchart LR
+  U[User] --> M[Manager DSH Session]
+  M -->|line_create / line_send| P[dsh-agent-lines]
+  P --> Q[(SQLite lines.db)]
+  P -->|prompt requestId| W1[Worker line Session A]
+  P -->|prompt requestId| W2[Worker line Session B]
+  W1 -->|line_inbox / line_ack| P
+  W2 -->|line_inbox / line_ack| P
+~~~
+
+The DSH adapter owns line identity and delivery into a Session; the transport owns durable messages and cross-process storage. The default transport is local SQLite. Public architecture: [English](docs/ARCHITECTURE.en.md) | [中文](docs/ARCHITECTURE.md).
+
+## Requirements
+
+- DSH `>=0.2.1-rc.5 <0.3.0`
+- Node.js `^22.19.0 || >=24.0.0`
+- A local filesystem for the SQLite database (NFS/CIFS/SMB/FUSE are refused)
 
 ## Workspaces
 
