@@ -2,6 +2,13 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.3.2 (2026-11-04)
+
+- Zero-config bootstrap: with no plugin config, start one unbound manager line; a root Session can call line_claim_manager to bind itself.
+- Default DB path follows DSH_HOME; without it, still ~/.dsh/agent-lines/lines.db.
+- README now requires a DSH Web restart after install/update; explicit manager/worker config is optional.
+- No schema change; remains v6.
+
 ## 0.3.1 (2026-11-04)
 
 - README is now user-first: scenarios and install come first; technical details are later.

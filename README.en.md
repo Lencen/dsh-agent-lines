@@ -2,6 +2,8 @@
 
 English | [中文](README.md)
 
+GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
+
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
 > **100% Vibe Coding.** The architecture, code, tests, and docs were produced in AI agent sessions. It is experimental: review the code and run an integration test before production use.
@@ -31,13 +33,15 @@ One-command install (recommended; no need to find a profile):
 
 The script picks the DSH Web profile, installs the plugin, and verifies agent-lines. If it cannot decide, it lists existing profiles and tells you how to specify one.
 
+**Restart DSH Web after install or update.** A running process does not load new plugin code. With no plugin config the plugin starts in zero-config mode: one unbound manager line, and a root Session can call line_claim_manager to bind itself. The explicit "Manager config" block is optional, for a fixed manager/worker setup.
+
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.3.1.tgz
+    bash install.sh ./dsh-agent-lines-0.3.2.tgz
 
-When it finishes, the script prints the path to the manager config file. Paste the "Manager config" block below into that file once.
+After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
-### Manager config
+### Manager config (optional)
 
 ```yaml
 - id: agent-lines
@@ -64,8 +68,8 @@ Only `createFrom` may call `line_create`. Worker profiles should leave `allowCre
 ## Quick start
 
 1. Run the installer above.
-2. Open the config file printed by the installer and paste the "Manager config" block once.
-3. Start DSH Web and open any root Session.
+2. **Restart DSH Web** so the plugin is loaded.
+3. Open any root Session. The zero-config path needs no YAML.
 4. Call line_status; if the Session is not bound, call line_claim_manager({ confirm: "bind-manager" }).
 5. Say "create the first-use team"; wait for the member lines, then send the first task separately.
 

@@ -2,6 +2,8 @@
 
 [English](README.en.md) | 中文
 
+GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
+
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
 > **100% Vibe Coding。** 架构、代码、测试、文档都在 AI agent 会话中完成。它是实验性项目：生产使用前请审阅代码并跑一遍集成测试。
@@ -31,13 +33,15 @@ DSH 的 super agent 平替插件。
 
 脚本会自动选择 DSH Web 使用的 profile，安装后检查 agent-lines 是否可用；如果判断不了，会列出已有配置并提示你怎么指定。
 
+**安装或更新后必须重启 DSH Web。** 运行中的进程不会加载新插件代码。插件没有 config 时走零配置：启动一条未绑定 manager，根会话可以调用 line_claim_manager 自己绑定。显式“管理线配置”是可选的，用于固定 manager/worker。
+
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.3.1.tgz
+    bash install.sh ./dsh-agent-lines-0.3.2.tgz
 
-安装完成后，脚本会打印管理线配置文件的路径。把下面“管理线配置”整段粘贴进去一次即可。
+安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
-### 管理线配置
+### 管理线配置（可选）
 
 ```yaml
 - id: agent-lines
@@ -64,8 +68,8 @@ DSH 的 super agent 平替插件。
 ## 快速开始
 
 1. 运行上面的安装脚本。
-2. 按脚本提示打开配置文件，把“管理线配置”整段粘贴进去（只做一次）。
-3. 启动 DSH Web，打开任意根会话。
+2. **重启 DSH Web**，让插件加载。
+3. 打开任意根会话。零配置路径不需要改 YAML。
 4. 先调用 line_status；如果当前会话未绑定，调用 line_claim_manager({ confirm: "bind-manager" })。
 5. 直接说“按首次使用创建团队”，然后等它建好成员线；第一个任务再单独发。
 
