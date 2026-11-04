@@ -33,7 +33,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.3.0.tgz
+    bash install.sh ./dsh-agent-lines-0.3.1.tgz
 
 When it finishes, the script prints the path to the manager config file. Paste the "Manager config" block below into that file once.
 

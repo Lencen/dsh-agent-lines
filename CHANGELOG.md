@@ -2,6 +2,13 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.3.1 (2026-11-04)
+
+- README 改为用户优先：先场景、安装和首次使用，技术细节后置；安装/快速开始不再要求手填 profile。
+- 新增 install.sh，自动选择 DSH Web profile，并检查 agent-lines 是否可用。
+- 同步最新双语 README、Pages、安装说明；0.3.1 的 npm 包内文档与公开仓库一致。
+- 无运行时行为变更；schema 仍为 v6。
+
 ## 0.3.0 (2026-11-04)
 
 - Transport 接缝（transport: sqlite 默认）。

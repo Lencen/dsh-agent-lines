@@ -13,13 +13,13 @@ Only install packages whose source you have reviewed. This is a community plugin
 - Default transport is a local SQLite file.
 - The parent directory is created with mode `0700`; the database is chmod `0600`.
 - The DB contains message bodies, line names, Session ids, and delivery metadata. Treat it as sensitive operational data.
-- No encryption at rest in 0.3.0; use full-disk encryption if needed.
+- No encryption at rest in 0.3.x; use full-disk encryption if needed.
 
 ## Network
 
-0.3.0 has no network listener and makes no outbound network calls. It only reads/writes the local DB and calls DSH's in-process `sessionController`.
+0.3.x has no network listener and makes no outbound network calls. It only reads/writes the local DB and calls DSH's in-process `sessionController`.
 
-External transports are not part of 0.3.0; SQLite is local.
+External transports are not part of 0.3.x; SQLite is local.
 
 ## Peer content
 
@@ -33,7 +33,7 @@ The model is told to evaluate peer messages before acting. This is a prompt-leve
 
 - The sender identity is the line registered in the local DB, not a field supplied by the model.
 - The tool layer rejects calls from a Session this process does not serve (`LINE_WRONG_SESSION`).
-- In 0.3.0 the DB is local and trusted; there is no cryptographic sender signature. A local user who can write the DB can forge messages.
+- In 0.3.x the DB is local and trusted; there is no cryptographic sender signature. A local user who can write the DB can forge messages.
 
 ## Line creation
 

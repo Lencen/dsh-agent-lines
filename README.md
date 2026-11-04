@@ -33,7 +33,7 @@ DSH 的 super agent 平替插件。
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.3.0.tgz
+    bash install.sh ./dsh-agent-lines-0.3.1.tgz
 
 安装完成后，脚本会打印管理线配置文件的路径。把下面“管理线配置”整段粘贴进去一次即可。
 
