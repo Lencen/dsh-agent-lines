@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>dsh-agent-lines — durable lines for DSH agents</title>
-<meta name="description" content="Durable, addressable peer messaging lines for DSH agents. One manager, several execution lines, local SQLite, community plugin.">
+<title>dsh-agent-lines — let one AI lead run a team</title>
+<meta name="description" content="State the goal. One AI lead splits the work, creates team lines, tracks progress, and reports back. Each line keeps its own context; work survives a restart.">
 <meta property="og:image" content="https://lencen.github.io/dsh-agent-lines/assets/social-preview.png">
 <style>
 :root{--bg:#080b10;--panel:#0d1117;--line:#263241;--text:#e6edf3;--muted:#8b949e;--cyan:#58a6ff;--green:#7ee787}
@@ -49,8 +49,8 @@ footer{padding:34px 0 48px;color:var(--muted);font-size:12px}
 <section class="hero" style="border:0;padding-bottom:22px">
   <div>
     <div class="kicker">Community plugin · Apache-2.0</div>
-    <h1>Durable lines<br><span>for DSH agents</span></h1>
-    <p class="lead">One manager, several execution lines. Each line is an ordinary DSH Session with its own context and durable inbox. Messages live in local SQLite, shared across processes, with no network service.</p>
+    <h1>Let one AI lead<br><span>run a team for you</span></h1>
+    <p class="lead">You state the goal. The lead splits it into research, architecture, UI, development, test, acceptance, release, and ops lines; assigns work, tracks progress, and reports back. Close the window or restart DSH; the work and messages remain.</p>
     <div class="install">curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh &amp;&amp; bash install.sh</div>
     <div class="actions">
       <a class="btn primary" href="https://github.com/Lencen/dsh-agent-lines">GitHub repository</a>
@@ -63,20 +63,30 @@ footer{padding:34px 0 48px;color:var(--muted);font-size:12px}
   </div>
 </section>
 <section>
-  <h2>Not another chat box</h2>
+  <h2>What it takes off your plate</h2>
   <div class="cards">
-    <div class="card"><b>Addressable lines</b><p>agent#line is a stable identity; a manager can create roles, send tasks, and collect results.</p></div>
-    <div class="card"><b>Durable messages</b><p>Messages survive a receiver restart; at-least-once delivery with requestId idempotency in the DSH Session log.</p></div>
-    <div class="card"><b>Clear boundaries</b><p>0.3 is local SQLite only: no handover, no process isolation, no built-in team UI.</p></div>
+    <div class="card"><b>No repeated context</b><p>Each member line is a long-lived DSH Session with its own context. Send new work to the right role instead of re-explaining the project.</p></div>
+    <div class="card"><b>No manual dispatch</b><p>The lead decomposes work, assigns it, coordinates, resolves disagreements, and collects results. You read the summary.</p></div>
+    <div class="card"><b>No lost work</b><p>Tasks and messages are stored locally. Restart DSH and continue; member state and unread messages are still there.</p></div>
+  </div>
+  <p style="color:var(--muted);font-size:14px;margin-top:14px">Built for long-running projects and multi-role work. For a one-off subtask, DSH's built-in subagent / Agent Teams is simpler.</p>
+</section>
+<section>
+  <h2>A real usage pattern</h2>
+  <div class="cards">
+    <div class="card"><b>1. You state the goal</b><p>“Add CSV export to the reports page, with tests and a short runbook.”</p></div>
+    <div class="card"><b>2. The lead forms the team</b><p>Split into research, architecture, UI/UX, development, test, acceptance, release, and ops; create each line.</p></div>
+    <div class="card"><b>3. The team works in parallel</b><p>Members do their parts; the lead tracks progress, resolves interface disagreements, and reassigns when needed.</p></div>
+    <div class="card"><b>4. You get the result</b><p>The lead reports conclusions, file paths, risks, and open questions. You do not chase every member yourself.</p></div>
   </div>
 </section>
 <section>
-  <h2>First use: one manager + 8 member lines</h2>
+  <h2>First use: let the lead form the team</h2>
   <pre>You are the development team lead: own decomposition, assignment, coordination, tracking, and summary.
-Use line_create for:
+First bind this Session with line_claim_manager, then use line_create for:
 research / architecture / uiux / dev / test / acceptance / release / ops
-Then call line_list and wait for my first task.</pre>
-  <p style="color:var(--muted);font-size:14px">Full docs, protocol, and limits: <a href="https://github.com/Lencen/dsh-agent-lines">README</a>. Community plugin, not an official DeepSeek product.</p>
+After creation, confirm with line_list, then wait for my first task.</pre>
+  <p style="color:var(--muted);font-size:14px">Restart DSH Web after install or update. Technical details, protocol, and limits: <a href="https://github.com/Lencen/dsh-agent-lines">README / architecture</a>. Community plugin, not an official DeepSeek product.</p>
 </section>
 <footer>dsh-agent-lines 0.3.2 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</footer>
 </main>
