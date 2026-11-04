@@ -1,0 +1,68 @@
+{
+  "name": "dsh-agent-lines",
+  "version": "0.3.0",
+  "description": "DSH Agent 的持久、可寻址消息线（社区插件）。",
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "dsh-agent-lines": "./bin/dsh-agent-lines.js"
+  },
+  "files": [
+    "lib",
+    "bin",
+    "cordis.patch.yml",
+    "README.md",
+    "README.en.md",
+    "LICENSE",
+    "NOTICE",
+    "CHANGELOG.md",
+    "CHANGELOG.en.md",
+    "SECURITY.md",
+    "SECURITY.en.md",
+    "CONTRIBUTING.md",
+    "CONTRIBUTING.en.md",
+    "CODE_OF_CONDUCT.md",
+    "CODE_OF_CONDUCT.en.md",
+    "docs",
+    "examples"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0",
+    "dsh": ">=0.2.1-rc.5 <0.3.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "dsh",
+    "agents",
+    "multi-agent",
+    "messaging"
+  ],
+  "author": "Lencen <iamlencen@qq.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lencen/dsh-agent-lines.git"
+  },
+  "homepage": "https://github.com/Lencen/dsh-agent-lines#readme",
+  "bugs": {
+    "url": "https://github.com/Lencen/dsh-agent-lines/issues"
+  },
+  "contributors": [
+    "DeepSeek Harness agent (DSH) — deepseek v4.1 flash 1017"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

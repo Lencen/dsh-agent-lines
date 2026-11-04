@@ -1,0 +1,39 @@
+# 更新记录
+
+[English](CHANGELOG.en.md) | 中文
+
+## 0.3.0 (2026-11-04)
+
+- Transport 接缝（transport: sqlite 默认）。
+- line_create 解析管理线工作区并传 workspaceId，新建线挂到工作区而不是“未分组”；可用 workspace 参数指定已有工作区。
+- line_move_workspace 把已有线 Session 挂到 cwd 匹配的工作区。
+- 回声保护：默认禁止 self-send、默认 5 秒去重窗口、maxReplyDepth（默认 8）、noReply 消息，以及 hop/root 元数据。
+- 只读 line_status 对所有 Session 可见，包括未绑定 Session。
+- line_claim_manager 全局工具：live 根 Session 可用 confirm: "bind-manager" 绑定为管理线；CLI claim 仍是兜底。
+- dsh-agent-lines claim --agent ... --line manager --session ...：写入持久 claim 请求；运行中的插件无需重启即可重绑管理线。
+- manager_bindings 持久化：已 claim 的管理 Session 跨重启保留，即使 profile 仍指向旧 Session。
+- 启动时用 sessionPersistence.stat 校验配置的 Session；缺失的 Session 保持未绑定，不显示 online。
+- allowClaim 控制 claim 轮询（默认 false）。
+- Schema v6：claim_requests、manager_bindings，以及消息 hop/no_reply/root_message_id。
+
+## 0.2.0 (2026-11-04)
+
+- 单 DSH 进程多线：lines[] 配置、Session→line 映射、每线投递循环和每 agent prompt section。
+- line_create 面向配置的管理线（allowCreate、createFrom）：在管理线 cwd 创建普通 DSH Session 并注册为线。
+- 按 label 幂等创建（created:false）和 maxLines 限制（默认 16）。
+- role 和 created_by 列及自动迁移；管理线启动时恢复自己创建的线。
+- 兼容旧的单线配置（line/sessionId）。
+- line 工具只对已绑定 Session 生效；未绑定聊天不再看到它们。
+- 进程退出释放租约，减少快速重启后的 LINE_LEASE_HELD。
+
+## 0.1.0 (2026-11-04)
+
+- 首个 MVP：本地 SQLite 线注册表和持久消息队列。
+- owner 进程通过 ctx.sessionController.prompt + requestId 幂等投递。
+- 租约、心跳、过期 claim 回收、指数重试、TTL。
+- 工具：line_list、line_send、line_inbox、line_ack。
+- CLI：list、send、inbox、ack、doctor、tail。
+- 显式区分 delivered 和 acked；至少一次投递，Session 日志有效一次。
+- 本地文件系统检查（拒绝 NFS/CIFS/SMB/FUSE）。
+
+未包含：HTTP transport、Web UI、Postgres adapter、自动拉起进程。

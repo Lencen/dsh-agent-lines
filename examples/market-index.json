@@ -1,0 +1,69 @@
+{
+  "format": 1,
+  "title": {
+    "en": "Agent Lines",
+    "zh": "Agent 线"
+  },
+  "description": {
+    "en": "Durable peer messaging lines for DSH agents.",
+    "zh": "DSH agent 的持久化跨进程同级消息线。"
+  },
+  "metadata": {
+    "categories": {
+      "agent-collaboration": {
+        "title": {
+          "en": "Agent collaboration",
+          "zh": "Agent 协作"
+        }
+      }
+    },
+    "labels": {
+      "community": {
+        "title": {
+          "en": "Community",
+          "zh": "社区"
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-agent-lines",
+      "title": {
+        "en": "Agent Lines",
+        "zh": "Agent 线"
+      },
+      "description": {
+        "en": "Durable, addressable peer messaging between DSH processes.",
+        "zh": "DSH 进程间可寻址、持久化的同级消息层。"
+      },
+      "author": "Lencen",
+      "metadata": {
+        "category": "agent-collaboration",
+        "labels": [
+          "community"
+        ],
+        "keywords": [
+          "dsh-plugin",
+          "agent",
+          "messaging"
+        ]
+      },
+      "dist-tags": {
+        "latest": "0.3.0"
+      },
+      "versions": [
+        {
+          "version": "0.3.0",
+          "publishTimestamp": 1793771000,
+          "source": {
+            "type": "npm"
+          },
+          "engines": {
+            "dsh": ">=0.2.1-rc.5 <0.3.0"
+          }
+        }
+      ]
+    }
+  ]
+}

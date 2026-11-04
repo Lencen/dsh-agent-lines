@@ -1,0 +1,37 @@
+name: Bug 报告 / Bug report
+description: 安装、运行、协议或工具行为异常
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请先搜索已有 issue。不要粘贴 token、真实 Session 内容、客户数据或内部路径。
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么
+      description: 实际行为与期望行为
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 最小复现
+      description: 命令、配置片段、DSH/插件版本
+      placeholder: |
+        dsh --version
+        node -p "require('dsh-agent-lines/package.json').version"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志/错误码
+      description: 请脱敏；不要包含 token、Session 原文、内部路径
+      render: text
+  - type: input
+    id: platform
+    attributes:
+      label: 环境
+      placeholder: "OS / Node / DSH / SQLite 本地盘"

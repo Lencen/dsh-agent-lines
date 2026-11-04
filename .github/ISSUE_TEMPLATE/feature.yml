@@ -1,0 +1,30 @@
+name: 功能建议 / Feature request
+description: 新 transport、工具、CLI 或文档改进
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决的问题
+      description: 不要只写“加一个功能”；说明使用场景
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 是否影响 0.3 的单 writer / manager 模型？
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: 范围确认
+      options:
+        - label: 这不涉及把 broker/Python/Postgres 打包进插件
+        - label: 这不是官方 DeepSeek 功能请求

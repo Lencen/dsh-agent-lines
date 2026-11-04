@@ -1,0 +1,5 @@
+# dsh-agent-lines bundle layer: inserts the host plugin.
+# The profile supplies agentId, line, sessionId and dbPath (see README).
+- insert:
+    - id: agent-lines
+      name: dsh-agent-lines

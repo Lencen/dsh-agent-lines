@@ -1,0 +1,8 @@
+node_modules/
+lines.db
+lines.db-*
+*.log
+.DS_Store
+*.tgz
+*.tar.gz
+coverage/

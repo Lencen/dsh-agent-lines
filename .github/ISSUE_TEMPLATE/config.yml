@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 使用问答 / Q&A
+    url: https://github.com/Lencen/dsh-agent-lines/discussions
+    about: 安装、配置、使用问题请先到 Discussions
+  - name: 安全漏洞 / Security
+    url: https://github.com/Lencen/dsh-agent-lines/security/advisories/new
+    about: 不要公开提交安全漏洞
