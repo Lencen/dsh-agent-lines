@@ -53,7 +53,7 @@ DSH 适配层负责线身份和“把消息送进 Session”；transport 负责�
 dsh plugin --profile <profile> add dsh-agent-lines@0.3.0
 ```
 
-包尚未发布时，用本地 tarball 安装：
+离线或 npm 不可用时，用本地 tarball 安装：
 
 ```bash
 dsh plugin --profile <profile> add ./dsh-agent-lines-0.3.0.tgz
