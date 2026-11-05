@@ -17,6 +17,7 @@ test('legacy single-line config still normalizes', () => {
   assert.equal(config.allowSelfSend, false)
   assert.equal(config.dedupeWindowMs, 5000)
   assert.equal(config.maxReplyDepth, 8)
+  assert.equal(config.bootstrapOnCreate, true)
 })
 
 test('zero config bootstraps one unbound manager', () => {
@@ -36,6 +37,7 @@ test('multi-line config carries roles and allowCreate', () => {
     agentId: 'agent-demo',
     allowCreate: true,
     allowClaim: true,
+    bootstrapOnCreate: false,
     lines: [
       { label: 'manager', sessionId: 'session-m', role: 'dispatcher' },
       { label: 'frontend', sessionId: 'session-f', role: 'UI' },
@@ -48,6 +50,7 @@ test('multi-line config carries roles and allowCreate', () => {
   assert.equal(config.lines[0].role, 'dispatcher')
   assert.equal(config.lines[1].lineId, 'agent-demo#frontend')
   assert.equal(config.createFrom, 'manager')
+  assert.equal(config.bootstrapOnCreate, false)
 })
 
 test('duplicate labels and sessions are rejected', () => {
