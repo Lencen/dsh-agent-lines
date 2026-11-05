@@ -2,6 +2,12 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.3.4 (2026-11-05)
+
+- Removed the conflicting suggestion that one-off subtasks should use subagent / Agent Teams.
+- The plugin is positioned for long-running, multi-role teams that need durable messages; one-off subtasks are left to the user's DSH-native choice.
+- Synced the npm package and Release artifact; no runtime behavior change; schema remains v6.
+
 ## 0.3.3 (2026-11-04)
 
 - Scenario-first landing page: hero, three cards, four-step real usage, first-use claim prompt, restart note.
