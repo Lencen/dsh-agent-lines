@@ -2,6 +2,12 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.3.5 (2026-11-05)
+
+- 集成 P0/P1 bootstrap：line_create 默认排队 onboarding 消息，新增 bootstrapOnCreate，line_status/line_list 暴露 materialized / visibleInSidebar / bootstrapQueued。
+- 保留 0.3.4 的文档与删句；README 以 0.3.4 为基础手工补 bootstrap 说明，没有用本地旧版覆盖。
+- 无 schema 变化，仍为 v6。
+
 ## 0.3.4 (2026-11-05)
 
 - 删除与插件定位冲突的提示句：不再在 README / 落地页建议“临时子任务直接用 subagent / Agent Teams”。

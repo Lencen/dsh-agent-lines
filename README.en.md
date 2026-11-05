@@ -36,7 +36,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.3.4.tgz
+    bash install.sh ./dsh-agent-lines-0.3.5.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -63,6 +63,12 @@ After install and restart, it works without a config. When you want a fixed mana
 ```
 
 Only `createFrom` may call `line_create`. Worker profiles should leave `allowCreate` false.
+
+### New line bootstrap
+
+When the manager calls line_create, the plugin queues a no-work onboarding message by default so the blank Session gets its first message and appears in the sidebar; pass bootstrap: false to skip it.
+
+line_status / line_list return materialized, visibleInSidebar, and bootstrapQueued; a new line may remain blank until its first message.
 
 ## Quick start
 

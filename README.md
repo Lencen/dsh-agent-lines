@@ -36,7 +36,7 @@ DSH 的 super agent 平替插件。
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.3.4.tgz
+    bash install.sh ./dsh-agent-lines-0.3.5.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -63,6 +63,12 @@ DSH 的 super agent 平替插件。
 ```
 
 只有 `createFrom` 指定的线能调用 `line_create`。worker profile 不要开 `allowCreate`。
+
+### 新线 bootstrap
+
+管理线调用 line_create 创建新线时，插件默认排队一条不要求执行任务的 onboarding 消息，让空白 Session 产生第一条消息并出现在侧栏；传 bootstrap: false 可关闭。
+
+line_status / line_list 会返回 materialized、visibleInSidebar、bootstrapQueued；新线在首条消息前可能仍是 blank。
 
 ## 快速开始
 
