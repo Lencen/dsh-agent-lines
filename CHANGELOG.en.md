@@ -2,6 +2,12 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.3.5 (2026-11-05)
+
+- Integrated P0/P1 bootstrap: line_create queues an onboarding message by default, adds bootstrapOnCreate, and line_status/line_list expose materialized / visibleInSidebar / bootstrapQueued.
+- Kept the 0.3.4 docs and wording; README bootstrap notes were added manually on top of 0.3.4, not overwritten from the older local tree.
+- No schema change; remains v6.
+
 ## 0.3.4 (2026-11-05)
 
 - Removed the conflicting suggestion that one-off subtasks should use subagent / Agent Teams.
