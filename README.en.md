@@ -22,7 +22,6 @@ Use it when:
 - Work must survive closing a window or restarting DSH: messages and context should still be there.
 - You want one lead agent to decompose work, create the team, track progress, collect results, and report back.
 
-If you only need temporary child tasks inside one session, use DSH subagents / Agent Teams; you do not need this plugin.
 
 ## Install
 
@@ -77,14 +76,15 @@ Only `createFrom` may call `line_create`. Worker profiles should leave `allowCre
 
 Copy this into a new root Session. The prompt starts with binding, then creates one team. Replace the task later; do not let the manager execute the work.
 
-> Use dsh-agent-lines. If this Session is not yet bound, call line_claim_manager with confirm "bind-manager". You are the development team lead: own task decomposition, assignment, communication, progress tracking, result collection, summary, and reporting. You only manage and coordinate; do not execute specific development tasks.
+> Use dsh-agent-lines. Make this Session the development team lead; bind it first if needed.
 >
-> Create these member lines with line_create. Use ASCII labels and Chinese roles:
-> research (调研), architecture (架构), uiux (UIUX), dev (开发), test (测试), acceptance (验收), release (发布), ops (运维).
+> You own task decomposition, assignment, coordination, progress tracking, result collection, and reporting. You manage and coordinate only; do not execute development tasks.
 >
-> After creation, call line_list to confirm, then wait for my first task. Do not start work by yourself.
+> Form the team. Use short English names and Chinese roles: research (调研), architecture (架构), uiux (UIUX), dev (开发), test (测试), acceptance (验收), release (发布), ops (运维).
+>
+> After the team is ready, wait for my first task. Do not start by yourself.
 
-Why ASCII labels: line labels are identifiers such as <code>research</code>; Chinese is the <code>role</code> text, not the label. This prompt creates one team. Version 0.3 does not support multiple simultaneous teams in one plugin instance.
+Member names are short English names; Chinese is the role. This prompt creates one team. Version 0.3 does not support multiple simultaneous teams in one plugin instance.
 
 Copyable calls (the manager Session runs these):
 
