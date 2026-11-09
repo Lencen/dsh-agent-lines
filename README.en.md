@@ -23,6 +23,18 @@ Use it when:
 - You want one lead agent to decompose work, create the team, track progress, collect results, and report back.
 
 
+## Any team type, not just development
+
+The plugin does not limit team types. It is "one manager + several long-lived members".
+The examples below use a development team; novel, video, research, or operations teams only change roles and tasks.
+
+- Novel: editor-in-chief, outline, writer, editor, proofreader, reviewer;
+- Video: manager, planning, script, editing, cover, publishing;
+- Development: manager, developer, tester, acceptance;
+- Research: manager, research, analysis, writing, review.
+
+You do not need to know the roles up front. Tell the manager "build a novel team and set up its workflow and mechanisms"; it proposes the team shape first.
+
 ## What each version adds (business scenarios)
 
 ### 0.3.6: replace a role when context is full
@@ -43,7 +55,7 @@ Scenario: the manager wants to see which line is close to saturation or has gone
 Use: line_status / line_list expose activity.level, turns, steps, lastActivityAt.  
 Effect: a low/medium/high activity proxy, not a fake "78% context used"; exact context usage waits for DSH.
 
-### 0.3.9: the manager can see cross-line traffic
+### 0.4.0: the manager can see cross-line traffic
 
 Scenario: lines message each other directly; the manager needs visibility without every message becoming a manager turn.  
 Use: line_observe({ line: "writer", limit: 20 }) or CLI observe --json.  
@@ -62,7 +74,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.3.9.tgz
+    bash install.sh ./dsh-agent-lines-0.4.0.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -165,12 +177,13 @@ Tools:
 | `line_list` | List lines, status, unread counts, current line and role |
 | `line_create` | Manager only: create a line; same label is idempotent; replace:true swaps the label to a fresh Session |
 | `line_handoff` | Manager only: structured handoff snapshot (JSON/Markdown), no model call |
-| `line_observe` | Manager only: read-only cross-line feed; no prompt injection, no state change |
+| `line_observe` | Manager only: read-only cross-line feed with kind/approval state; no prompt injection, no state change |
+| `line_manager_ack` | Manager only: approve/reject a pending_approval task |
 | `line_retire` | Manager only: soft-retire; reject new sends, keep Session and history |
 | `line_rebind` | Manager only: atomically switch a line to a new live Session, optionally migrating backlog |
 | `line_rename` | Manager only: rename the sidebar title and persist it in lines.db |
 | `line_move_workspace` | Manager only: attach an existing line Session to a workspace whose path exactly matches the Session cwd |
-| `line_send` | Send to `line` or `agent#line`; optional `idempotencyKey`, `replyTo`, `noReply`, `forceDistinct`, `ttlMs` |
+| `line_send` | Send to `line` or `agent#line`; optional `kind`, `ccManager`, `idempotencyKey`, `replyTo`, `noReply`, `forceDistinct`, `ttlMs` |
 | `line_inbox` | Read delivered messages for the current line |
 | `line_ack` | Acknowledge a delivered message |
 
@@ -262,6 +275,19 @@ dsh-agent-lines claim --agent agent-demo --line manager --session "$DSH_SESSION_
 ```
 
 Claim is never automatic for every new Session: it needs an explicit user request or an explicit CLI call.
+
+## Message kinds and task approval
+
+`line_send` supports four kinds:
+
+| kind | Meaning | Non-manager send |
+|---|---|---|
+| info | Informational sync | delivered directly |
+| request | Request help | delivered directly |
+| task | Assign work | becomes pending_approval; delivered only after manager approve |
+| alert | Alert | delivered directly |
+
+Manager tasks skip approval. Use `line_observe` to see pending tasks and `line_manager_ack({ messageId, decision: "approve" | "reject" })` to decide.
 
 ## Echo and duplicate protection
 

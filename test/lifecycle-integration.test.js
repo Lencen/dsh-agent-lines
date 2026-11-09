@@ -123,3 +123,20 @@ test('line_observe is manager-only read-only feed', async () => {
     await assert.rejects(() => h.tools.get('line_observe').execute({}, exec(workerAgent)), error => error.code === 'LINE_CREATE_FORBIDDEN')
   } finally { h.cleanup() }
 })
+test('worker task waits for manager approval', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const created = await h.tools.get('line_create').execute({ label: 'writer', role: 'writer', bootstrap: false }, exec(h.manager))
+    const worker = h.agents.get(created.sessionId)
+    const sent = await h.tools.get('line_send').execute({ to: 'manager', text: '请批准这个任务', kind: 'task' }, exec(worker))
+    assert.equal(sent.requiresApproval, true)
+    assert.equal(sent.state, 'pending_approval')
+    const feed = await h.tools.get('line_observe').execute({ limit: 10 }, exec(h.manager))
+    assert.equal(feed.messages[0].approvalState, 'pending')
+    const ack = await h.tools.get('line_manager_ack').execute({ messageId: sent.id, decision: 'approve' }, exec(h.manager))
+    assert.equal(ack.state, 'queued')
+    const after = await h.tools.get('line_observe').execute({ limit: 10 }, exec(h.manager))
+    assert.equal(after.messages[0].state, 'queued')
+  } finally { h.cleanup() }
+})

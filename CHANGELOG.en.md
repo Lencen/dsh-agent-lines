@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.4.0 (2026-11-09)
+
+- Message governance: line_send adds kind (info/request/task/alert) and ccManager; a non-manager task becomes pending_approval and is delivered only after line_manager_ack.
+- Schema v8: messages.kind/cc_manager/approval_state/approved_by/approved_at; additive migration.
+- Added line_manager_ack (approve/reject).
+- line_observe shows kind/ccManager/approvalState; pending tasks do not enter the target inbox.
+- README is team-agnostic; GitHub Pages is rewritten for beginners (DSH-assisted install, novel/video/dev scenarios, restart handoff card).
+
 ## 0.3.9 (2026-11-09)
 
 - Added read-only line_observe: a manager feed of cross-line messages without prompts or state changes.

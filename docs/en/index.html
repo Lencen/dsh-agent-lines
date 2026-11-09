@@ -3,96 +3,150 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>dsh-agent-lines — let one AI lead run a team</title>
-<meta name="description" content="State the goal. One AI lead splits the work, creates team lines, tracks progress, and reports back. Each line keeps its own context; work survives a restart.">
+<title>dsh-agent-lines — let an AI lead run your AI team</title>
+<meta name="description" content="Tell the lead your goal. It splits work, builds a team, tracks progress and summarizes results. Members and messages survive a DSH restart.">
 <meta property="og:image" content="https://lencen.github.io/dsh-agent-lines/assets/social-preview.png">
 <style>
-:root{--bg:#080b10;--panel:#0d1117;--line:#263241;--text:#e6edf3;--muted:#8b949e;--cyan:#58a6ff;--green:#7ee787}
+:root{--bg:#080b10;--panel:#0d1117;--line:#263241;--text:#e6edf3;--muted:#8b949e;--cyan:#58a6ff;--green:#7ee787;--warn:#f0b72f}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 80% 0%,#12314a 0,#080b10 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.7}
+body{margin:0;background:radial-gradient(circle at 80% 0%,#12314a 0,#080b10 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif;line-height:1.75}
 a{color:var(--cyan);text-decoration:none}
-.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
 header{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid #1f2937}
 .brand{display:flex;align-items:center;gap:10px;color:var(--text);font-weight:700}
 .mark{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#58a6ff,#7ee787)}
 nav a{color:var(--muted);margin-left:18px;font-size:14px}
-.hero{padding:72px 0 48px;display:grid;grid-template-columns:1.05fr .95fr;gap:42px;align-items:center}
-.kicker{color:var(--green);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
-h1{font-size:48px;line-height:1.15;margin:14px 0 18px;letter-spacing:-.03em}
+.hero{padding:64px 0 32px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.kicker{color:var(--green);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+h1{font-size:46px;line-height:1.15;margin:12px 0 16px;letter-spacing:-.03em}
 h1 span{color:var(--cyan)}
-.lead{color:#b7c3cf;font-size:17px;max-width:560px}
-.install{margin:26px 0;background:#0a0f16;border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-family:"DejaVu Sans Mono",monospace;font-size:13px;color:#c9d1d9;overflow:auto}
-.actions{display:flex;gap:12px;flex-wrap:wrap}
-.btn{display:inline-block;padding:10px 16px;border-radius:9px;border:1px solid var(--line);color:var(--text);font-size:14px}
-.btn.primary{background:var(--cyan);color:#06111f;border-color:var(--cyan);font-weight:700}
+.lead{color:#b7c3cf;font-size:17px;max-width:580px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.btn{display:inline-block;padding:11px 17px;border-radius:9px;border:1px solid var(--line);color:var(--text);font-size:14px}
+.btn.primary{background:var(--green);color:#06111f;border-color:var(--green);font-weight:700}
 .shot{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);box-shadow:0 22px 60px rgba(0,0,0,.35)}
 .shot img{display:block;width:100%;height:auto}
 .caption{font-size:12px;color:var(--muted);padding:10px 14px;border-top:1px solid #1f2937}
-section{padding:36px 0;border-top:1px solid #161d27}
-h2{font-size:22px;margin:0 0 18px}
+section{padding:34px 0;border-top:1px solid #161d27}
+h2{font-size:23px;margin:0 0 16px}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.card{background:rgba(13,17,23,.8);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card{background:rgba(13,17,23,.82);border:1px solid var(--line);border-radius:12px;padding:18px}
 .card b{display:block;margin-bottom:6px}
 .card p{color:var(--muted);font-size:14px;margin:0}
-pre{background:#0a0f16;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#c9d1d9;font-size:13px}
-footer{padding:34px 0 48px;color:var(--muted);font-size:12px}
-@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:44px}h1{font-size:36px}.cards{grid-template-columns:1fr}}
+pre{background:#0a0f16;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#c9d1d9;font-size:13px;white-space:pre-wrap}
+.note{color:var(--muted);font-size:13px}
+.warn{border-left:3px solid var(--warn);padding:10px 14px;background:#141007;color:#e8d7a8;border-radius:6px;font-size:14px}
+details{background:rgba(13,17,23,.7);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:14px}
+summary{cursor:pointer;color:var(--muted);font-size:14px}
+footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px solid #161d27}
+@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:40px}h1{font-size:36px}.cards{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
   <a class="brand" href="../"><span class="mark"></span>dsh-agent-lines</a>
-  <nav><a href="../">中文</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/tag/v0.3.9">Release</a></nav>
+  <nav><a href="../">中文</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/tag/v0.4.0">Release</a></nav>
 </header>
 <main>
-<section class="hero" style="border:0;padding-bottom:22px">
+<section class="hero" style="border:0;padding-bottom:20px">
   <div>
     <div class="kicker">Community plugin · Apache-2.0</div>
-    <h1>Let one AI lead<br><span>run a team for you</span></h1>
-    <p class="lead">You state the goal. The lead splits it into research, architecture, UI, development, test, acceptance, release, and ops lines; assigns work, tracks progress, and reports back. Close the window or restart DSH; the work and messages remain.</p>
-    <div class="install">curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh &amp;&amp; bash install.sh</div>
+    <h1>Let an AI lead<br><span>run your AI team</span></h1>
+    <p class="lead">Tell it the goal. The lead splits work, picks members, assigns tasks, tracks progress and summarizes the result. Close the window or restart DSH: members and messages stay.</p>
     <div class="actions">
-      <a class="btn primary" href="https://github.com/Lencen/dsh-agent-lines">GitHub repository</a>
-      <a class="btn" href="https://github.com/Lencen/dsh-agent-lines/releases/tag/v0.3.9">Download 0.3.9</a>
+      <a class="btn primary" href="#start">How to start</a>
+      <a class="btn" href="#install">Install</a>
     </div>
   </div>
   <div class="shot">
-    <img src="../assets/first-use.gif" alt="First use: create a manager line and 8 member lines, then receive acks">
-    <div class="caption">demo profile · generic labels · no internal data</div>
+    <img src="../assets/first-use.gif" alt="A lead creates member lines and gets acknowledgements">
+    <div class="caption">Demo profile · generic roles · no internal data</div>
   </div>
 </section>
+
 <section>
-  <h2>What it takes off your plate</h2>
+  <h2>What it does for you</h2>
   <div class="cards">
-    <div class="card"><b>No repeated context</b><p>Each member line is a long-lived DSH Session with its own context. Send new work to the right role instead of re-explaining the project.</p></div>
-    <div class="card"><b>No manual dispatch</b><p>The lead decomposes work, assigns it, coordinates, resolves disagreements, and collects results. You read the summary.</p></div>
-    <div class="card"><b>No lost work</b><p>Tasks and messages are stored locally. Restart DSH and continue; member state and unread messages are still there.</p></div>
+    <div class="card"><b>No repeated background</b><p>Each member keeps its own context; new tasks go straight to the right role.</p></div>
+    <div class="card"><b>No manual scheduling</b><p>The lead splits work, coordinates, tracks progress; you read the summary.</p></div>
+    <div class="card"><b>No fear of closing</b><p>Members and messages are stored locally; restart DSH and continue.</p></div>
   </div>
-  <p style="color:var(--muted);font-size:14px;margin-top:14px">Built for long-running projects and multi-role work.</p>
 </section>
+
 <section>
-  <h2>A real usage pattern</h2>
+  <h2>Any team type</h2>
+  <p class="note">Not only development. Novel, video, research, operations — change roles and tasks, not the plugin.</p>
   <div class="cards">
-    <div class="card"><b>1. You state the goal</b><p>“Add CSV export to the reports page, with tests and a short runbook.”</p></div>
-    <div class="card"><b>2. The lead forms the team</b><p>Split into research, architecture, UI/UX, development, test, acceptance, release, and ops; create each line.</p></div>
-    <div class="card"><b>3. The team works in parallel</b><p>Members do their parts; the lead tracks progress, resolves interface disagreements, and reassigns when needed.</p></div>
-    <div class="card"><b>4. You get the result</b><p>The lead reports conclusions, file paths, risks, and open questions. You do not chase every member yourself.</p></div>
+    <div class="card"><b>Novel team</b><p>Editor-in-chief, outline, writer, editor, proofreader, reviewer.</p></div>
+    <div class="card"><b>Video team</b><p>Lead, planning, script, editing, cover, publishing.</p></div>
+    <div class="card"><b>Development team</b><p>Lead, developer, tester, acceptance.</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">You do not need to know the roles first. Say “build a novel team and set up its workflow and mechanisms”; the lead proposes the team shape first.</p>
+</section>
+
+<section id="install">
+  <h2>Install: let DSH do it</h2>
+  <p>In a new DSH session, say:</p>
+  <pre>Check and install the GitHub plugin Lencen/dsh-agent-lines.
+Use only the official repo or official npm package; do not install from forks.
+Before running anything, show me the command and wait for my confirmation.
+After install, load it as required; if DSH Web must restart, first tell me which URL to open,
+how to start a new session, and what to say first, and warn me that this session will disconnect.
+Wait for my confirmation before restarting.</pre>
+  <div class="warn">Restarting DSH Web disconnects this session; the agent cannot notify you after the restart. Put the next steps in the last message before restarting.</div>
+  <details>
+    <summary>Prefer manual install? Command</summary>
+    <pre>curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh &amp;&amp; bash install.sh</pre>
+    <p class="note">Restart DSH Web after install so the plugin loads.</p>
+  </details>
+</section>
+
+<section id="start">
+  <h2>How to start</h2>
+  <div class="cards">
+    <div class="card"><b>1. Install and restart</b><p>Use the flow above; restart DSH Web when asked.</p></div>
+    <div class="card"><b>2. Open a new session</b><p>Tell the lead what kind of team you want.</p></div>
+    <div class="card"><b>3. Confirm the plan</b><p>The lead proposes team shape and workflow; confirm or add roles.</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">Say:</p>
+  <pre>Build a novel team and set up its workflow and mechanisms.
+or
+Build a development team and set up its development workflow and mechanisms.</pre>
+  <p class="note">If you have specific roles, add:</p>
+  <pre>Also add a proofreader and a reviewer.</pre>
+</section>
+
+<section>
+  <h2>First prompts</h2>
+  <p class="note">Novel:</p>
+  <pre>Build a novel team and set up its workflow and mechanisms.
+Do not write the novel yet; wait for my first chapter task.</pre>
+  <p class="note">Video:</p>
+  <pre>Build a video team and set up its workflow and mechanisms.
+Do not start yet; wait for my first topic.</pre>
+  <p class="note">Development:</p>
+  <pre>Build a development team and set up its development workflow and mechanisms.
+Do not start yet; wait for my first requirement.</pre>
+</section>
+
+<section>
+  <h2>FAQ</h2>
+  <div class="cards">
+    <div class="card"><b>Is it expensive?</b><p>You pay for actual usage; the lead proposes a minimal team first and expands later.</p></div>
+    <div class="card"><b>Do I lose it on restart?</b><p>No. Members and messages are stored locally; continue after restart.</p></div>
+    <div class="card"><b>Two teams at once?</b><p>One plugin instance supports one team. Use separate environments for novel and video.</p></div>
   </div>
 </section>
-<section>
-  <h2>First use: let the lead form the team</h2>
-  <pre>Use dsh-agent-lines. Make this Session the development team lead; bind it first if needed.
 
-You own task decomposition, assignment, coordination, progress tracking, result collection, and reporting. You manage and coordinate only; do not execute development tasks.
-
-Form the team. Use short English names and Chinese roles:
-research (调研), architecture (架构), uiux (UIUX), dev (开发), test (测试), acceptance (验收), release (发布), ops (运维).
-
-After the team is ready, wait for my first task. Do not start by yourself.</pre>
-  <p style="color:var(--muted);font-size:14px">Restart DSH Web after install or update. Technical details, protocol, and limits: <a href="https://github.com/Lencen/dsh-agent-lines">README / architecture</a>. Community plugin, not an official DeepSeek product.</p>
-</section>
-<footer>dsh-agent-lines 0.3.9 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</footer>
+<footer>
+  <details>
+    <summary>Developers: protocol, limits, install command</summary>
+    <p><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a> · <a href="https://github.com/Lencen/dsh-agent-lines/releases/tag/v0.4.0">Release</a> · <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PROTOCOL.en.md">Protocol</a></p>
+    <p class="note">Community plugin, not an official DeepSeek product.</p>
+  </details>
+  <p style="margin-top:18px">dsh-agent-lines 0.4.0 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</p>
+</footer>
 </main>
 </div>
 </body>

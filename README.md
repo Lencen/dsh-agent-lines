@@ -23,6 +23,18 @@ DSH 的 super agent 平替插件。
 - 你希望一个负责人 agent 自己拆任务、建团队、追进度、收结果，最后向你汇报。
 
 
+## 团队类型不限于开发
+
+插件不限定团队类型。本质是“一个负责人 + 若干长期成员”的协作方式。
+下面用开发团队做示例；小说、视频、研究、运营团队只换角色和任务，不需要改插件或代码。
+
+- 小说：总编、大纲、写手、编辑、校对、审读；
+- 视频：负责人、策划、脚本、剪辑、封面、发布；
+- 开发：负责人、开发、测试、验收；
+- 研究：负责人、资料、分析、写作、审阅。
+
+第一次不需要自己想清楚角色：直接对负责人说“帮我建个小说创作团队，按小说创作的流程建立工作流程与机制”，它会先给团队结构和流程建议，你确认或补充即可。
+
 ## 版本能力与业务场景
 
 ### 0.3.6：上下文满了，角色可以换人
@@ -43,13 +55,29 @@ DSH 的 super agent 平替插件。
 用法：line_status / line_list 看 activity.level、turns、steps、lastActivityAt。  
 效果：给出低/中/高活跃度，不伪造“上下文使用率 78%”；真实窗口等 DSH 上游提供。
 
-### 0.3.9：管理线看得到跨线消息
+### 0.4.0：管理线看得到跨线消息
 
 场景：成员线之间直接同步，管理线需要知道发生了什么，但不希望每条消息都打断自己。  
 用法：line_observe({ line: "writer", limit: 20 }) 或 CLI observe --json。  
 效果：只读 feed，显示 from/to/state/摘要；不注入 prompt、不改消息状态；line_send 语义不变。
 
 ## 安装
+
+### 让 DSH 帮你装（推荐给新手）
+
+在 DSH 新会话里说：
+
+~~~text
+帮我检查并安装 GitHub 上 Lencen/dsh-agent-lines 插件。
+只从官方仓库或官方 npm 安装，不要从其他 fork 安装。
+安装前先告诉我准备执行什么命令，等我确认后再执行。
+安装完成后按插件要求加载；如果需要重启 DSH Web，先告诉我重启后打开哪个地址、
+怎么新开会话、第一句该说什么，并提醒当前会话会断开；等我确认后再重启。
+~~~
+
+重启后当前会话会断开，agent 无法再自动通知你；重启后的步骤会在重启前给你。
+
+### 手动安装
 
 一条命令安装（推荐，不需要自己找 profile）：
 
@@ -62,7 +90,7 @@ DSH 的 super agent 平替插件。
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.3.9.tgz
+    bash install.sh ./dsh-agent-lines-0.4.0.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -170,12 +198,13 @@ level 是活跃度代理（low/medium/high），不是上下文使用率百分�
 | `line_list` | 列出线、状态、未读数、当前线和 role |
 | `line_create` | 仅管理线：创建新线；同 label 幂等；传 replace:true 可给同 label 换新 Session |
 | `line_handoff` | 仅管理线：生成结构化交接单（JSON/Markdown），不调模型 |
-| `line_observe` | 仅管理线：只读跨线消息 feed；不注入 prompt、不改状态 |
+| `line_observe` | 仅管理线：只读跨线消息 feed；显示 kind/审批状态，不注入 prompt、不改状态 |
+| `line_manager_ack` | 仅管理线：对 pending_approval 的 task 做 approve/reject |
 | `line_retire` | 仅管理线：软下线；拒绝新发送，保留 Session/历史 |
 | `line_rebind` | 仅管理线：把线原子切到新的 live Session，可迁移积压 |
 | `line_rename` | 仅管理线：改侧栏标题，持久化到 lines.db |
 | `line_move_workspace` | 仅管理线：把已有线的 Session 挂到路径完全匹配的工作区 |
-| `line_send` | 发到 `line` 或 `agent#line`；可选 `idempotencyKey`、`replyTo`、`noReply`、`forceDistinct`、`ttlMs` |
+| `line_send` | 发到 `line` 或 `agent#line`；可选 `kind`、`ccManager`、`idempotencyKey`、`replyTo`、`noReply`、`forceDistinct`、`ttlMs` |
 | `line_inbox` | 读当前线已投递消息 |
 | `line_ack` | 确认已处理 |
 
@@ -260,6 +289,19 @@ dsh-agent-lines claim --agent agent-demo --line manager --session "$DSH_SESSION_
 ```
 
 claim 不会对每个新会话自动执行：需要用户明确要求，或运维显式调用。
+
+## 消息类型与任务审批
+
+`line_send` 支持四种 kind：
+
+| kind | 含义 | 非管理线发送 |
+|---|---|---|
+| info | 信息同步 | 直接投递 |
+| request | 请求协助 | 直接投递 |
+| task | 派任务 | 进入 pending_approval，管理线 approve 后才投递 |
+| alert | 告警 | 直接投递 |
+
+管理线发 task 不进入审批。管理线用 `line_observe` 看 pending，再用 `line_manager_ack({ messageId, decision: "approve" | "reject" })` 决定。
 
 ## 回声与重复保护
 

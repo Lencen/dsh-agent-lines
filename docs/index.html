@@ -3,96 +3,149 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>dsh-agent-lines — 让 AI 负责人带一支 AI 团队</title>
-<meta name="description" content="你说目标，AI 负责人拆任务、建团队、盯进度、收结果；每条成员线有独立会话和持久消息，重启不丢。">
+<title>dsh-agent-lines — 让 AI 负责人带一支团队</title>
+<meta name="description" content="你说目标，AI 负责人拆任务、组团队、追进度、收结果；关掉窗口、重启 DSH，成员和消息还在。">
 <meta property="og:image" content="https://lencen.github.io/dsh-agent-lines/assets/social-preview.png">
 <style>
-:root{--bg:#080b10;--panel:#0d1117;--line:#263241;--text:#e6edf3;--muted:#8b949e;--cyan:#58a6ff;--green:#7ee787}
+:root{--bg:#080b10;--panel:#0d1117;--line:#263241;--text:#e6edf3;--muted:#8b949e;--cyan:#58a6ff;--green:#7ee787;--warn:#f0b72f}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 80% 0%,#12314a 0,#080b10 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif;line-height:1.7}
+body{margin:0;background:radial-gradient(circle at 80% 0%,#12314a 0,#080b10 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif;line-height:1.75}
 a{color:var(--cyan);text-decoration:none}
-.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
 header{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid #1f2937}
 .brand{display:flex;align-items:center;gap:10px;color:var(--text);font-weight:700}
 .mark{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#58a6ff,#7ee787)}
 nav a{color:var(--muted);margin-left:18px;font-size:14px}
-.hero{padding:72px 0 48px;display:grid;grid-template-columns:1.05fr .95fr;gap:42px;align-items:center}
-.kicker{color:var(--green);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
-h1{font-size:48px;line-height:1.15;margin:14px 0 18px;letter-spacing:-.03em}
+.hero{padding:64px 0 32px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.kicker{color:var(--green);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+h1{font-size:46px;line-height:1.15;margin:12px 0 16px;letter-spacing:-.03em}
 h1 span{color:var(--cyan)}
-.lead{color:#b7c3cf;font-size:17px;max-width:560px}
-.install{margin:26px 0;background:#0a0f16;border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-family:"DejaVu Sans Mono",monospace;font-size:13px;color:#c9d1d9;overflow:auto}
-.actions{display:flex;gap:12px;flex-wrap:wrap}
-.btn{display:inline-block;padding:10px 16px;border-radius:9px;border:1px solid var(--line);color:var(--text);font-size:14px}
-.btn.primary{background:var(--cyan);color:#06111f;border-color:var(--cyan);font-weight:700}
+.lead{color:#b7c3cf;font-size:17px;max-width:580px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.btn{display:inline-block;padding:11px 17px;border-radius:9px;border:1px solid var(--line);color:var(--text);font-size:14px}
+.btn.primary{background:var(--green);color:#06111f;border-color:var(--green);font-weight:700}
 .shot{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);box-shadow:0 22px 60px rgba(0,0,0,.35)}
 .shot img{display:block;width:100%;height:auto}
 .caption{font-size:12px;color:var(--muted);padding:10px 14px;border-top:1px solid #1f2937}
-section{padding:36px 0;border-top:1px solid #161d27}
-h2{font-size:22px;margin:0 0 18px}
+section{padding:34px 0;border-top:1px solid #161d27}
+h2{font-size:23px;margin:0 0 16px}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.card{background:rgba(13,17,23,.8);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card{background:rgba(13,17,23,.82);border:1px solid var(--line);border-radius:12px;padding:18px}
 .card b{display:block;margin-bottom:6px}
 .card p{color:var(--muted);font-size:14px;margin:0}
-pre{background:#0a0f16;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#c9d1d9;font-size:13px}
-footer{padding:34px 0 48px;color:var(--muted);font-size:12px}
-@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:44px}h1{font-size:36px}.cards{grid-template-columns:1fr}}
+pre{background:#0a0f16;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#c9d1d9;font-size:13px;white-space:pre-wrap}
+.note{color:var(--muted);font-size:13px}
+.warn{border-left:3px solid var(--warn);padding:10px 14px;background:#141007;color:#e8d7a8;border-radius:6px;font-size:14px}
+details{background:rgba(13,17,23,.7);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:14px}
+summary{cursor:pointer;color:var(--muted);font-size:14px}
+footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px solid #161d27}
+@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:40px}h1{font-size:36px}.cards{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
   <a class="brand" href="./"><span class="mark"></span>dsh-agent-lines</a>
-  <nav><a href="en/index.html">English</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/tag/v0.3.9">Release</a></nav>
+  <nav><a href="en/index.html">English</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/tag/v0.4.0">Release</a></nav>
 </header>
 <main>
-<section class="hero" style="border:0;padding-bottom:22px">
+<section class="hero" style="border:0;padding-bottom:20px">
   <div>
     <div class="kicker">Community plugin · Apache-2.0</div>
-    <h1>让一个 AI 负责人<br><span>替你带一支 AI 团队</span></h1>
-    <p class="lead">你只管说目标。负责人会拆任务、建调研 / 架构 / 开发 / 测试等成员线、分配工作、追进度、收结果，最后给你一份汇总。关掉窗口或重启 DSH，任务和消息还在。</p>
-    <div class="install">curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh &amp;&amp; bash install.sh</div>
+    <h1>让 AI 负责人<br><span>替你带一支 AI 团队</span></h1>
+    <p class="lead">你只说目标。负责人会拆任务、找合适的成员、安排工作、追进度，最后把结果汇总给你。关掉窗口、重启 DSH，成员和消息都还在。</p>
     <div class="actions">
-      <a class="btn primary" href="https://github.com/Lencen/dsh-agent-lines">GitHub 仓库</a>
-      <a class="btn" href="https://github.com/Lencen/dsh-agent-lines/releases/tag/v0.3.9">下载 0.3.9</a>
+      <a class="btn primary" href="#start">怎么开始</a>
+      <a class="btn" href="#install">安装插件</a>
     </div>
   </div>
   <div class="shot">
-    <img src="assets/first-use.gif" alt="首次使用：创建管理线、8 条成员线并收到 ack">
-    <div class="caption">demo profile · 通用 label · 不含内部数据</div>
+    <img src="assets/first-use.gif" alt="负责人创建成员线并收到确认">
+    <div class="caption">演示环境 · 通用角色 · 不含内部数据</div>
   </div>
 </section>
+
 <section>
-  <h2>它替你省掉什么</h2>
+  <h2>它能帮你做什么</h2>
   <div class="cards">
-    <div class="card"><b>不用反复讲背景</b><p>每条成员线是一个独立的 DSH 会话，长期保留自己的上下文；新任务直接派给对应角色。</p></div>
-    <div class="card"><b>不用自己当调度</b><p>负责人拆任务、分配、协调、处理分歧、收结果；你只需要看最后的汇总。</p></div>
-    <div class="card"><b>不用怕关窗口</b><p>任务和消息保存在本地；重启 DSH 后还能接着做，成员状态和未处理消息都在。</p></div>
+    <div class="card"><b>不用反复讲背景</b><p>每个成员长期保留自己的上下文；新任务直接派给对应角色。</p></div>
+    <div class="card"><b>不用自己当调度</b><p>负责人拆任务、分工、协调、追进度，你只看最后的汇总。</p></div>
+    <div class="card"><b>不用怕关窗口</b><p>成员和消息保存在本地；重启 DSH 后还能接着做。</p></div>
   </div>
-  <p style="color:var(--muted);font-size:14px;margin-top:14px">适合长期项目、多角色协作。</p>
 </section>
+
 <section>
-  <h2>一个真实用法</h2>
+  <h2>适合什么团队</h2>
+  <p class="note">不限于开发。小说、视频、研究、运营都可以；只换角色和任务，不需要改插件。</p>
   <div class="cards">
-    <div class="card"><b>1. 你说目标</b><p>“给报表页加 CSV 导出，带测试和一页 runbook。”</p></div>
-    <div class="card"><b>2. 负责人组队</b><p>拆成调研、架构、UIUX、开发、测试、验收、发布、运维，按角色建线。</p></div>
-    <div class="card"><b>3. 团队并行</b><p>成员各自做事；负责人追进度、处理接口分歧，必要时重新分配。</p></div>
-    <div class="card"><b>4. 你收结果</b><p>负责人汇总结论、文件路径、风险和遗留问题；不用自己挨个问。</p></div>
+    <div class="card"><b>小说团队</b><p>总编、大纲、写手、编辑、校对、审读。</p></div>
+    <div class="card"><b>视频团队</b><p>负责人、策划、脚本、剪辑、封面、发布。</p></div>
+    <div class="card"><b>开发团队</b><p>负责人、开发、测试、验收。</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">第一次不需要自己想清楚角色。你只说“帮我建个小说创作团队，按小说创作的流程建立工作流程与机制”，负责人会先给团队结构和流程建议。</p>
+</section>
+
+<section id="install">
+  <h2>安装：可以让 DSH 帮你装</h2>
+  <p>在 DSH 新会话里说：</p>
+  <pre>帮我检查并安装 GitHub 上 Lencen/dsh-agent-lines 插件。
+只从官方仓库或官方 npm 安装，不要从其他 fork 安装。
+安装前先告诉我准备执行什么命令，等我确认后再执行。
+安装完成后按插件要求加载；如果需要重启 DSH Web，先告诉我重启后打开哪个地址、
+怎么新开会话、第一句该说什么，并提醒当前会话会断开；等我确认后再重启。</pre>
+  <div class="warn">重启 DSH Web 会让当前会话断开，重启后 agent 无法再自动通知你；重启后的步骤必须写在重启前。</div>
+  <details>
+    <summary>不想让 DSH 装？手动安装命令</summary>
+    <pre>curl -fsSL https://raw.githubusercontent.com/Lencen/dsh-agent-lines/main/install.sh -o install.sh &amp;&amp; bash install.sh</pre>
+    <p class="note">安装后必须重启 DSH Web，插件才会生效。</p>
+  </details>
+</section>
+
+<section id="start">
+  <h2>怎么开始（白话）</h2>
+  <div class="cards">
+    <div class="card"><b>1. 装好并重启</b><p>按上面的方式安装；需要时重启 DSH Web。</p></div>
+    <div class="card"><b>2. 新开一个会话</b><p>重启后新开会话，对负责人说要建什么团队。</p></div>
+    <div class="card"><b>3. 等它给方案</b><p>负责人先提团队结构和流程；你确认或补充角色。</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">直接说：</p>
+  <pre>帮我建个小说创作团队，按小说创作的流程建立工作流程与机制。
+或
+帮我建个开发团队，按开发流程建立工作流程与机制。</pre>
+  <p class="note">如果你有明确要求，再补一句：</p>
+  <pre>另外加一个校对和一个审读角色。</pre>
+</section>
+
+<section>
+  <h2>第一次使用提示词</h2>
+  <p class="note">小说：</p>
+  <pre>帮我建个小说创作团队，按小说创作的流程建立工作流程与机制。
+先不要写正文，建好后等我发第一章任务。</pre>
+  <p class="note">视频：</p>
+  <pre>帮我建个视频创作团队，按视频创作的流程建立工作流程与机制。
+先不要开工，建好后等我发第一个选题。</pre>
+  <p class="note">开发：</p>
+  <pre>帮我建个开发团队，按开发流程建立工作流程与机制。
+先不要开工，建好后等我发第一个需求。</pre>
+</section>
+
+<section>
+  <h2>常见问题</h2>
+  <div class="cards">
+    <div class="card"><b>会不会很贵？</b><p>按实际使用计费；负责人会先提最小可用团队，后续再扩。</p></div>
+    <div class="card"><b>关掉会丢吗？</b><p>不会，成员和消息保存在本地，重启后还能接着做。</p></div>
+    <div class="card"><b>能同时做两个团队吗？</b><p>当前一个插件实例只支持一个团队；小说和视频建议分开环境。</p></div>
   </div>
 </section>
-<section>
-  <h2>首次使用：让负责人自己组队</h2>
-  <pre>使用 dsh-agent-lines。先把这个会话设为开发团队的管理线；如果还没绑定，就先完成绑定。
 
-你是开发团队负责人：负责任务拆解与分配、协调沟通、跟踪进度、汇总结果、总结汇报。你只做管理和协调，不执行具体开发任务。
-
-请组建开发团队。成员名字用简短英文，岗位用中文：
-research（调研）、architecture（架构）、uiux（UIUX）、dev（开发）、test（测试）、acceptance（验收）、release（发布）、ops（运维）。
-
-团队建好后先待命，不要自动开工，等我发第一个任务。</pre>
-  <p style="color:var(--muted);font-size:14px">安装或更新后需要重启 DSH Web。技术细节、协议和限制见 <a href="https://github.com/Lencen/dsh-agent-lines">README / 架构文档</a>。社区插件，不是 DeepSeek 官方产品。</p>
-</section>
-<footer>dsh-agent-lines 0.3.9 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</footer>
+<footer>
+  <details>
+    <summary>给开发者：协议、限制、安装命令</summary>
+    <p><a href="https://github.com/Lencen/dsh-agent-lines">GitHub 仓库</a> · <a href="https://github.com/Lencen/dsh-agent-lines/releases/tag/v0.4.0">Release</a> · <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PROTOCOL.md">协议</a></p>
+    <p class="note">社区插件，不是 DeepSeek 官方产品。技术细节以 README / 协议为准。</p>
+  </details>
+  <p style="margin-top:18px">dsh-agent-lines 0.4.0 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</p>
+</footer>
 </main>
 </div>
 </body>

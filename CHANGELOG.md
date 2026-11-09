@@ -2,6 +2,14 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.4.0 (2026-11-09)
+
+- 消息治理：line_send 新增 kind（info/request/task/alert）、ccManager；非管理线发 task 进入 pending_approval，需 line_manager_ack 审批后才投递。
+- schema v8：messages.kind/cc_manager/approval_state/approved_by/approved_at；additive 迁移。
+- 新增 line_manager_ack（approve/reject）。
+- line_observe 展示 kind/ccManager/approvalState；待审批任务不进目标线 inbox。
+- README 团队类型通用化；GitHub Pages 面向小白改版（安装交给 DSH、小说/视频/开发场景、重启前交接卡）。
+
 ## 0.3.9 (2026-11-09)
 
 - 新增只读 line_observe：管理线查看跨线消息 feed，不注入 prompt、不改消息状态。
