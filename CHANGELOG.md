@@ -2,6 +2,13 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.6.0 (2026-11-09)
+
+- line_department_board：按角色线懒取该线官方团队（负责人/成员/任务/摘要/消息）。
+- line_team_board lines[] 增加 officialTeamLead/officialTeamAvailable/deptSummary。
+- line_send 增加 parentTaskRef；schema v10；任务树 parentTaskId 投影。
+- 只读；不合并上级任务板；不写任务。
+
 ## 0.5.1 (2026-11-09)
 
 - line_team_board 自动写主机快照 DSH_HOME/agent-lines/team-board.json（0600，原子替换）。
