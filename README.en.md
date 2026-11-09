@@ -41,7 +41,7 @@ Not a replacement: they complement each other. One line: **Agent Teams owns the 
 
 Official Agent Teams is experimental; dsh-agent-lines is a community plugin, not an official DeepSeek product.
 
-## Agent Teams read-only integration (0.5.0)
+## Agent Teams read-only integration (0.5.1)
 
 The user only sends a task to the manager. The manager automatically reads official Agent Teams tasks/members, maps teammate names to lines; no user export, no mapping config, no plugin buttons.
 
@@ -102,7 +102,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.5.0.tgz
+    bash install.sh ./dsh-agent-lines-0.5.1.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 

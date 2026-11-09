@@ -2,7 +2,7 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.5.2 (2026-11-09)
+## 0.5.1 (2026-11-09)
 
 - line_team_board writes a host snapshot at DSH_HOME/agent-lines/team-board.json (0600, atomic replace).
 - Board contract adds messages[], quality[], team, approval detail, deliveries, schemaVersion, epoch-ms generatedAt.

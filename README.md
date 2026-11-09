@@ -91,7 +91,7 @@ DSH 的 super agent 平替插件。
 
 DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是社区插件，不是 DeepSeek 官方产品。
 
-## 与 DSH 官方“智能体团队”插件的只读融合（0.5.0）
+## 与 DSH 官方“智能体团队”插件的只读融合（0.5.1）
 
 用户只给负责人发任务。负责人自动读取官方智能体团队插件的任务和成员，按成员名字自动对应角色；不要求用户导出任务、不要求配置对应关系、不要求点插件按钮。
 
@@ -133,6 +133,12 @@ DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是
 用法：line_status / line_list 看 activity.level、turns、steps、lastActivityAt。  
 效果：给出低/中/高活跃度，不伪造“上下文使用率 78%”；真实窗口等 DSH 上游提供。
 
+### 0.5.1：官方团队看板接入 + 主机快照
+
+场景：团队既有长期角色，又想看官方“智能体团队”插件的任务板。
+用法：负责人调用 line_team_board；插件自动读官方任务/成员并写 team-board.json。
+效果：只读融合；不要求用户导出/配置；同版本补齐 messages/quality/team/approval/deliveries 契约。
+
 ### 0.4.1：管理线看得到跨线消息
 
 场景：成员线之间直接同步，管理线需要知道发生了什么，但不希望每条消息都打断自己。  
@@ -168,7 +174,7 @@ DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.5.0.tgz
+    bash install.sh ./dsh-agent-lines-0.5.1.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 

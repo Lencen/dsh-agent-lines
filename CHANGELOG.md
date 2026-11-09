@@ -2,7 +2,7 @@
 
 [English](CHANGELOG.en.md) | 中文
 
-## 0.5.2 (2026-11-09)
+## 0.5.1 (2026-11-09)
 
 - line_team_board 自动写主机快照 DSH_HOME/agent-lines/team-board.json（0600，原子替换）。
 - 看板契约补齐：messages[]、quality[]、team、approval 详情、deliveries、schemaVersion、generatedAt epoch ms。
