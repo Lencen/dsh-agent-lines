@@ -2,6 +2,12 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.5.2 (2026-11-09)
+
+- line_team_board writes a host snapshot at DSH_HOME/agent-lines/team-board.json (0600, atomic replace).
+- Board contract adds messages[], quality[], team, approval detail, deliveries, schemaVersion, epoch-ms generatedAt.
+- The manager refreshes it by calling the board; no user export/config.
+
 ## 0.5.0 (2026-11-09)
 
 - Add line_team_board: manager-only read-only board that auto-reads ctx.agentTeams.listTasks/listMembers + lines.db.

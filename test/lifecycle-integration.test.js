@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { apply } from '../lib/index.js'
 import { LineStore } from '../lib/store.js'
 
@@ -174,6 +174,15 @@ test('line_team_board auto-reads Agent Teams and maps owner by line label', asyn
     assert.equal(stale.tasks[0].staleOwner, true)
     assert.equal(stale.tasks[0].staleReason, 'line replaced/rebuilt')
     assert.equal(stale.tasks[0].ownerLine, 'writer')
+    const snapshotPath = join(dirname(h.config.dbPath), 'team-board.json')
+    assert.equal(existsSync(snapshotPath), true)
+    assert.equal(statSync(snapshotPath).mode & 0o777, 0o600)
+    const snapshot = JSON.parse(readFileSync(snapshotPath, 'utf8'))
+    assert.equal(snapshot.available, true)
+    assert.ok(Array.isArray(snapshot.messages))
+    assert.ok(Array.isArray(snapshot.quality))
+    assert.ok(snapshot.team && snapshot.team.managerLine)
+    assert.equal(snapshot.schemaVersion, 1)
     const worker = h.agents.get(replaced.sessionId)
     await assert.rejects(() => h.tools.get('line_team_board').execute({}, exec(worker)), error => error.code === 'LINE_CREATE_FORBIDDEN')
   } finally { h.cleanup() }
