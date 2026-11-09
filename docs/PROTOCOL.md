@@ -95,6 +95,7 @@ line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作
     line_retire({ line, reason? })
     line_rebind({ line, sessionId, migrate?: "queued" | "none", reason? })
     line_create({ label, replace: true, force?, migrate?, title?, reason? })
+    line_observe({ line?, since?, limit? })
     line_handoff({ line, format?: "md" | "json", limit?: number })
     line_rename({ line, title })
 
@@ -104,6 +105,7 @@ line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作
 - migrate=none：backlog 非空时返回 LINE_BACKLOG_NOT_EMPTY。
 - replace：同 label 创建新 Session 并 rebind；active 线需 force + reason。
 - line_events 记录 title/retire/rebind 审计；title 持久化，重启保留。
+- line_observe 仅管理线、只读跨线 feed；不注入 prompt、不改消息状态。
 
 ## 回声与回复深度
 

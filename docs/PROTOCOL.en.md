@@ -103,6 +103,7 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
     line_retire({ line, reason? })
     line_rebind({ line, sessionId, migrate?: "queued" | "none", reason? })
     line_create({ label, replace: true, force?, migrate?, title?, reason? })
+    line_observe({ line?, since?, limit? })
     line_handoff({ line, format?: "md" | "json", limit?: number })
     line_rename({ line, title })
 
@@ -112,6 +113,7 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
 - migrate=none: returns LINE_BACKLOG_NOT_EMPTY if the backlog is non-empty.
 - replace: creates a fresh Session for the same label and rebinds; an active line requires force + reason.
 - line_events records title/retire/rebind audit; titles survive restarts.
+- line_observe is a manager-only read-only cross-line feed; it does not inject prompts or change state.
 
 ## Echo and reply depth
 

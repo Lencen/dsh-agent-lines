@@ -23,6 +23,32 @@ Use it when:
 - You want one lead agent to decompose work, create the team, track progress, collect results, and report back.
 
 
+## What each version adds (business scenarios)
+
+### 0.3.6: replace a role when context is full
+
+Scenario: a writer line has worked long enough that its context is saturated and quality drops.  
+Use: the manager calls line_create({ label: "writer", replace: true, force: true, reason: "context full" }).  
+Effect: the same label moves to a clean Session; the old Session is retired but kept; queued/claimed messages migrate; delivered/acked are never re-delivered; no manual routing.
+
+### 0.3.7: hand off before replacing
+
+Scenario: the new writer does not know what the old line finished, what is next, or which traps to avoid.  
+Use: line_handoff({ line: "writer", format: "md" }).  
+Effect: a structured snapshot (progress, backlog, recent messages, lifecycle) without a model call; the new line reads it first.
+
+### 0.3.8: know when to replace
+
+Scenario: the manager wants to see which line is close to saturation or has gone quiet.  
+Use: line_status / line_list expose activity.level, turns, steps, lastActivityAt.  
+Effect: a low/medium/high activity proxy, not a fake "78% context used"; exact context usage waits for DSH.
+
+### 0.3.9: the manager can see cross-line traffic
+
+Scenario: lines message each other directly; the manager needs visibility without every message becoming a manager turn.  
+Use: line_observe({ line: "writer", limit: 20 }) or CLI observe --json.  
+Effect: a read-only feed with from/to/state/summary; no prompt injection and no state change; line_send semantics unchanged.
+
 ## Install
 
 One-command install (recommended; no need to find a profile):
@@ -36,7 +62,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.3.8.tgz
+    bash install.sh ./dsh-agent-lines-0.3.9.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -139,6 +165,7 @@ Tools:
 | `line_list` | List lines, status, unread counts, current line and role |
 | `line_create` | Manager only: create a line; same label is idempotent; replace:true swaps the label to a fresh Session |
 | `line_handoff` | Manager only: structured handoff snapshot (JSON/Markdown), no model call |
+| `line_observe` | Manager only: read-only cross-line feed; no prompt injection, no state change |
 | `line_retire` | Manager only: soft-retire; reject new sends, keep Session and history |
 | `line_rebind` | Manager only: atomically switch a line to a new live Session, optionally migrating backlog |
 | `line_rename` | Manager only: rename the sidebar title and persist it in lines.db |
@@ -155,7 +182,7 @@ Line tools other than `line_status` and `line_claim_manager` are registered only
 
 A line does not inherit the old Session context. Recommended flow:
 
-1. Have the old line write a handoff file (line_handoff is available from 0.3.8);
+1. Have the old line write a handoff file (line_handoff is available from 0.3.7);
 2. The manager calls `line_create({ label, replace: true, force: true, reason: "context full" })`;
 3. The plugin creates a clean Session, atomically swaps the same label, and marks the old Session retired but keeps it;
 4. queued/claimed messages migrate to the new line; delivered/acked stay on the old Session and are never re-delivered.
@@ -171,6 +198,7 @@ dsh-agent-lines list
 dsh-agent-lines send --from frontend-line --to backend-line --text "hi"
 dsh-agent-lines inbox --line backend-line
 dsh-agent-lines ack --line backend-line --id msg_...
+dsh-agent-lines --json observe --line writer --limit 20
 dsh-agent-lines claim --agent agent-demo --line manager --session "$DSH_SESSION_ID"
 dsh-agent-lines doctor
 ```

@@ -2,6 +2,13 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.3.9 (2026-11-09)
+
+- Added read-only line_observe: a manager feed of cross-line messages without prompts or state changes.
+- Added CLI observe --json.
+- README now documents version-by-version business scenarios; fixed line_handoff version (0.3.7).
+- No schema change; line_send semantics unchanged.
+
 ## 0.3.8 (2026-11-09)
 
 - line_status / line_list expose activity: turns/steps/decodeTokens/level/lastActivityAt.
