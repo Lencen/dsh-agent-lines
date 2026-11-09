@@ -2,6 +2,12 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.4.1 (2026-11-09)
+
+- 修复 F1：line_create replace / line_rebind 在 rebind 后没有重新 acquire lease，导致线 offline、消息 queued 直到进程重启。
+- 回归测试：replace 后新 Session 必须有 live lease。
+- 无 schema 变化；0.4.0 的 kind/审批/文档/官网不变。
+
 ## 0.4.0 (2026-11-09)
 
 - 消息治理：line_send 新增 kind（info/request/task/alert）、ccManager；非管理线发 task 进入 pending_approval，需 line_manager_ack 审批后才投递。
