@@ -55,7 +55,7 @@ DSH 的 super agent 平替插件。
 用法：line_status / line_list 看 activity.level、turns、steps、lastActivityAt。  
 效果：给出低/中/高活跃度，不伪造“上下文使用率 78%”；真实窗口等 DSH 上游提供。
 
-### 0.4.0：管理线看得到跨线消息
+### 0.4.1：管理线看得到跨线消息
 
 场景：成员线之间直接同步，管理线需要知道发生了什么，但不希望每条消息都打断自己。  
 用法：line_observe({ line: "writer", limit: 20 }) 或 CLI observe --json。  
@@ -90,7 +90,7 @@ DSH 的 super agent 平替插件。
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.4.0.tgz
+    bash install.sh ./dsh-agent-lines-0.4.1.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 

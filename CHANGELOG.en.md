@@ -2,6 +2,12 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.4.1 (2026-11-09)
+
+- Fix F1: after line_create replace / line_rebind, the new line did not re-acquire a lease, leaving it offline and messages queued until restart.
+- Regression test: the replaced line must have a live lease.
+- No schema change; 0.4.0 kinds/approval/docs/landing unchanged.
+
 ## 0.4.0 (2026-11-09)
 
 - Message governance: line_send adds kind (info/request/task/alert) and ccManager; a non-manager task becomes pending_approval and is delivered only after line_manager_ack.

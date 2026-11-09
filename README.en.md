@@ -55,7 +55,7 @@ Scenario: the manager wants to see which line is close to saturation or has gone
 Use: line_status / line_list expose activity.level, turns, steps, lastActivityAt.  
 Effect: a low/medium/high activity proxy, not a fake "78% context used"; exact context usage waits for DSH.
 
-### 0.4.0: the manager can see cross-line traffic
+### 0.4.1: the manager can see cross-line traffic
 
 Scenario: lines message each other directly; the manager needs visibility without every message becoming a manager turn.  
 Use: line_observe({ line: "writer", limit: 20 }) or CLI observe --json.  
@@ -74,7 +74,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.4.0.tgz
+    bash install.sh ./dsh-agent-lines-0.4.1.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 

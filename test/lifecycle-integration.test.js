@@ -4,6 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { apply } from '../lib/index.js'
+import { LineStore } from '../lib/store.js'
 
 function harness() {
   const dir = mkdtempSync(join(tmpdir(), 'agent-lines-int-'))
@@ -63,6 +64,13 @@ test('line_create title, replace, retire and rename lifecycle', async () => {
     assert.equal(replaced.oldSessionId, oldSession)
     assert.notEqual(replaced.sessionId, oldSession)
     assert.equal(replaced.counts.queued, 0)
+    const check = new LineStore(h.config.dbPath)
+    try {
+      const row = check.listLines().find(line => line.label === 'writer')
+      assert.ok(row, 'replaced line row')
+      assert.ok(row.lease && row.lease.live, 'F1: replaced line must acquire a live lease')
+      assert.equal(row.session_id, replaced.sessionId)
+    } finally { check.close() }
 
     const renamed = await h.tools.get('line_rename').execute({ line: 'writer', title: '写手 · 新' }, exec(h.manager))
     assert.equal(renamed.title, '写手 · 新')
