@@ -2,6 +2,13 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.6.0 (2026-11-09)
+
+- line_department_board: lazily read a line's official team (lead/members/tasks/summary/messages).
+- line_team_board lines[] adds officialTeamLead/officialTeamAvailable/deptSummary.
+- line_send adds parentTaskRef; schema v10; parentTaskId projection for the task tree.
+- Read-only; no merging into the parent task board; no task writes.
+
 ## 0.5.1 (2026-11-09)
 
 - line_team_board writes a host snapshot at DSH_HOME/agent-lines/team-board.json (0600, atomic replace).
