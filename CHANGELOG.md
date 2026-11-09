@@ -2,6 +2,12 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.6.2 (2026-11-09)
+
+- 新增 line_communications：负责人只读沟通看板；按线/任务/kind/state 筛选。
+- 明确不暴露官方团队内部子 agent 私聊。
+- 只读，不改消息状态。
+
 ## 0.6.1 (2026-11-09)
 
 - subteamPolicy（auto/ask/never）与 maxMembers 消息字段；schema v12。
