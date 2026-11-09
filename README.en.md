@@ -65,17 +65,29 @@ You do not need to know the roles up front. Tell the manager "build a novel team
 
 ## What each version adds (business scenarios)
 
-### 0.3.6: replace a role when context is full
+### 0.6.1: internal team policy and audit
 
-Scenario: a writer line has worked long enough that its context is saturated and quality drops.  
-Use: the manager calls line_create({ label: "writer", replace: true, force: true, reason: "context full" }).  
-Effect: the same label moves to a clean Session; the old Session is retired but kept; queued/claimed messages migrate; delivered/acked are never re-delivered; no manual routing.
+Scenario: the manager wants to cap whether a role line may create an internal team and how many members it may have.  
+Use: line_send with subteamPolicy (auto/ask/never) and maxMembers; the board shows the line-level policy and audit.  
+Effect: line_team_board.lines[] exposes the line policy; line_department_board returns task policy and subteamAudit; records/shows/audits only, does not block official spawn.
 
-### 0.3.7: hand off before replacing
+### 0.6.0: three-level organization and department view
 
-Scenario: the new writer does not know what the old line finished, what is next, or which traps to avoid.  
-Use: line_handoff({ line: "writer", format: "md" }).  
-Effect: a structured snapshot (progress, backlog, recent messages, lifecycle) without a model call; the new line reads it first.
+Scenario: the manager has several long-lived role lines, and each line has its own official team.  
+Use: line_department_board({ line }) lazily reads that line's official team, tasks, summary and messages.  
+Effect: three-level org tree; the parent sees department summaries without merging child task boards; taskScope prevents same task-id collisions across teams.
+
+### 0.5.1: official team board and host snapshot
+
+Scenario: the team keeps long-lived roles but also wants to see the official Agent Teams board.  
+Use: the manager calls line_team_board; the plugin reads official tasks/members and writes team-board.json.  
+Effect: read-only integration; no user export/config; contract fields messages/quality/team/approval/deliveries.
+
+### 0.4.1: the manager can see cross-line traffic
+
+Scenario: lines message each other directly; the manager needs visibility without every message becoming a manager turn.  
+Use: line_observe({ line: "writer", limit: 20 }) or CLI observe --json.  
+Effect: a read-only feed with from/to/state/summary; no prompt injection and no state change; line_send semantics unchanged.
 
 ### 0.3.8: know when to replace
 
@@ -83,11 +95,17 @@ Scenario: the manager wants to see which line is close to saturation or has gone
 Use: line_status / line_list expose activity.level, turns, steps, lastActivityAt.  
 Effect: a low/medium/high activity proxy, not a fake "78% context used"; exact context usage waits for DSH.
 
-### 0.4.1: the manager can see cross-line traffic
+### 0.3.7: hand off before replacing
 
-Scenario: lines message each other directly; the manager needs visibility without every message becoming a manager turn.  
-Use: line_observe({ line: "writer", limit: 20 }) or CLI observe --json.  
-Effect: a read-only feed with from/to/state/summary; no prompt injection and no state change; line_send semantics unchanged.
+Scenario: the new writer does not know what the old line finished, what is next, or which traps to avoid.  
+Use: line_handoff({ line: "writer", format: "md" }).  
+Effect: a structured snapshot (progress, backlog, recent messages, lifecycle) without a model call; the new line reads it first.
+
+### 0.3.6: replace a role when context is full
+
+Scenario: a writer line has worked long enough that its context is saturated and quality drops.  
+Use: the manager calls line_create({ label: "writer", replace: true, force: true, reason: "context full" }).  
+Effect: the same label moves to a clean Session; the old Session is retired but kept; queued/claimed messages migrate; delivered/acked are never re-delivered; no manual routing.
 
 ## Install
 
