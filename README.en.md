@@ -23,6 +23,24 @@ Use it when:
 - You want one lead agent to decompose work, create the team, track progress, collect results, and report back.
 
 
+## How it differs from official Agent Teams
+
+Not a replacement: they complement each other. One line: **Agent Teams owns the work, dsh-agent-lines owns the people and the messages.**
+
+| Dimension | Official Agent Teams | dsh-agent-lines |
+|---|---|---|
+| Focus | Task orchestration and team collaboration | Long-lived roles and durable messaging |
+| Roles | Named teammates around tasks, process-internal lifetime | Lines persist across sessions and restarts |
+| Tasks | Shared task board, DAG, blocked_by, Web panel | No task board; reliably delivers tasks/messages to roles |
+| Messages | Direct inbox for current team work; no restart retry guarantee | SQLite queue with lease, ack, retry, resume after restart |
+| Context full | Spawn a new teammate | handoff + replace; same role, new Session |
+| Workspace | Members share a workspace | Each line can bind its own workspace |
+| Best for | One-off or short multi-agent orchestration | Long novels, video series, research, ongoing operations |
+
+**Together:** lines own people, Agent Teams owns tasks, files own memory. The user sends work to the manager; the manager reads Agent Teams tasks and line status automatically, with no user export or config.
+
+Official Agent Teams is experimental; dsh-agent-lines is a community plugin, not an official DeepSeek product.
+
 ## Agent Teams read-only integration (0.5.0)
 
 The user only sends a task to the manager. The manager automatically reads official Agent Teams tasks/members, maps teammate names to lines; no user export, no mapping config, no plugin buttons.
