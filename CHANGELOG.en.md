@@ -2,6 +2,12 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.6.5 (2026-11-09)
+
+- Web board adds local manager actions: send message, approve/reject pending, handoff.
+- Actions require x-board-token; still localhost-only; read-only without token.
+- No hard subteam enforcement; hard limits wait for official API.
+
 ## 0.6.4 (2026-11-09)
 
 - Add built-in read-only web board: dsh-agent-lines board.
