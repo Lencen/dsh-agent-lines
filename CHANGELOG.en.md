@@ -2,6 +2,12 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.6.2 (2026-11-09)
+
+- Add line_communications: manager-only read-only communication board; filter by line/task/kind/state.
+- Explicitly does not expose official internal sub-agent private messages.
+- Read-only; no message state change.
+
 ## 0.6.1 (2026-11-09)
 
 - subteamPolicy (auto/ask/never) and maxMembers message fields; schema v12.
