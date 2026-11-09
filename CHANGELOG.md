@@ -2,6 +2,12 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.5.2 (2026-11-09)
+
+- line_team_board 自动写主机快照 DSH_HOME/agent-lines/team-board.json（0600，原子替换）。
+- 看板契约补齐：messages[]、quality[]、team、approval 详情、deliveries、schemaVersion、generatedAt epoch ms。
+- 负责人调用看板即刷新；用户不需要导出/配置。
+
 ## 0.5.0 (2026-11-09)
 
 - 新增 line_team_board：管理线只读看板，自动读 ctx.agentTeams.listTasks/listMembers + lines.db。

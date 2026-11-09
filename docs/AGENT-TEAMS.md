@@ -23,6 +23,10 @@ manager 自动：
 4. 按 teammate name 自动映射 line；
 5. 把任务、线、待审批放进 line_team_board。
 
+## 主机快照
+
+负责人调用看板时，自动写 DSH_HOME/agent-lines/team-board.json（权限 0600，原子替换）；用户不需要导出或配置。
+
 ## 看板内容
 
 - tasks：id、subject、status、ownerName、ownerLine、blockedBy、staleOwner；
