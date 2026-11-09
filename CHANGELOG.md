@@ -2,6 +2,13 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.3.8 (2026-11-09)
+
+- line_status / line_list 增加 activity：turns/steps/decodeTokens/level/lastActivityAt。
+- 明确 activityLevel 只是活跃度代理，不是 contextUsage 百分比；DSH 未暴露上下文窗口。
+- 生命周期/标题/在飞版本保持 0.3.6/0.3.7 兼容。
+- 测试 35/35 通过。
+
 ## 0.3.7 (2026-11-09)
 
 - 新增 line_handoff：结构化交接快照（JSON/Markdown），不调用模型。

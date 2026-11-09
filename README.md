@@ -36,7 +36,7 @@ DSH 的 super agent 平替插件。
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.3.7.tgz
+    bash install.sh ./dsh-agent-lines-0.3.8.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -124,6 +124,11 @@ line_create({ label: "ops", role: "运维" })
 
 这只是“用提示词组织团队”的方式，不是插件内置的组织架构；怎么拆任务由负责人模型决定。技术细节（消息、状态、工具）在下面的“使用”和“投递语义”。
 
+## 上下文活跃度
+
+line_status / line_list 返回 activity：turns/steps/decodeTokens/level/lastActivityAt。
+level 是活跃度代理（low/medium/high），不是上下文使用率百分比；DSH 当前不暴露上下文窗口。
+
 ## 使用
 
 管理线可以完全由对话驱动：
@@ -134,7 +139,7 @@ line_create({ label: "ops", role: "运维" })
 
 | 工具 | 作用 |
 |---|---|
-| `line_status` | 只读：当前会话绑定、manager Session 是否存在/live、线列表、修复命令；未绑定也可见 |
+| `line_status` | 只读：当前会话绑定、manager Session 是否存在/live、线列表、修复命令；未绑定也可见；含 activity 活跃度（不是 contextUsage） |
 | `line_claim_manager` | 把当前 live 根 Session 绑成 manager；需要 `allowClaim: true` 和 `confirm: "bind-manager"`；全局工具，不需要 shell |
 | `line_list` | 列出线、状态、未读数、当前线和 role |
 | `line_create` | 仅管理线：创建新线；同 label 幂等；传 replace:true 可给同 label 换新 Session |
@@ -155,7 +160,7 @@ line_create({ label: "ops", role: "运维" })
 
 线不会自动继承旧 Session 的上下文。推荐流程：
 
-1. 让旧线写交接单（0.3.7 起可用 `line_handoff`）；
+1. 让旧线写交接单（0.3.8 起可用 `line_handoff`）；
 2. 管理线调用 `line_create({ label, replace: true, force: true, reason: "context full" })`；
 3. 插件创建干净 Session、同 label 原子切换，旧 Session 标记 retired 但保留；
 4. queued/claimed 消息迁移到新线；delivered/acked 留在旧 Session，不重投。

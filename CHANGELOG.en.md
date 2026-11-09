@@ -2,6 +2,13 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.3.8 (2026-11-09)
+
+- line_status / line_list expose activity: turns/steps/decodeTokens/level/lastActivityAt.
+- activityLevel is an activity proxy, not a context-window percentage; DSH does not expose context usage.
+- Remains compatible with the 0.3.6/0.3.7 lifecycle/title work.
+- Tests 35/35 pass.
+
 ## 0.3.7 (2026-11-09)
 
 - Added line_handoff: structured handoff snapshots (JSON/Markdown), no model call.
