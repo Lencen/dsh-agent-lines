@@ -4,8 +4,10 @@
  * It does not start DSH or load any Session.
  */
 import { existsSync } from 'node:fs'
+import { dirname } from 'node:path'
 import { LineStore, defaultDbPath } from '../lib/store.js'
 import { LineError, lineId } from '../lib/protocol.js'
+import { startBoardServer } from '../lib/board-server.js'
 
 function usage() {
   console.error(`Usage:
@@ -17,6 +19,7 @@ function usage() {
   dsh-agent-lines [--db <path>] [--json] claim --line <line> --session <sessionId> [--agent <id>]
   dsh-agent-lines [--db <path>] [--json] doctor
   dsh-agent-lines [--db <path>] [--json] tail --line <line> [--agent <id>]
+  dsh-agent-lines board [--dir <snapshotDir>] [--host 127.0.0.1] [--port 4090]
 
 Environment: DSH_AGENT_LINES_DB overrides the default DB path.
 `)
@@ -54,9 +57,19 @@ function need(value, name) {
   return String(value)
 }
 
-function main() {
+async function main() {
   const { command, opts } = parse(process.argv.slice(2))
   if (command === undefined) { usage(); return 2 }
+  if (command === 'board') {
+    const dir = String(opts.dir ?? dirname(opts.db))
+    const host = String(opts.host ?? '127.0.0.1')
+    const port = Number(opts.port ?? 4090)
+    const { server, url } = await startBoardServer({ dir, host, port })
+    console.log(`[agent-lines] read-only board: ${url}`)
+    console.log(`[agent-lines] snapshots: ${dir}`)
+    process.on('SIGINT', () => { server.close(() => process.exit(0)) })
+    return 0
+  }
   if (!existsSync(opts.db) && command !== 'doctor') {
     console.error(`[agent-lines] database not found: ${opts.db}`)
     return 2
@@ -163,4 +176,4 @@ function main() {
   }
 }
 
-process.exitCode = main()
+process.exitCode = await main()
