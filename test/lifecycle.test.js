@@ -16,16 +16,16 @@ function acquire(store, line, instanceId, sessionId = 'session-' + line) {
   return store.acquire({ agentId: 'agent-demo', line, sessionId, instanceId, ttlMs: 30000 })
 }
 
-test('schema v11 has lifecycle/title/line_events', () => {
+test('schema v12 has lifecycle/title/line_events', () => {
   const { store, cleanup } = tempStore()
   try {
     const columns = store.db.prepare('PRAGMA table_info(lines)').all().map(c => c.name)
     for (const name of ['title', 'lifecycle', 'generation', 'rebind_at', 'rebind_from']) assert.ok(columns.includes(name), name)
     const msgCols = store.db.prepare('PRAGMA table_info(messages)').all().map(c => c.name)
-    for (const name of ['kind', 'cc_manager', 'approval_state', 'task_ref', 'parent_task_ref', 'task_scope', 'approved_by', 'approved_at']) assert.ok(msgCols.includes(name), name)
+    for (const name of ['kind', 'cc_manager', 'approval_state', 'task_ref', 'parent_task_ref', 'task_scope', 'subteam_policy', 'max_members', 'approved_by', 'approved_at']) assert.ok(msgCols.includes(name), name)
     const eventCols = store.db.prepare('PRAGMA table_info(line_events)').all().map(c => c.name)
     for (const name of ['id', 'line_id', 'action', 'old_session_id', 'new_session_id', 'reason', 'created_at']) assert.ok(eventCols.includes(name), name)
-    assert.equal(store.db.prepare('PRAGMA user_version').get().user_version, 11)
+    assert.equal(store.db.prepare('PRAGMA user_version').get().user_version, 12)
   } finally { cleanup() }
 })
 
@@ -100,7 +100,7 @@ test('retired line can be rebound to a clean session', () => {
     assert.equal(store.getLineRow('agent-demo', 'writer').lifecycle, 'active')
   } finally { cleanup() }
 })
-test('v6 database migrates additively to v11', () => {
+test('v6 database migrates additively to v12', () => {
   const dir = mkdtempSync(join(tmpdir(), 'agent-lines-v6-'))
   const dbPath = join(dir, 'lines.db')
   try {
@@ -112,7 +112,7 @@ test('v6 database migrates additively to v11', () => {
     try {
       const columns = store.db.prepare('PRAGMA table_info(lines)').all().map(c => c.name)
       for (const name of ['title', 'lifecycle', 'generation', 'rebind_at', 'rebind_from']) assert.ok(columns.includes(name), name)
-      assert.equal(store.db.prepare('PRAGMA user_version').get().user_version, 11)
+      assert.equal(store.db.prepare('PRAGMA user_version').get().user_version, 12)
       assert.equal(store.getLineRow('agent-demo', 'writer').lifecycle, 'active')
     } finally { store.close() }
   } finally { rmSync(dir, { recursive: true, force: true }) }

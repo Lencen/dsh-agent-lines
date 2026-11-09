@@ -2,6 +2,13 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.6.1 (2026-11-09)
+
+- subteamPolicy（auto/ask/never）与 maxMembers 消息字段；schema v12。
+- line_team_board 任务显示 subteamPolicy/maxMembers。
+- line_department_board 增加 subteamAudit（members/tasks/policies/maxMembers/overLimit）。
+- 只记录/展示/审计，不拦截官方 spawn。
+
 ## 0.6.0 (2026-11-09)
 
 - line_department_board：按角色线懒取该线官方团队（负责人/成员/任务/摘要/消息）。

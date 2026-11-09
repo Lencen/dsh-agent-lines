@@ -159,7 +159,7 @@ test('line_team_board auto-reads Agent Teams and maps owner by line label', asyn
       listMembers: () => [{ name: 'manager', role: 'lead', status: 'running' }, { name: 'writer', role: 'teammate', status: 'running' }],
       listTasks: () => [{ id: 'task-1', revision: 1, subject: 'ch1', description: '', status: 'pending', blockedBy: [], writeScopes: [], ownerName: 'writer', ready: true, writeScopeWarnings: [] }],
     } : originalGet(name, strict)
-    const sent = await h.tools.get('line_send').execute({ to: 'writer', text: '请写 ch1', taskRef: 'task-1', parentTaskRef: 'parent-1', taskScope: 'writer' }, exec(h.manager))
+    const sent = await h.tools.get('line_send').execute({ to: 'writer', text: '请写 ch1', taskRef: 'task-1', parentTaskRef: 'parent-1', taskScope: 'writer', subteamPolicy: 'ask', maxMembers: 2 }, exec(h.manager))
     assert.equal(sent.taskRef, 'task-1')
     const board = await h.tools.get('line_team_board').execute({}, exec(h.manager))
     assert.equal(board.available, true)
@@ -184,6 +184,11 @@ test('line_team_board auto-reads Agent Teams and maps owner by line label', asyn
     assert.equal(dept.tasks[0].ownerName, 'writer')
     assert.equal(dept.tasks[0].parentTaskId, 'parent-1')
     assert.equal(dept.messages[0].id, sent.id)
+    assert.equal(dept.tasks[0].subteamPolicy, 'ask')
+    assert.equal(dept.tasks[0].maxMembers, 2)
+    assert.equal(dept.subteamAudit.policies[0], 'ask')
+    assert.equal(dept.subteamAudit.maxMembers, 2)
+    assert.equal(dept.subteamAudit.overLimit, false)
     const writerAgent = h.agents.get(replaced.sessionId)
     const reply = await h.tools.get('line_send').execute({ to: 'manager', text: '已完成 ch1', taskRef: 'task-1', taskScope: 'writer' }, exec(writerAgent))
     const stale2 = await h.tools.get('line_team_board').execute({}, exec(h.manager))
