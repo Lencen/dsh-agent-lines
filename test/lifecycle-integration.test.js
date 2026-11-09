@@ -178,6 +178,8 @@ test('line_team_board auto-reads Agent Teams and maps owner by line label', asyn
     assert.equal(writerLine.officialTeamAvailable, true)
     assert.equal(writerLine.officialTeamLead, true)
     assert.equal(writerLine.deptSummary.total, 1)
+    assert.equal(writerLine.subteamPolicy, 'ask')
+    assert.equal(writerLine.maxMembers, 2)
     const dept = await h.tools.get('line_department_board').execute({ line: 'writer' }, exec(h.manager))
     assert.equal(dept.available, true)
     assert.equal(dept.tasks[0].id, 'task-1')
