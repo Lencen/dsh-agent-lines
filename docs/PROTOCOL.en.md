@@ -103,6 +103,7 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
     line_retire({ line, reason? })
     line_rebind({ line, sessionId, migrate?: "queued" | "none", reason? })
     line_create({ label, replace: true, force?, migrate?, title?, reason? })
+    line_handoff({ line, format?: "md" | "json", limit?: number })
     line_rename({ line, title })
 
 - retired: line_send returns LINE_RETIRED; the Session and history are kept.

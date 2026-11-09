@@ -2,6 +2,14 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.3.7 (2026-11-09)
+
+- 新增 line_handoff：结构化交接快照（JSON/Markdown），不调用模型。
+- line_status / line_list 增加 lifecycle/title/generation/pending/lastActivityAt/oldSessionId。
+- rebind 后给新线发 noReply 交接通知；replace 复用 onboarding 消息。
+- list --json 可直接喂给外部看板；新增 examples/dashboard 说明。
+- 测试 33/33 通过。
+
 ## 0.3.6 (2026-11-09)
 
 - 新增线生命周期：line_retire、line_rebind、line_create replace:true、line_rename。

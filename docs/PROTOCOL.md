@@ -95,6 +95,7 @@ line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作
     line_retire({ line, reason? })
     line_rebind({ line, sessionId, migrate?: "queued" | "none", reason? })
     line_create({ label, replace: true, force?, migrate?, title?, reason? })
+    line_handoff({ line, format?: "md" | "json", limit?: number })
     line_rename({ line, title })
 
 - retired：line_send 返回 LINE_RETIRED；Session 和消息历史保留。
