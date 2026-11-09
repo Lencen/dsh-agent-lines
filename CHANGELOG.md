@@ -2,6 +2,13 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.3.9 (2026-11-09)
+
+- 新增只读 line_observe：管理线查看跨线消息 feed，不注入 prompt、不改消息状态。
+- CLI 新增 observe --json。
+- README 补“版本能力与业务场景”，修正 line_handoff 的版本标注（0.3.7）。
+- 无 schema 变化，line_send 语义不变。
+
 ## 0.3.8 (2026-11-09)
 
 - line_status / line_list 增加 activity：turns/steps/decodeTokens/level/lastActivityAt。

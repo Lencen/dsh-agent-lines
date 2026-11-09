@@ -9,6 +9,7 @@ import { LineError, lineId } from '../lib/protocol.js'
 
 function usage() {
   console.error(`Usage:
+  dsh-agent-lines [--db <path>] [--json] observe [--line <line>] [--since <epochMs>] [--limit N] [--agent <id>]
   dsh-agent-lines [--db <path>] [--json] list
   dsh-agent-lines [--db <path>] [--json] send --from <line> --to <line|agent#line> --text <text> [--agent <id>] [--key <key>] [--reply-to <id>]
   dsh-agent-lines [--db <path>] [--json] inbox --line <line> [--agent <id>] [--limit N] [--all]
@@ -62,6 +63,16 @@ function main() {
   }
   const store = new LineStore(opts.db)
   try {
+    if (command === 'observe') {
+      const result = store.observe({
+        agentId: String(opts.agent ?? 'agent-deepseek'),
+        line: opts.line === undefined ? null : String(opts.line),
+        since: Number(opts.since ?? 0),
+        limit: Number(opts.limit ?? 100),
+      })
+      print({ db: store.dbPath, ...result }, opts.json)
+      return 0
+    }
     if (command === 'list') {
       print({ db: store.dbPath, lines: store.listLines(), counts: store.counts() }, opts.json)
       return 0

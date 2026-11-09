@@ -23,6 +23,32 @@ DSH 的 super agent 平替插件。
 - 你希望一个负责人 agent 自己拆任务、建团队、追进度、收结果，最后向你汇报。
 
 
+## 版本能力与业务场景
+
+### 0.3.6：上下文满了，角色可以换人
+
+场景：写手线连续工作很久，上下文配额耗尽；继续写容易出现前后矛盾。  
+用法：管理线调用 line_create({ label: "writer", replace: true, force: true, reason: "context full" })。  
+效果：同一个 label 切到干净 Session，旧 Session 只 retired、不删除；queued/claimed 消息迁移，delivered/acked 不重投；管理线不需要手工改路由。
+
+### 0.3.7：换人之前先交接
+
+场景：新写手不知道旧线做到哪、下一步是什么、哪些坑不能踩。  
+用法：line_handoff({ line: "writer", format: "md" })。  
+效果：生成结构化交接单（进度、积压、最近消息、生命周期），不调用模型；新线先读交接单再继续。
+
+### 0.3.8：什么时候该换线
+
+场景：管理线想知道哪条线快满了、哪条线最近没动静。  
+用法：line_status / line_list 看 activity.level、turns、steps、lastActivityAt。  
+效果：给出低/中/高活跃度，不伪造“上下文使用率 78%”；真实窗口等 DSH 上游提供。
+
+### 0.3.9：管理线看得到跨线消息
+
+场景：成员线之间直接同步，管理线需要知道发生了什么，但不希望每条消息都打断自己。  
+用法：line_observe({ line: "writer", limit: 20 }) 或 CLI observe --json。  
+效果：只读 feed，显示 from/to/state/摘要；不注入 prompt、不改消息状态；line_send 语义不变。
+
 ## 安装
 
 一条命令安装（推荐，不需要自己找 profile）：
@@ -36,7 +62,7 @@ DSH 的 super agent 平替插件。
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.3.8.tgz
+    bash install.sh ./dsh-agent-lines-0.3.9.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -144,6 +170,7 @@ level 是活跃度代理（low/medium/high），不是上下文使用率百分�
 | `line_list` | 列出线、状态、未读数、当前线和 role |
 | `line_create` | 仅管理线：创建新线；同 label 幂等；传 replace:true 可给同 label 换新 Session |
 | `line_handoff` | 仅管理线：生成结构化交接单（JSON/Markdown），不调模型 |
+| `line_observe` | 仅管理线：只读跨线消息 feed；不注入 prompt、不改状态 |
 | `line_retire` | 仅管理线：软下线；拒绝新发送，保留 Session/历史 |
 | `line_rebind` | 仅管理线：把线原子切到新的 live Session，可迁移积压 |
 | `line_rename` | 仅管理线：改侧栏标题，持久化到 lines.db |
@@ -160,7 +187,7 @@ level 是活跃度代理（low/medium/high），不是上下文使用率百分�
 
 线不会自动继承旧 Session 的上下文。推荐流程：
 
-1. 让旧线写交接单（0.3.8 起可用 `line_handoff`）；
+1. 让旧线写交接单（0.3.7 起可用 `line_handoff`）；
 2. 管理线调用 `line_create({ label, replace: true, force: true, reason: "context full" })`；
 3. 插件创建干净 Session、同 label 原子切换，旧 Session 标记 retired 但保留；
 4. queued/claimed 消息迁移到新线；delivered/acked 留在旧 Session，不重投。
@@ -176,6 +203,7 @@ dsh-agent-lines list
 dsh-agent-lines send --from frontend-line --to backend-line --text "hi"
 dsh-agent-lines inbox --line backend-line
 dsh-agent-lines ack --line backend-line --id msg_...
+dsh-agent-lines --json observe --line writer --limit 20
 dsh-agent-lines claim --agent agent-demo --line manager --session "$DSH_SESSION_ID"
 dsh-agent-lines doctor
 ```

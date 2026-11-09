@@ -109,3 +109,17 @@ test('line_handoff snapshots backlog and markdown', async () => {
     assert.equal(status.lines.find(line => line.label === 'writer').activity.steps, 20)
   } finally { h.cleanup() }
 })
+test('line_observe is manager-only read-only feed', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const created = await h.tools.get('line_create').execute({ label: 'writer', role: 'writer', bootstrap: false }, exec(h.manager))
+    await h.tools.get('line_send').execute({ to: 'writer', text: 'cross line' }, exec(h.manager))
+    const feed = await h.tools.get('line_observe').execute({ limit: 10 }, exec(h.manager))
+    assert.equal(feed.count, 1)
+    assert.equal(feed.messages[0].to, 'agent-demo#writer')
+    assert.equal(feed.messages[0].summary, 'cross line')
+    const workerAgent = h.agents.get(created.sessionId)
+    await assert.rejects(() => h.tools.get('line_observe').execute({}, exec(workerAgent)), error => error.code === 'LINE_CREATE_FORBIDDEN')
+  } finally { h.cleanup() }
+})
