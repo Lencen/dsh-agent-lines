@@ -90,6 +90,20 @@ line_create 通过 workspaceRegistry.resolveByPath(managerCwd) 解析管理线�
 
 line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作区。DSH 的 attachSession 要求 Session 存储的 cwd 与工作区 path 完全一致；不同目录会 WORKSPACE_ATTACH_FAILED，不会迁移 Session。如果 Session 创建成功但注册失败，错误里带 detail.sessionId，Session 不会自动删除。
 
+## 线生命周期（0.3.6）
+
+    line_retire({ line, reason? })
+    line_rebind({ line, sessionId, migrate?: "queued" | "none", reason? })
+    line_create({ label, replace: true, force?, migrate?, title?, reason? })
+    line_rename({ line, title })
+
+- retired：line_send 返回 LINE_RETIRED；Session 和消息历史保留。
+- rebind：原子切换 lines.session_id，generation+1；旧 Session 不删除。
+- migrate=queued：queued/claimed 迁移到新 Session；delivered/acked 不重投。
+- migrate=none：backlog 非空时返回 LINE_BACKLOG_NOT_EMPTY。
+- replace：同 label 创建新 Session 并 rebind；active 线需 force + reason。
+- line_events 记录 title/retire/rebind 审计；title 持久化，重启保留。
+
 ## 回声与回复深度
 
 - rootMessageId 标识回复链；根消息为 null。

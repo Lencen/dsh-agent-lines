@@ -36,7 +36,7 @@ DSH 的 super agent 平替插件。
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.3.5.tgz
+    bash install.sh ./dsh-agent-lines-0.3.6.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -137,7 +137,10 @@ line_create({ label: "ops", role: "运维" })
 | `line_status` | 只读：当前会话绑定、manager Session 是否存在/live、线列表、修复命令；未绑定也可见 |
 | `line_claim_manager` | 把当前 live 根 Session 绑成 manager；需要 `allowClaim: true` 和 `confirm: "bind-manager"`；全局工具，不需要 shell |
 | `line_list` | 列出线、状态、未读数、当前线和 role |
-| `line_create` | 仅管理线：在管理线工作区（或指定的已有工作区）创建 DSH Session 并注册为线；同 label 幂等 |
+| `line_create` | 仅管理线：创建新线；同 label 幂等；传 replace:true 可给同 label 换新 Session |
+| `line_retire` | 仅管理线：软下线；拒绝新发送，保留 Session/历史 |
+| `line_rebind` | 仅管理线：把线原子切到新的 live Session，可迁移积压 |
+| `line_rename` | 仅管理线：改侧栏标题，持久化到 lines.db |
 | `line_move_workspace` | 仅管理线：把已有线的 Session 挂到路径完全匹配的工作区 |
 | `line_send` | 发到 `line` 或 `agent#line`；可选 `idempotencyKey`、`replyTo`、`noReply`、`forceDistinct`、`ttlMs` |
 | `line_inbox` | 读当前线已投递消息 |
@@ -146,6 +149,17 @@ line_create({ label: "ops", role: "运维" })
 除 `line_status`、`line_claim_manager` 外，line 工具只注册在已绑定线的 Session 上；这两个控制工具是全局的：status 只读，claim 仅限根会话且受 allowClaim 控制。
 
 `line_create` 在管理线所属工作区（没有工作区时回退当前目录）创建普通 DSH Session；它**不会**创建独立 OS 进程、profile 或端口，也不转移已有 Session。
+
+### 上下文满时换人
+
+线不会自动继承旧 Session 的上下文。推荐流程：
+
+1. 让旧线写交接单（0.3.7 起可用 `line_handoff`）；
+2. 管理线调用 `line_create({ label, replace: true, force: true, reason: "context full" })`；
+3. 插件创建干净 Session、同 label 原子切换，旧 Session 标记 retired 但保留；
+4. queued/claimed 消息迁移到新线；delivered/acked 留在旧 Session，不重投。
+
+`migrate: "none"` 时若还有 queued/claimed 会直接报 `LINE_BACKLOG_NOT_EMPTY`，不会静默切走。
 
 创建的线会记录 `created_by`，进程重启时由管理线恢复。line_create 会解析管理线所属工作区并传 workspaceId（DSH 会自动 attach），所以新线出现在该工作区而不是“未分组”；如果管理线本身不在工作区，则回退 cwd，线保持未分组。传 `workspace`（已有路径或 id）可指定其他工作区。若某条线的 Session 还从未落盘，首次投递可能 `session/not-found`；给它发一条任务（或重新创建）即可让它持久化。
 

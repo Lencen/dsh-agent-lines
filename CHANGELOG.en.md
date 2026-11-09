@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.3.6 (2026-11-09)
+
+- Added line lifecycle: line_retire, line_rebind, line_create replace:true, line_rename.
+- Schema v7: lines.title/lifecycle/generation/rebind_at/rebind_from + line_events audit; additive migration from v6.
+- Backlog migration: queued/claimed migrate; delivered/acked are never re-delivered; migrate:none fails closed when backlog is non-empty.
+- Persistent titles: line_create/line_rename write lines.title and survive restarts.
+- Tests 32/32 pass; existing 0.3.5 behavior unchanged.
+
 ## 0.3.5 (2026-11-05)
 
 - Integrated P0/P1 bootstrap: line_create queues an onboarding message by default, adds bootstrapOnCreate, and line_status/line_list expose materialized / visibleInSidebar / bootstrapQueued.

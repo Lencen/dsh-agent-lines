@@ -2,6 +2,14 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.3.6 (2026-11-09)
+
+- 新增线生命周期：line_retire、line_rebind、line_create replace:true、line_rename。
+- schema v7：lines.title/lifecycle/generation/rebind_at/rebind_from + line_events 审计；旧 DB additive 迁移。
+- 积压迁移：queued/claimed 迁移，delivered/acked 不重投；migrate:none 在 backlog 非空时 fail-closed。
+- 标题持久化：line_create/line_rename 写 lines.title，重启保留。
+- 测试 32/32 通过；旧 0.3.5 行为不变。
+
 ## 0.3.5 (2026-11-05)
 
 - 集成 P0/P1 bootstrap：line_create 默认排队 onboarding 消息，新增 bootstrapOnCreate，line_status/line_list 暴露 materialized / visibleInSidebar / bootstrapQueued。
