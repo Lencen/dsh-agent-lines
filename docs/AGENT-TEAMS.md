@@ -1,11 +1,11 @@
-# 与官方 Agent Teams 融合（只读，0.5.0）
+# 与DSH 官方“智能体插件”（实验性） 融合（只读，0.5.0）
 
 > 一句话：line 管人，team 管事，文件管记忆。
 > 用户只给 manager 发任务；不导出、不配置、不点插件按钮。
 
 ## 前提
 
-- manager line 必须同时是官方 Agent Teams 的 Lead 或成员；
+- manager line 必须同时是DSH 官方“智能体插件”（实验性） 的 Lead 或成员；
 - 否则 line_team_board 显示 available=false，不要求用户导出。
 
 ## 用户怎么用
@@ -19,7 +19,7 @@
 manager 自动：
 1. 在 Agent Teams 任务板创建任务；
 2. 用 line 建/复用长期角色；
-3. 读 ctx.agentTeams.listTasks/listMembers；
+3. 读 官方智能体插件服务.listTasks/listMembers；
 4. 按 teammate name 自动映射 line；
 5. 把任务、线、待审批放进 line_team_board。
 
@@ -38,7 +38,7 @@ manager 自动：
 
 ## 限制
 
-- ctx.agentTeams 是 experimental 内部服务，不是稳定公开 API；
+- 官方智能体插件服务 是 experimental 内部服务，不是稳定公开 API；
 - 服务不可用就显示 unavailable；
 - L2 双向任务桥未批准。
 
