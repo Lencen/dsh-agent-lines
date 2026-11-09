@@ -116,6 +116,12 @@ DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是
 用法：line_status / line_list 看 activity.level、turns、steps、lastActivityAt。  
 效果：给出低/中/高活跃度，不伪造“上下文使用率 78%”；真实窗口等 DSH 上游提供。
 
+### 0.6.1：内部团队策略 + 审计
+
+场景：负责人给角色线派任务时，要限制是否允许建内部团队、最多几人。
+用法：line_send 带 subteamPolicy（auto/ask/never）与 maxMembers；看板显示策略和审计。
+效果：只记录/展示/审计，不硬拦截官方 spawn；部门视图返回 subteamAudit。
+
 ### 0.6.0：三级组织 + 部门视图
 
 场景：负责人下面有多条长期角色线，每条线自己也带官方团队。
@@ -163,7 +169,7 @@ DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.6.0.tgz
+    bash install.sh ./dsh-agent-lines-0.6.1.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
