@@ -23,6 +23,24 @@ DSH 的 super agent 平替插件。
 - 你希望一个负责人 agent 自己拆任务、建团队、追进度、收结果，最后向你汇报。
 
 
+## 和官方 Agent Teams 的区别
+
+不是替代关系，是互补关系。一句话：**官方 Agent Teams 管“事”，dsh-agent-lines 管“人”和“消息”。**
+
+| 维度 | 官方 Agent Teams | dsh-agent-lines |
+|---|---|---|
+| 定位 | 任务编排、团队协作 | 长期角色、持久通信 |
+| 角色 | 具名 teammate，围绕任务协作，进程内生命周期 | 线长期存在，跨会话、跨重启 |
+| 任务 | 共享任务板、任务 DAG、blocked_by、Web 面板 | 没有任务板；负责把任务/消息可靠送到角色 |
+| 消息 | 直接 inbox，当前团队协作；不保证重启后重试 | SQLite 持久队列，lease、ack、重试、断线续投 |
+| 上下文满了 | 新建 teammate | handoff + replace，同一角色换新 Session |
+| 工作目录 | 成员共享工作区 | 每条线可以绑自己的 workspace |
+| 适合 | 一次性/短周期多 agent 编排 | 长篇小说、系列视频、长期研究、持续运营 |
+
+**一起用：** line 管人，team 管事，文件管记忆。用户只给 manager 发任务；manager 自动读 Agent Teams 任务和 line 状态，不要求用户导出或配置。
+
+官方 Agent Teams 目前是 experimental；dsh-agent-lines 是社区插件，不是 DeepSeek 官方产品。
+
 ## 与官方 Agent Teams 融合（只读，0.5.0）
 
 用户只给 manager 发任务。manager 自动读官方 Agent Teams 任务和成员，按 teammate name 自动映射 line；不要求用户导出任务、不要求配置映射、不要求点插件按钮。
