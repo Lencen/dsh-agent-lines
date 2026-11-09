@@ -2,6 +2,13 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.6.1 (2026-11-09)
+
+- subteamPolicy (auto/ask/never) and maxMembers message fields; schema v12.
+- line_team_board tasks expose subteamPolicy/maxMembers.
+- line_department_board adds subteamAudit (members/tasks/policies/maxMembers/overLimit).
+- Records/shows/audits only; does not block official spawn.
+
 ## 0.6.0 (2026-11-09)
 
 - line_department_board: lazily read a line's official team (lead/members/tasks/summary/messages).
