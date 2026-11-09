@@ -26,7 +26,7 @@ function harness() {
       prompt: async () => {},
     },
     on: () => () => {},
-    get: (name) => name === 'sessionPersistence' ? { stat: async () => ({}) } : undefined,
+    get: (name) => name === 'sessionPersistence' ? { stat: async () => ({}) } : name === 'sessionProjections' ? { snapshot: () => ({ values: { sessionStats: { turns: 2, steps: 20, decodeTokens: 30 } } }) } : undefined,
     effect: (fn) => { effects.push(fn()) },
   }
   for (const a of agents.values()) a.ctx = ctx
@@ -105,5 +105,7 @@ test('line_handoff snapshots backlog and markdown', async () => {
     const status = await h.tools.get('line_status').execute({}, exec(h.manager))
     assert.equal(status.lines.find(line => line.label === 'writer').lifecycle, 'active')
     assert.equal(status.lines.find(line => line.label === 'writer').title, '写手')
+    assert.equal(status.lines.find(line => line.label === 'writer').activity.level, 'medium')
+    assert.equal(status.lines.find(line => line.label === 'writer').activity.steps, 20)
   } finally { h.cleanup() }
 })
