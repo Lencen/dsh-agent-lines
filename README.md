@@ -98,6 +98,12 @@ DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是
 
 ## 版本能力与业务场景
 
+### 0.6.5：负责人本地操作
+
+场景：负责人在 Web 看板上直接发消息、批准/拒绝 pending、生成 handoff。
+用法：dsh-agent-lines board --port 4090 --db $DSH_HOME/agent-lines/lines.db；用启动日志 token。
+效果：本地 token 保护；默认 127.0.0.1；POST 后 /api/live 刷新消息数；不硬拦截。
+
 ### 0.6.4：只读 Web 看板
 
 场景：负责人不想每次让模型调工具，想直接在浏览器看团队任务/部门。
