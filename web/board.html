@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dsh-agent-lines · 团队看板</title>
+<style>
+:root{--bg:#0f1115;--card:#181b22;--line:#2a2f3a;--text:#e8eaed;--muted:#9aa3b2;--accent:#7c9cff;--ok:#5dd39e;--warn:#f2c14e;--bad:#ff7a7a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
+h1{font-size:16px;margin:0;font-weight:600}button{background:#242936;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+main{padding:18px;display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;min-height:120px;display:flex;flex-direction:column;gap:8px}
+.span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+@media(max-width:800px){.span-4,.span-6,.span-8{grid-column:span 12}main{grid-template-columns:1fr}}
+.k{color:var(--muted);font-size:12px}.v{font-size:22px;font-weight:600}.muted{color:var(--muted)}
+.line-row{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #232833;cursor:pointer}
+.line-row:last-child{border-bottom:0}.line-row:hover{background:#1d2230}
+.badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:12px;color:var(--muted)}
+.status-online{color:var(--ok)}.status-offline{color:var(--bad)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:6px 4px;border-bottom:1px solid #232833;font-size:13px}th{color:var(--muted);font-weight:500}
+.empty{color:var(--muted);padding:12px 0}
+#drawer{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;justify-content:flex-end}
+#drawer.open{display:flex}#drawer .panel{width:min(720px,96vw);height:100%;background:var(--bg);border-left:1px solid var(--line);padding:18px;overflow:auto}
+</style>
+</head>
+<body>
+<header><h1>dsh-agent-lines · 团队看板 <span class="badge">只读</span></h1><button id="refresh">刷新</button></header>
+<main>
+  <section class="card span-4"><div class="k">任务</div><div class="v" id="task-total">-</div><div class="muted" id="task-status">-</div></section>
+  <section class="card span-4"><div class="k">线 / 官方成员</div><div class="v" id="sessions">-</div><div class="muted">角色线 · 部门成员</div></section>
+  <section class="card span-4"><div class="k">消息 / Token</div><div class="v" id="messages">-</div><div class="muted" id="tokens">-</div></section>
+  <section class="card span-6"><div class="k">组织 / 线状态</div><div id="lines" class="empty">加载中…</div></section>
+  <section class="card span-6"><div class="k">任务</div><div id="tasks" class="empty">加载中…</div></section>
+  <section class="card span-12"><div class="k">说明</div><div class="muted">只读快照；官方内部子 agent 私聊不暴露；任务无时间字段与每任务 token，不伪造趋势。点击线查看部门视图。</div></section>
+</main>
+<div id="drawer"><div class="panel"><div style="display:flex;justify-content:space-between;align-items:center"><b id="drawer-title">部门视图</b><button id="drawer-close">关闭</button></div><div id="drawer-body" class="empty" style="margin-top:12px">加载中…</div></div></div>
+<script>
+const $=id=>document.getElementById(id)
+let board=null
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function statusClass(s){return s==='online'?'status-online':'status-offline'}
+async function load(){
+  const res=await fetch('/api/team-board',{cache:'no-store'})
+  if(!res.ok){$('lines').textContent='快照不存在：请先在 DSH 会话里调用 line_team_board';$('tasks').textContent='';return}
+  board=await res.json();render()
+}
+function render(){
+  const tasks=board.tasks||[], lines=board.lines||[]
+  $('task-total').textContent=tasks.length
+  const st={};tasks.forEach(t=>st[t.status]=(st[t.status]||0)+1)
+  $('task-status').textContent=Object.entries(st).map(([k,v])=>k+' '+v).join(' · ')||'无任务'
+  $('sessions').textContent=lines.length+' / '+lines.reduce((n,l)=>n+(l.deptSummary?l.deptSummary.total?1:0:0),0)
+  const msgs=(board.messages||[]).length;$('messages').textContent=msgs
+  $('tokens').textContent='token 当前值：见 line_metrics'
+  $('lines').innerHTML=lines.length?lines.map(l=>'<div class="line-row" data-line="'+esc(l.label)+'"><div><b>'+esc(l.label)+'</b> <span class="badge '+statusClass(l.status)+'">'+esc(l.status)+'</span><div class="muted">'+esc(l.lifecycle||'')+' · gen '+esc(l.generation??'')+' · 部门任务 '+(l.deptSummary?l.deptSummary.total:0)+'</div></div><div class="muted">'+(l.officialTeamAvailable?'官方团队✓':'无团队')+'</div></div>').join(''):'<div class="empty">没有线</div>'
+  $('tasks').innerHTML=tasks.length?'<table><thead><tr><th>任务</th><th>状态</th><th>负责人</th></tr></thead><tbody>'+tasks.map(t=>'<tr><td>'+esc(t.subject||t.id)+'</td><td>'+esc(t.status)+'</td><td>'+esc(t.ownerName||'-')+'</td></tr>').join('')+'</tbody></table>':'<div class="empty">没有任务</div>'
+  document.querySelectorAll('.line-row').forEach(el=>el.onclick=()=>openDept(el.dataset.line))
+}
+async function openDept(line){
+  $('drawer').classList.add('open');$('drawer-title').textContent='部门视图 · '+line;$('drawer-body').textContent='加载中…'
+  const res=await fetch('/api/team-board/'+encodeURIComponent(line),{cache:'no-store'})
+  if(!res.ok){$('drawer-body').innerHTML='<div class="empty">该线暂无部门快照（先在负责人会话调用 line_department_board）</div>';return}
+  const d=await res.json();const tasks=d.tasks||[], members=d.officialTeam?.members||[]
+  $('drawer-body').innerHTML='<div class="muted">available: '+esc(d.available)+' · lead: '+esc(d.officialTeam?.leadName||'-')+'</div>'
+    +'<h3 style="font-size:14px;margin:14px 0 6px">成员</h3>'+(members.length?'<div>'+members.map(m=>'<span class="badge">'+esc(m.name)+' · '+esc(m.role)+'</span>').join(' ')+'</div>':'<div class="empty">无成员</div>')
+    +'<h3 style="font-size:14px;margin:14px 0 6px">任务</h3>'+(tasks.length?'<table><thead><tr><th>任务</th><th>状态</th><th>parent</th></tr></thead><tbody>'+tasks.map(t=>'<tr><td>'+esc(t.subject||t.id)+'</td><td>'+esc(t.status)+'</td><td>'+esc(t.parentTaskId||'-')+'</td></tr>').join('')+'</tbody></table>':'<div class="empty">无任务</div>')
+}
+$('refresh').onclick=load
+$('drawer-close').onclick=()=>$('drawer').classList.remove('open')
+load()
+</script>
+</body></html>
