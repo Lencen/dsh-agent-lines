@@ -2,6 +2,12 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.6.3 (2026-11-09)
+
+- Add line_metrics: manager-only read-only data board.
+- Current task/line/team counts; message kind/state and daily trend; per-line current tokens.
+- Explicitly no official task timestamps or per-task tokens; no invented trends.
+
 ## 0.6.2 (2026-11-09)
 
 - Add line_communications: manager-only read-only communication board; filter by line/task/kind/state.
