@@ -45,6 +45,14 @@ async function load(){
   if(!res.ok){$('lines').textContent='快照不存在：请先在 DSH 会话里调用 line_team_board';$('tasks').textContent='';return}
   board=await res.json();render()
 }
+async function loadMetrics(){
+  try{const res=await fetch('/api/team-metrics',{cache:'no-store'});if(!res.ok)return;const m=await res.json();
+    if(m.tasks?.manager){$('task-total').textContent=m.tasks.manager.total??'-'}
+    if(m.sessions){$('sessions').textContent=(m.sessions.lines??'-')+' / '+(m.sessions.officialMembers??'-')}
+    if(m.messages){$('messages').textContent=m.messages.total??'-'}
+    if(m.tokens){$('tokens').textContent='token 当前值：'+m.tokens.total}
+  }catch{}
+}
 function render(){
   const tasks=board.tasks||[], lines=board.lines||[]
   $('task-total').textContent=tasks.length
@@ -68,6 +76,6 @@ async function openDept(line){
 }
 $('refresh').onclick=load
 $('drawer-close').onclick=()=>$('drawer').classList.remove('open')
-load()
+load().then(loadMetrics)
 </script>
 </body></html>
