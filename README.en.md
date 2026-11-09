@@ -36,7 +36,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.3.6.tgz
+    bash install.sh ./dsh-agent-lines-0.3.7.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -138,6 +138,7 @@ Tools:
 | `line_claim_manager` | Bind this live root Session as manager; requires `allowClaim: true` and `confirm: "bind-manager"`; global, no shell needed |
 | `line_list` | List lines, status, unread counts, current line and role |
 | `line_create` | Manager only: create a line; same label is idempotent; replace:true swaps the label to a fresh Session |
+| `line_handoff` | Manager only: structured handoff snapshot (JSON/Markdown), no model call |
 | `line_retire` | Manager only: soft-retire; reject new sends, keep Session and history |
 | `line_rebind` | Manager only: atomically switch a line to a new live Session, optionally migrating backlog |
 | `line_rename` | Manager only: rename the sidebar title and persist it in lines.db |

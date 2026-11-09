@@ -36,7 +36,7 @@ DSH 的 super agent 平替插件。
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.3.6.tgz
+    bash install.sh ./dsh-agent-lines-0.3.7.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -138,6 +138,7 @@ line_create({ label: "ops", role: "运维" })
 | `line_claim_manager` | 把当前 live 根 Session 绑成 manager；需要 `allowClaim: true` 和 `confirm: "bind-manager"`；全局工具，不需要 shell |
 | `line_list` | 列出线、状态、未读数、当前线和 role |
 | `line_create` | 仅管理线：创建新线；同 label 幂等；传 replace:true 可给同 label 换新 Session |
+| `line_handoff` | 仅管理线：生成结构化交接单（JSON/Markdown），不调模型 |
 | `line_retire` | 仅管理线：软下线；拒绝新发送，保留 Session/历史 |
 | `line_rebind` | 仅管理线：把线原子切到新的 live Session，可迁移积压 |
 | `line_rename` | 仅管理线：改侧栏标题，持久化到 lines.db |

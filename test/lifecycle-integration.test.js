@@ -89,3 +89,21 @@ test('line_rebind switches to a live Session and rejects manager line', async ()
     await assert.rejects(() => h.tools.get('line_rebind').execute({ line: 'manager', sessionId: newId }, exec(h.manager)), error => error.code === 'LINE_MANAGER_REBIND_UNSUPPORTED')
   } finally { h.cleanup() }
 })
+test('line_handoff snapshots backlog and markdown', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const created = await h.tools.get('line_create').execute({ label: 'writer', role: 'writer', title: '写手', bootstrap: false }, exec(h.manager))
+    await h.tools.get('line_send').execute({ to: 'writer', text: 'todo for writer' }, exec(h.manager))
+    const snap = await h.tools.get('line_handoff').execute({ line: 'writer', format: 'json' }, exec(h.manager))
+    assert.equal(snap.label, 'writer')
+    assert.equal(snap.counts.queued, 1)
+    assert.equal(snap.sessionId, created.sessionId)
+    const md = await h.tools.get('line_handoff').execute({ line: 'writer', format: 'md' }, exec(h.manager))
+    assert.match(md.markdown, /交接单/)
+    assert.match(md.markdown, /queued: 1/)
+    const status = await h.tools.get('line_status').execute({}, exec(h.manager))
+    assert.equal(status.lines.find(line => line.label === 'writer').lifecycle, 'active')
+    assert.equal(status.lines.find(line => line.label === 'writer').title, '写手')
+  } finally { h.cleanup() }
+})

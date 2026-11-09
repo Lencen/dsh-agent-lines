@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.3.7 (2026-11-09)
+
+- Added line_handoff: structured handoff snapshots (JSON/Markdown), no model call.
+- line_status / line_list now expose lifecycle/title/generation/pending/lastActivityAt/oldSessionId.
+- rebind sends a noReply handoff notice to the new line; replace reuses the onboarding message.
+- list --json can feed an external dashboard; added examples/dashboard notes.
+- Tests 33/33 pass.
+
 ## 0.3.6 (2026-11-09)
 
 - Added line lifecycle: line_retire, line_rebind, line_create replace:true, line_rename.
