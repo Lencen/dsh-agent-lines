@@ -98,34 +98,22 @@ DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是
 
 ## 版本能力与业务场景
 
-### 0.3.6：上下文满了，角色可以换人
+### 0.6.1：内部团队策略 + 审计
 
-场景：写手线连续工作很久，上下文配额耗尽；继续写容易出现前后矛盾。  
-用法：管理线调用 line_create({ label: "writer", replace: true, force: true, reason: "context full" })。  
-效果：同一个 label 切到干净 Session，旧 Session 只 retired、不删除；queued/claimed 消息迁移，delivered/acked 不重投；管理线不需要手工改路由。
-
-### 0.3.7：换人之前先交接
-
-场景：新写手不知道旧线做到哪、下一步是什么、哪些坑不能踩。  
-用法：line_handoff({ line: "writer", format: "md" })。  
-效果：生成结构化交接单（进度、积压、最近消息、生命周期），不调用模型；新线先读交接单再继续。
-
-### 0.3.8：什么时候该换线
-
-场景：管理线想知道哪条线快满了、哪条线最近没动静。  
-用法：line_status / line_list 看 activity.level、turns、steps、lastActivityAt。  
-效果：给出低/中/高活跃度，不伪造“上下文使用率 78%”；真实窗口等 DSH 上游提供。
+场景：负责人给角色线派任务时，要限制是否允许建内部团队、最多几人。  
+用法：line_send 带 subteamPolicy（auto/ask/never）与 maxMembers；看板显示线级策略和审计。  
+效果：line_team_board.lines[] 显示该线策略；line_department_board 返回 task 策略与 subteamAudit；只记录/展示/审计，不硬拦截官方 spawn。
 
 ### 0.6.0：三级组织 + 部门视图
 
-场景：负责人下面有多条长期角色线，每条线自己也带官方团队。
-用法：负责人调用 line_department_board({ line }) 按线懒取该线的官方团队、任务、摘要、消息。
+场景：负责人下面有多条长期角色线，每条线自己也带官方团队。  
+用法：负责人调用 line_department_board({ line }) 按线懒取该线的官方团队、任务、摘要、消息。  
 效果：组织树三级；上级只看部门摘要，不合并下级任务板；taskScope 防止同名 task id 串味。
 
 ### 0.5.1：官方团队看板接入 + 主机快照
 
-场景：团队既有长期角色，又想看官方“智能体团队”插件的任务板。
-用法：负责人调用 line_team_board；插件自动读官方任务/成员并写 team-board.json。
+场景：团队既有长期角色，又想看官方“智能体团队”插件的任务板。  
+用法：负责人调用 line_team_board；插件自动读官方任务/成员并写 team-board.json。  
 效果：只读融合；不要求用户导出/配置；同版本补齐 messages/quality/team/approval/deliveries 契约。
 
 ### 0.4.1：管理线看得到跨线消息
@@ -133,6 +121,24 @@ DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是
 场景：成员线之间直接同步，管理线需要知道发生了什么，但不希望每条消息都打断自己。  
 用法：line_observe({ line: "writer", limit: 20 }) 或 CLI observe --json。  
 效果：只读 feed，显示 from/to/state/摘要；不注入 prompt、不改消息状态；line_send 语义不变。
+
+### 0.3.8：什么时候该换线
+
+场景：管理线想知道哪条线快满了、哪条线最近没动静。  
+用法：line_status / line_list 看 activity.level、turns、steps、lastActivityAt。  
+效果：给出低/中/高活跃度，不伪造“上下文使用率 78%”；真实窗口等 DSH 上游提供。
+
+### 0.3.7：换人之前先交接
+
+场景：新写手不知道旧线做到哪、下一步是什么、哪些坑不能踩。  
+用法：line_handoff({ line: "writer", format: "md" })。  
+效果：生成结构化交接单（进度、积压、最近消息、生命周期），不调用模型；新线先读交接单再继续。
+
+### 0.3.6：上下文满了，角色可以换人
+
+场景：写手线连续工作很久，上下文配额耗尽；继续写容易出现前后矛盾。  
+用法：管理线调用 line_create({ label: "writer", replace: true, force: true, reason: "context full" })。  
+效果：同一个 label 切到干净 Session，旧 Session 只 retired、不删除；queued/claimed 消息迁移，delivered/acked 不重投；管理线不需要手工改路由。
 
 ## 安装
 
