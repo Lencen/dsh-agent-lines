@@ -2,6 +2,12 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.6.3 (2026-11-09)
+
+- 新增 line_metrics：负责人只读数据看板。
+- 任务/线/子团队当前统计；消息 kind/state 与按日趋势；每线 token 当前值。
+- 明确官方任务无时间字段、无每任务 token，不伪造趋势。
+
 ## 0.6.2 (2026-11-09)
 
 - 新增 line_communications：负责人只读沟通看板；按线/任务/kind/state 筛选。
