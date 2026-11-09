@@ -185,6 +185,7 @@ test('line_team_board auto-reads Agent Teams and maps owner by line label', asyn
     assert.equal(dept.tasks[0].ownerName, 'writer')
     assert.equal(dept.tasks[0].parentTaskId, 'parent-1')
     assert.ok(Array.isArray(dept.messages))
+    assert.equal(existsSync(join(dirname(h.config.dbPath), 'team-board.writer.json')), true)
     const snapshotPath = join(dirname(h.config.dbPath), 'team-board.json')
     assert.equal(existsSync(snapshotPath), true)
     assert.equal(statSync(snapshotPath).mode & 0o777, 0o600)
