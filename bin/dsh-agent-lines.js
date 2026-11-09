@@ -67,7 +67,7 @@ async function main() {
     const port = Number(opts.port ?? 4090)
     const db = opts.db === undefined || !existsSync(opts.db) ? null : String(opts.db)
     const token = String(opts.token ?? randomBytes(16).toString('hex'))
-    const { server, url } = await startBoardServer({ dir, host, port, db, token, agentId: String(opts.agent ?? 'agent-deepseek'), from: String(opts.from ?? 'manager') })
+    const { server, url } = await startBoardServer({ dir, host, port, db, token, agentId: opts.agent === undefined ? null : String(opts.agent), from: opts.from === undefined ? null : String(opts.from) })
     console.log(`[agent-lines] board: ${url}`)
     console.log(`[agent-lines] snapshots: ${dir}`)
     console.log(`[agent-lines] actions: ${db === null ? 'disabled (no db)' : 'enabled (x-board-token required)'}`)
