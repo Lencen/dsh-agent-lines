@@ -169,7 +169,12 @@ test('line_team_board auto-reads Agent Teams and maps owner by line label', asyn
     assert.equal(board.tasks[0].ownerLine, 'writer')
     assert.equal(board.tasks[0].staleOwner, false)
     assert.ok(board.lines.some(line => line.label === 'writer' && line.sessionId === created.sessionId))
-    const worker = h.agents.get(created.sessionId)
+    const replaced = await h.tools.get('line_create').execute({ label: 'writer', replace: true, force: true, bootstrap: false }, exec(h.manager))
+    const stale = await h.tools.get('line_team_board').execute({}, exec(h.manager))
+    assert.equal(stale.tasks[0].staleOwner, true)
+    assert.equal(stale.tasks[0].staleReason, 'line replaced/rebuilt')
+    assert.equal(stale.tasks[0].ownerLine, 'writer')
+    const worker = h.agents.get(replaced.sessionId)
     await assert.rejects(() => h.tools.get('line_team_board').execute({}, exec(worker)), error => error.code === 'LINE_CREATE_FORBIDDEN')
   } finally { h.cleanup() }
 })
