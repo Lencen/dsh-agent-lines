@@ -7,6 +7,7 @@
 - 新增 line_team_board：管理线只读看板，自动读 ctx.agentTeams.listTasks/listMembers + lines.db。
 - 按 teammate name/role 自动映射 line；无映射 unlinked；不要求用户导出/配置。
 - Agent Teams 服务不可用或 manager 非成员时 available=false。
+- line_send 新增 taskRef，消息可自动挂到 Agent Teams 任务；schema v9 additive。
 - 只读；不写任务/消息，不触发管理线 turn。
 - 文档：docs/AGENT-TEAMS.md + 静态看板示例。
 

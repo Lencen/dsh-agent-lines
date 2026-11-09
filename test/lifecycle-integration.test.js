@@ -159,8 +159,12 @@ test('line_team_board auto-reads Agent Teams and maps owner by line label', asyn
       listMembers: () => [{ name: 'manager', role: 'lead', status: 'running' }, { name: 'writer', role: 'teammate', status: 'running' }],
       listTasks: () => [{ id: 'task-1', revision: 1, subject: 'ch1', description: '', status: 'pending', blockedBy: [], writeScopes: [], ownerName: 'writer', ready: true, writeScopeWarnings: [] }],
     } : originalGet(name, strict)
+    const sent = await h.tools.get('line_send').execute({ to: 'writer', text: '请写 ch1', taskRef: 'task-1' }, exec(h.manager))
+    assert.equal(sent.taskRef, 'task-1')
     const board = await h.tools.get('line_team_board').execute({}, exec(h.manager))
     assert.equal(board.available, true)
+    assert.equal(board.tasks[0].lastMessage.id, sent.id)
+    assert.equal(board.tasks[0].lastMessage.summary, '请写 ch1')
     assert.equal(board.tasks[0].ownerName, 'writer')
     assert.equal(board.tasks[0].ownerLine, 'writer')
     assert.equal(board.tasks[0].staleOwner, false)

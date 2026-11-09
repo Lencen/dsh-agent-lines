@@ -7,6 +7,7 @@ English | [中文](CHANGELOG.md)
 - Add line_team_board: manager-only read-only board that auto-reads ctx.agentTeams.listTasks/listMembers + lines.db.
 - Auto maps teammate name/role to lines; unlinked when missing; no user export/config.
 - available=false when Agent Teams is unavailable or the manager is not a member.
+- line_send adds taskRef, linking messages to Agent Teams tasks; schema v9 additive.
 - Read-only; no task/message writes; no manager turn.
 - Docs: docs/en/AGENT-TEAMS.md + static board example.
 
