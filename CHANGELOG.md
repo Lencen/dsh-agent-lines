@@ -2,6 +2,14 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.5.0 (2026-11-09)
+
+- 新增 line_team_board：管理线只读看板，自动读 ctx.agentTeams.listTasks/listMembers + lines.db。
+- 按 teammate name/role 自动映射 line；无映射 unlinked；不要求用户导出/配置。
+- Agent Teams 服务不可用或 manager 非成员时 available=false。
+- 只读；不写任务/消息，不触发管理线 turn。
+- 文档：docs/AGENT-TEAMS.md + 静态看板示例。
+
 ## 0.4.1 (2026-11-09)
 
 - 修复 F1：line_create replace / line_rebind 在 rebind 后没有重新 acquire lease，导致线 offline、消息 queued 直到进程重启。

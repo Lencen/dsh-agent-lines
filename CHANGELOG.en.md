@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.5.0 (2026-11-09)
+
+- Add line_team_board: manager-only read-only board that auto-reads ctx.agentTeams.listTasks/listMembers + lines.db.
+- Auto maps teammate name/role to lines; unlinked when missing; no user export/config.
+- available=false when Agent Teams is unavailable or the manager is not a member.
+- Read-only; no task/message writes; no manager turn.
+- Docs: docs/en/AGENT-TEAMS.md + static board example.
+
 ## 0.4.1 (2026-11-09)
 
 - Fix F1: after line_create replace / line_rebind, the new line did not re-acquire a lease, leaving it offline and messages queued until restart.
