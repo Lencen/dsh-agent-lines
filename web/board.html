@@ -54,6 +54,11 @@ async function loadMetrics(){
     if(m.tokens){$('tokens').textContent='token 当前值：'+m.tokens.total}
   }catch{}
 }
+async function loadLive(){
+  try{const res=await fetch('/api/live',{cache:'no-store'});if(!res.ok)return;const d=await res.json();
+    if(d.counts){const n=(d.counts.states||[]).reduce((a,s)=>a+Number(s.n||0),0);$('messages').textContent=n}
+  }catch{}
+}
 function render(){
   const tasks=board.tasks||[], lines=board.lines||[]
   $('task-total').textContent=tasks.length
@@ -79,7 +84,7 @@ async function action(path, body){
   const token=$('token').value.trim(); if(!token){$('action-result').textContent='请先填 board token';return}
   const res=await fetch('/api/actions/'+path,{method:'POST',headers:{'content-type':'application/json','x-board-token':token},body:JSON.stringify(body)})
   const data=await res.json().catch(()=>({}));$('action-result').textContent=res.ok?('OK '+JSON.stringify(data)):('失败 '+JSON.stringify(data))
-  if(res.ok) await load(), await loadMetrics()
+  if(res.ok){await load();await loadMetrics();await loadLive()}
 }
 $('send').onclick=()=>action('send',{to:$('to').value.trim(),text:$('text').value.trim(),kind:'info'})
 $('approve').onclick=()=>action('approve',{messageId:$('msgid').value.trim()})
@@ -87,6 +92,6 @@ $('reject').onclick=()=>action('reject',{messageId:$('msgid').value.trim()})
 $('handoff').onclick=()=>action('handoff',{line:$('to').value.trim()})
 $('refresh').onclick=load
 $('drawer-close').onclick=()=>$('drawer').classList.remove('open')
-load().then(loadMetrics)
+load().then(()=>{loadMetrics();loadLive()})
 </script>
 </body></html>

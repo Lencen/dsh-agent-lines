@@ -43,6 +43,9 @@ test('board server actions require token and write to the store', async () => {
   const pending = store.send({ agentId: 'agent-deepseek', fromLine: 'writer', to: 'manager', text: '请审批', kind: 'task', requireApproval: true })
   const { server, url } = await startBoardServer({ dir, host: '127.0.0.1', port: 0, db, token: 'tkn', agentId: 'agent-deepseek', from: 'manager' })
   try {
+    const live = await fetch(new URL('/api/live', url))
+    assert.equal(live.status, 200)
+    assert.ok((await live.json()).counts.states.length >= 1)
     const denied = await fetch(new URL('/api/actions/send', url), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to: 'writer', text: 'x' }) })
     assert.equal(denied.status, 403)
     const sent = await fetch(new URL('/api/actions/send', url), { method: 'POST', headers: { 'content-type': 'application/json', 'x-board-token': 'tkn' }, body: JSON.stringify({ to: 'writer', text: 'hi' }) })
