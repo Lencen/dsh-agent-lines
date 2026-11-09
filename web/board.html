@@ -50,7 +50,6 @@ async function loadMetrics(){
   try{const res=await fetch('/api/team-metrics',{cache:'no-store'});if(!res.ok)return;const m=await res.json();
     if(m.tasks?.manager){$('task-total').textContent=m.tasks.manager.total??'-'}
     if(m.sessions){$('sessions').textContent=(m.sessions.lines??'-')+' / '+(m.sessions.officialMembers??'-')}
-    if(m.messages){$('messages').textContent=m.messages.total??'-'}
     if(m.tokens){$('tokens').textContent='token 当前值：'+m.tokens.total}
   }catch{}
 }
@@ -90,7 +89,9 @@ $('send').onclick=()=>action('send',{to:$('to').value.trim(),text:$('text').valu
 $('approve').onclick=()=>action('approve',{messageId:$('msgid').value.trim()})
 $('reject').onclick=()=>action('reject',{messageId:$('msgid').value.trim()})
 $('handoff').onclick=()=>action('handoff',{line:$('to').value.trim()})
-$('refresh').onclick=load
+async function refreshAll(){await load();await loadMetrics();await loadLive()}
+$('refresh').onclick=refreshAll
+setInterval(loadLive,5000)
 $('drawer-close').onclick=()=>$('drawer').classList.remove('open')
 load().then(()=>{loadMetrics();loadLive()})
 </script>
