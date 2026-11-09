@@ -2,6 +2,12 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.6.5 (2026-11-09)
+
+- Web 看板增加负责人本地操作：发消息、批准/拒绝 pending、handoff。
+- 操作需 x-board-token；默认仍只绑 127.0.0.1；无 token 时只读。
+- 不做建队策略硬拦截；硬限制仍等官方 API。
+
 ## 0.6.4 (2026-11-09)
 
 - 新增内置只读 Web 看板：dsh-agent-lines board。

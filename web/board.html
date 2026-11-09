@@ -32,6 +32,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:6px 4px;
   <section class="card span-4"><div class="k">消息 / Token</div><div class="v" id="messages">-</div><div class="muted" id="tokens">-</div></section>
   <section class="card span-6"><div class="k">组织 / 线状态</div><div id="lines" class="empty">加载中…</div></section>
   <section class="card span-6"><div class="k">任务</div><div id="tasks" class="empty">加载中…</div></section>
+  <section class="card span-12"><div class="k">负责人操作（0.6.5，本地 token）</div><div class="muted" style="margin-bottom:8px">只写本机 lines.db；请求头 x-board-token；不开放公网。</div><input id="token" placeholder="board token（启动日志）" style="max-width:420px"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><input id="to" placeholder="to line" style="width:140px"><input id="text" placeholder="消息正文" style="flex:1;min-width:220px"><button id="send">发送</button></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><input id="msgid" placeholder="pending message id" style="flex:1;min-width:220px"><button id="approve">批准</button><button id="reject">拒绝</button><button id="handoff">handoff</button></div><div id="action-result" class="muted" style="margin-top:8px"></div></section>
   <section class="card span-12"><div class="k">说明</div><div class="muted">只读快照；官方内部子 agent 私聊不暴露；任务无时间字段与每任务 token，不伪造趋势。点击线查看部门视图。</div></section>
 </main>
 <div id="drawer"><div class="panel"><div style="display:flex;justify-content:space-between;align-items:center"><b id="drawer-title">部门视图</b><button id="drawer-close">关闭</button></div><div id="drawer-body" class="empty" style="margin-top:12px">加载中…</div></div></div>
@@ -74,6 +75,16 @@ async function openDept(line){
     +'<h3 style="font-size:14px;margin:14px 0 6px">成员</h3>'+(members.length?'<div>'+members.map(m=>'<span class="badge">'+esc(m.name)+' · '+esc(m.role)+'</span>').join(' ')+'</div>':'<div class="empty">无成员</div>')
     +'<h3 style="font-size:14px;margin:14px 0 6px">任务</h3>'+(tasks.length?'<table><thead><tr><th>任务</th><th>状态</th><th>parent</th></tr></thead><tbody>'+tasks.map(t=>'<tr><td>'+esc(t.subject||t.id)+'</td><td>'+esc(t.status)+'</td><td>'+esc(t.parentTaskId||'-')+'</td></tr>').join('')+'</tbody></table>':'<div class="empty">无任务</div>')
 }
+async function action(path, body){
+  const token=$('token').value.trim(); if(!token){$('action-result').textContent='请先填 board token';return}
+  const res=await fetch('/api/actions/'+path,{method:'POST',headers:{'content-type':'application/json','x-board-token':token},body:JSON.stringify(body)})
+  const data=await res.json().catch(()=>({}));$('action-result').textContent=res.ok?('OK '+JSON.stringify(data)):('失败 '+JSON.stringify(data))
+  if(res.ok) await load(), await loadMetrics()
+}
+$('send').onclick=()=>action('send',{to:$('to').value.trim(),text:$('text').value.trim(),kind:'info'})
+$('approve').onclick=()=>action('approve',{messageId:$('msgid').value.trim()})
+$('reject').onclick=()=>action('reject',{messageId:$('msgid').value.trim()})
+$('handoff').onclick=()=>action('handoff',{line:$('to').value.trim()})
 $('refresh').onclick=load
 $('drawer-close').onclick=()=>$('drawer').classList.remove('open')
 load().then(loadMetrics)
