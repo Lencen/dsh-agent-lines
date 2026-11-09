@@ -36,7 +36,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.3.5.tgz
+    bash install.sh ./dsh-agent-lines-0.3.6.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -137,7 +137,10 @@ Tools:
 | `line_status` | Read-only: current Session binding, manager Session live/persisted, lines, repair command; visible even when unbound |
 | `line_claim_manager` | Bind this live root Session as manager; requires `allowClaim: true` and `confirm: "bind-manager"`; global, no shell needed |
 | `line_list` | List lines, status, unread counts, current line and role |
-| `line_create` | Manager only: create a DSH Session in the manager workspace (or a named existing workspace) and register it as a line; same label is idempotent |
+| `line_create` | Manager only: create a line; same label is idempotent; replace:true swaps the label to a fresh Session |
+| `line_retire` | Manager only: soft-retire; reject new sends, keep Session and history |
+| `line_rebind` | Manager only: atomically switch a line to a new live Session, optionally migrating backlog |
+| `line_rename` | Manager only: rename the sidebar title and persist it in lines.db |
 | `line_move_workspace` | Manager only: attach an existing line Session to a workspace whose path exactly matches the Session cwd |
 | `line_send` | Send to `line` or `agent#line`; optional `idempotencyKey`, `replyTo`, `noReply`, `forceDistinct`, `ttlMs` |
 | `line_inbox` | Read delivered messages for the current line |
@@ -146,6 +149,17 @@ Tools:
 Line tools other than `line_status` and `line_claim_manager` are registered only on Sessions bound to a line. Both control tools are global: `line_status` is read-only, and `line_claim_manager` is root-only and gated by `allowClaim`.
 
 `line_create` creates an ordinary DSH Session in the manager workspace (or in the manager cwd when no workspace exists). It does **not** create a separate OS process, profile, or port; all lines in that call share the DSH process. It also does not transfer an existing Session.
+
+### Replacing a line when context is full
+
+A line does not inherit the old Session context. Recommended flow:
+
+1. Have the old line write a handoff file (line_handoff is available from 0.3.7);
+2. The manager calls `line_create({ label, replace: true, force: true, reason: "context full" })`;
+3. The plugin creates a clean Session, atomically swaps the same label, and marks the old Session retired but keeps it;
+4. queued/claimed messages migrate to the new line; delivered/acked stay on the old Session and are never re-delivered.
+
+With `migrate: "none"`, a non-empty queue returns `LINE_BACKLOG_NOT_EMPTY` instead of silently switching.
 
 Created lines are recorded with `created_by` and restored by the manager on process startup. line_create uses the manager's workspace (workspaceId, so DSH attaches the Session) when one exists; otherwise it falls back to the manager cwd and the line is ungrouped. Pass `workspace` (existing path or id) to create in another workspace. A line whose Session was never materialized may fail on first delivery with `session/not-found`; send it a task (or recreate it) to persist the Session.
 

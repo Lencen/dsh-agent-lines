@@ -98,6 +98,20 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
 
 `line_move_workspace({ line, workspace })` attaches an existing line Session to an existing workspace. DSH's `attachSession` validates that the Session's stored cwd resolves exactly to the workspace path; a different directory fails with `WORKSPACE_ATTACH_FAILED`. It does not move a Session between different directories. If Session creation succeeds but registration fails, the error carries `detail.sessionId` and the Session is not deleted automatically.
 
+## Line lifecycle (0.3.6)
+
+    line_retire({ line, reason? })
+    line_rebind({ line, sessionId, migrate?: "queued" | "none", reason? })
+    line_create({ label, replace: true, force?, migrate?, title?, reason? })
+    line_rename({ line, title })
+
+- retired: line_send returns LINE_RETIRED; the Session and history are kept.
+- rebind: atomically switches lines.session_id and increments generation; the old Session is never deleted.
+- migrate=queued: queued/claimed messages move to the new Session; delivered/acked are never re-delivered.
+- migrate=none: returns LINE_BACKLOG_NOT_EMPTY if the backlog is non-empty.
+- replace: creates a fresh Session for the same label and rebinds; an active line requires force + reason.
+- line_events records title/retire/rebind audit; titles survive restarts.
+
 ## Echo and reply depth
 
 - `rootMessageId` groups a reply chain; a root message has null.
