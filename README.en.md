@@ -23,6 +23,16 @@ Use it when:
 - You want one lead agent to decompose work, create the team, track progress, collect results, and report back.
 
 
+## Agent Teams read-only integration (0.5.0)
+
+The user only sends a task to the manager. The manager automatically reads official Agent Teams tasks/members, maps teammate names to lines; no user export, no mapping config, no plugin buttons.
+
+Precondition: the manager line must also be the Agent Teams Lead/member; otherwise unavailable, never fall back to user export.
+
+Read-only: no task writes, no lines.db writes, no manager turn; L2 is not approved.
+
+See [docs/en/AGENT-TEAMS.md](docs/en/AGENT-TEAMS.md).
+
 ## Any team type, not just development
 
 The plugin does not limit team types. It is "one manager + several long-lived members".
@@ -179,6 +189,7 @@ Tools:
 | `line_handoff` | Manager only: structured handoff snapshot (JSON/Markdown), no model call |
 | `line_observe` | Manager only: read-only cross-line feed with kind/approval state; no prompt injection, no state change |
 | `line_manager_ack` | Manager only: approve/reject a pending_approval task |
+| `line_team_board` | Manager only: read-only fused board; auto-reads Agent Teams tasks/members + lines; no user export/config |
 | `line_retire` | Manager only: soft-retire; reject new sends, keep Session and history |
 | `line_rebind` | Manager only: atomically switch a line to a new live Session, optionally migrating backlog |
 | `line_rename` | Manager only: rename the sidebar title and persist it in lines.db |

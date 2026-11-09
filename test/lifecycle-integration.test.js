@@ -148,3 +148,35 @@ test('worker task waits for manager approval', async () => {
     assert.equal(after.messages[0].state, 'queued')
   } finally { h.cleanup() }
 })
+test('line_team_board auto-reads Agent Teams and maps owner by line label', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const created = await h.tools.get('line_create').execute({ label: 'writer', role: 'writer', bootstrap: false }, exec(h.manager))
+    const originalGet = h.ctx.get
+    h.ctx.get = (name, strict) => name === 'agentTeams' ? {
+      tryMembership: () => ({ role: 'lead' }),
+      listMembers: () => [{ name: 'manager', role: 'lead', status: 'running' }, { name: 'writer', role: 'teammate', status: 'running' }],
+      listTasks: () => [{ id: 'task-1', revision: 1, subject: 'ch1', description: '', status: 'pending', blockedBy: [], writeScopes: [], ownerName: 'writer', ready: true, writeScopeWarnings: [] }],
+    } : originalGet(name, strict)
+    const board = await h.tools.get('line_team_board').execute({}, exec(h.manager))
+    assert.equal(board.available, true)
+    assert.equal(board.tasks[0].ownerName, 'writer')
+    assert.equal(board.tasks[0].ownerLine, 'writer')
+    assert.equal(board.tasks[0].staleOwner, false)
+    assert.ok(board.lines.some(line => line.label === 'writer' && line.sessionId === created.sessionId))
+    const worker = h.agents.get(created.sessionId)
+    await assert.rejects(() => h.tools.get('line_team_board').execute({}, exec(worker)), error => error.code === 'LINE_CREATE_FORBIDDEN')
+  } finally { h.cleanup() }
+})
+
+test('line_team_board reports unavailable without Agent Teams service', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const board = await h.tools.get('line_team_board').execute({}, exec(h.manager))
+    assert.equal(board.available, false)
+    assert.match(board.reason, /not mounted/)
+    assert.deepEqual(board.tasks, [])
+  } finally { h.cleanup() }
+})

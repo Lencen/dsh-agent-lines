@@ -23,6 +23,16 @@ DSH 的 super agent 平替插件。
 - 你希望一个负责人 agent 自己拆任务、建团队、追进度、收结果，最后向你汇报。
 
 
+## 与官方 Agent Teams 融合（只读，0.5.0）
+
+用户只给 manager 发任务。manager 自动读官方 Agent Teams 任务和成员，按 teammate name 自动映射 line；不要求用户导出任务、不要求配置映射、不要求点插件按钮。
+
+前提：manager line 必须同时是 Agent Teams Lead 或成员；否则显示不可用，不降级到用户导出。
+
+只读：不写任务、不写 lines.db、不触发管理线 turn；L2 双向未批准。
+
+详见 [docs/AGENT-TEAMS.md](docs/AGENT-TEAMS.md)。
+
 ## 团队类型不限于开发
 
 插件不限定团队类型。本质是“一个负责人 + 若干长期成员”的协作方式。
@@ -200,6 +210,7 @@ level 是活跃度代理（low/medium/high），不是上下文使用率百分�
 | `line_handoff` | 仅管理线：生成结构化交接单（JSON/Markdown），不调模型 |
 | `line_observe` | 仅管理线：只读跨线消息 feed；显示 kind/审批状态，不注入 prompt、不改状态 |
 | `line_manager_ack` | 仅管理线：对 pending_approval 的 task 做 approve/reject |
+| `line_team_board` | 仅管理线：只读融合看板；自动读 Agent Teams 任务/成员 + lines，无用户导出/配置 |
 | `line_retire` | 仅管理线：软下线；拒绝新发送，保留 Session/历史 |
 | `line_rebind` | 仅管理线：把线原子切到新的 live Session，可迁移积压 |
 | `line_rename` | 仅管理线：改侧栏标题，持久化到 lines.db |
