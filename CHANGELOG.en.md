@@ -2,6 +2,12 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.6.4 (2026-11-09)
+
+- Add built-in read-only web board: dsh-agent-lines board.
+- Defaults to 127.0.0.1:4090; reads team-board.json / team-board.<line>.json.
+- Org/task view and department drawer; no write API; not public by default.
+
 ## 0.6.3 (2026-11-09)
 
 - Add line_metrics: manager-only read-only data board.

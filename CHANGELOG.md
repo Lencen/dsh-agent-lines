@@ -2,6 +2,12 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.6.4 (2026-11-09)
+
+- 新增内置只读 Web 看板：dsh-agent-lines board。
+- 默认 127.0.0.1:4090，读取 team-board.json / team-board.<line>.json。
+- 组织树/任务/部门抽屉；无写接口；不自动公网。
+
 ## 0.6.3 (2026-11-09)
 
 - 新增 line_metrics：负责人只读数据看板。
