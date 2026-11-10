@@ -23,16 +23,15 @@ const count = (re) => (html.match(re) || []).length
 const checks = []
 const check = (name, pass, detail) => checks.push({ name, pass, detail: detail ?? '' })
 
-check('B1 四卡结构 (tree/main/side/full)', count(/class="card /g) >= 4, 'cards=' + count(/class="card /g))
-check('B2 12 列 grid 布局', /display:grid/.test(html) && /grid-template-columns:\s*repeat\(12/.test(html))
-check('B3 同行等高 (align-items:stretch)', /align-items:stretch/.test(html))
-const slots = ['slot-title', 'slot-status', 'slot-body', 'slot-actions']
-check('B4 固定信息槽 (title/status/body/actions)', slots.every(s => html.includes(s)), slots.filter(s => !html.includes(s)).join(','))
-check('B5 data-level 层级标注', count(/data-level/g) >= 4, 'count=' + count(/data-level/g))
-check('B6 卡内滚动 (overflow:auto)', /overflow:auto/.test(html))
-check('B7 空态/离线/stale 占位', /stale|offline|empty/i.test(html))
+check('B1 五视图 (overview/org/tasks/data/cost)', count(/data-view="/g) >= 5, 'views=' + count(/data-view="/g))
+check('B2 内容+详情双列 grid', /grid-template-columns:\s*minmax\(0,\s*1fr\)\s+420px/.test(html))
+check('B3 详情停靠 (fixed + 内部滚动)', /aside\.drawer\{[^}]*position:fixed/.test(html) && /#drawer-body\{[^}]*overflow-y:auto/.test(html))
+check('B4 固定信息槽 (drawer-title/body)', html.includes('drawer-title') && html.includes('drawer-body'))
+check('B5 团队目标/决策/任务/数据存在', /团队目标|待决策/.test(html) && /任务/.test(html) && /消耗/.test(html))
+check('B6 卡内滚动 (overflow-y:auto)', /overflow-y:auto/.test(html))
+check('B7 空态/不可得占位', /暂无|不可得|未采集/.test(html))
 check('B8 只读边界显式标注', count(/只读/g) >= 2, 'count=' + count(/只读/g))
-check('B9 无写操作控件 (无 input/actions API)', !/<input/i.test(html) && !/api\/actions/.test(html))
+check('B9 无写操作控件 (允许刷新 checkbox)', !/api\/actions/.test(html) && !/<input[^>]+type="text"/i.test(html))
 
 const failures = checks.filter(c => !c.pass)
 if (json) console.log(JSON.stringify({ ok: failures.length === 0, file: target, checks }, null, 1))

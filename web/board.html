@@ -1,124 +1,92 @@
 <!doctype html>
 <html lang="zh-CN" data-theme="light">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>dsh-agent-lines · 团队看板</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dsh-agent-lines · 团队看板</title>
 <style>
-:root{--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--r:10px;--brand:#0B6E82;--text:#1f2328;--muted:#57606a;--dim:#6e7781;--ok:#237A34;--warn:#8A6300;--bad:#C02626;--bg:#f6f8fa;--panel:#fff;--bd:#e4e7ec;--chip:#f1f3f5}
-html[data-theme=dark]{--brand:#22D3EE;--text:#e6edf3;--muted:#9aa4b2;--dim:#8b949e;--ok:#34D399;--warn:#FBBF24;--bad:#F87171;--bg:#0d1117;--panel:#161b22;--bd:#30363d;--chip:#21262d}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
-.topbar{display:flex;align-items:center;gap:var(--s4);padding:var(--s3) var(--s5);border-bottom:1px solid var(--bd);background:var(--panel);position:sticky;top:0;z-index:9;flex-wrap:wrap}
-.brand{font-weight:600}.badge{font-size:12px;padding:2px var(--s2);border-radius:999px;background:var(--chip);border:1px solid var(--bd);color:var(--muted)}
-.crumb{font-size:13px;color:var(--muted)}.tabs{display:flex;gap:var(--s1);margin-left:auto;flex-wrap:wrap}
-.tab{font-size:13px;padding:var(--s1) var(--s3);border:1px solid var(--bd);border-radius:999px;background:var(--panel);cursor:pointer;color:var(--muted)}.tab[aria-selected=true]{background:var(--chip);color:var(--text);border-color:var(--brand)}
-.wrap{max-width:1680px;margin:0 auto;padding:var(--s5)}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--s4);align-items:stretch}
-.card{background:var(--panel);border:1px solid var(--bd);border-radius:var(--r);padding:var(--s5);min-width:0;height:100%;display:flex;flex-direction:column;gap:0}
-.slot-title{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);min-height:30px}.slot-title h2{margin:0;font-size:16px}
-.slot-status{font-size:12px;padding:1px var(--s2);border-radius:999px;background:var(--chip);border:1px solid var(--bd);color:var(--muted);white-space:nowrap}
-.slot-meta{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);min-height:20px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--bd);padding-bottom:var(--s2);margin-bottom:var(--s2)}
-.slot-body{flex:1;min-height:0;overflow:auto}.slot-actions{min-height:26px;display:flex;align-items:center;gap:var(--s2);border-top:1px solid var(--bd);padding-top:var(--s2);margin-top:var(--s2);flex-wrap:wrap}
-.slot-actions button{font-size:12px;padding:3px var(--s2);border:1px solid var(--bd);border-radius:6px;background:var(--panel);color:var(--muted)}
-.tree{grid-column:span 3}.main{grid-column:span 6}.side{grid-column:span 3}.full{grid-column:span 12}
-@media(max-width:1279px){.tree,.main,.side{grid-column:span 12}}
-.tree ul{list-style:none;margin:0;padding-left:var(--s4)}.tree>ul{padding-left:0}.tree li{margin:2px 0}
-.node{display:flex;align-items:center;gap:var(--s2);padding:2px var(--s2);border-radius:6px;cursor:pointer}.node:hover{background:var(--chip)}.node[aria-selected=true]{background:var(--chip);box-shadow:inset 2px 0 0 var(--brand)}
-.node .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.node .n{font-size:12px;color:var(--muted)}.lvl{font-size:12px;color:var(--dim)}
-.sub,.note{font-size:13px;color:var(--muted)}.empty{border:1px dashed var(--bd);border-radius:var(--r);padding:var(--s6) var(--s4);text-align:center;color:var(--muted)}.empty h3{margin:0 0 var(--s2);font-size:16px;color:var(--text)}
-.kv{display:flex;justify-content:space-between;gap:var(--s3);font-size:13px;padding:2px 0}.kv>span:first-child{color:var(--muted)}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:var(--s2) var(--s3);border-bottom:1px solid var(--bd)}th{color:var(--muted);font-weight:500}
-.pill{font-size:12px;padding:1px var(--s2);border-radius:999px;border:1px solid var(--bd);color:var(--muted);background:var(--chip);white-space:nowrap}.pill.ok{color:var(--ok)}.pill.warn{color:var(--warn)}.pill.bad{color:var(--bad)}
-.row{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;margin-bottom:var(--s2)}input,select{font:inherit;font-size:13px;padding:3px var(--s2);border:1px solid var(--bd);border-radius:6px;background:var(--panel);color:var(--text)}input[type=text]{flex:1;min-width:100px}
-</style></head>
-<body>
-<div class="topbar"><span class="brand">dsh-agent-lines · 团队看板</span><span class="badge">0.6.6 · UIUX 验收版</span><span class="badge" id="src">数据：加载中</span><span class="crumb" id="crumb">团队 &gt; 负责人 &gt; 总览</span>
-<div class="tabs" role="tablist"><button class="tab" data-view="overview" aria-selected="true">总览</button><button class="tab" data-view="tasks" aria-selected="false">任务</button><button class="tab" data-view="dept" aria-selected="false">部门</button><button class="tab" data-view="metrics" aria-selected="false">数据</button></div></div>
-<div class="wrap"><div class="grid">
-<section class="card tree" data-level="root"><div class="slot-title"><h2>组织树</h2><span class="slot-status">只读</span></div><div class="slot-meta"><span class="slot-owner">负责人会话 → 角色线 → 官方团队</span><span class="slot-time" id="treeTime">—</span></div><div class="slot-body"><div class="sub">只到三级；成员进右侧详情。</div><ul id="tree"></ul></div><div class="slot-actions"><span class="slot-status">只读</span><span class="note">看板不提供操作</span></div></section>
-<section class="card main" data-level="root"><div class="slot-title"><h2 id="mainTitle">总览</h2><span class="slot-status">只读</span></div><div class="slot-meta"><span class="slot-owner" id="mainOwner">负责人</span><span class="slot-time" id="mainTime">—</span></div><div class="slot-body" id="mainBody"><div class="empty"><h3>加载中</h3><p>读取 team-board.json</p></div></div><div class="slot-actions"><span class="slot-status">只读</span><span class="note">看板不提供操作</span></div></section>
-<aside class="card side" data-level="root"><div class="slot-title"><h2>详情 / 收件箱</h2><span class="slot-status">只读</span></div><div class="slot-meta"><span class="slot-owner" id="sideOwner">—</span><span class="slot-time" id="sideTime">—</span></div><div class="slot-body" id="sideBody"><div class="empty"><h3>未选择</h3><p>点击组织树中的线</p></div></div><div class="slot-actions"><span class="slot-status">只读</span><span class="note">看板不提供操作</span></div></aside>
-<section class="card full" data-level="root"><div class="slot-title"><h2 id="fullTitle">数据</h2><span class="slot-status">只读</span></div><div class="slot-meta"><span class="slot-owner" id="fullOwner">—</span><span class="slot-time" id="fullTime">—</span></div><div class="slot-body" id="fullBody"></div><div class="slot-actions"><span class="slot-status">只读</span><span class="note">看板不提供操作</span></div></section>
-</div></div>
+:root{--bg:#f6f8fa;--surface:#fff;--fg:#1f2328;--muted:#57606a;--border:#d0d7de;--badge:#eaeef2;--accent:#0969da;--ok:#1a7f37;--warn:#9a6700;--danger:#cf222e;--chrome:142px}
+html[data-theme="dark"]{--bg:#0d1117;--surface:#161b22;--fg:#e6edf3;--muted:#8b949e;--border:#30363d;--badge:#21262d;--accent:#4493f8;--ok:#3fb950;--warn:#d29922;--danger:#f85149}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;padding-top:var(--chrome)}
+#chrome{position:sticky;top:0;z-index:40;background:var(--surface);border-bottom:1px solid var(--border)}
+.topbar{display:flex;align-items:center;gap:12px;padding:8px 20px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.brand{font-weight:700}.grow{flex:1}.muted{color:var(--muted)}.badge{background:var(--badge);border:1px solid var(--border);border-radius:999px;padding:0 8px;font-size:12px;color:var(--muted)}
+.range,select,button{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 8px;cursor:pointer}
+.tabs{display:flex;gap:20px;padding:0 20px;overflow-x:auto}.tab{background:transparent;border:0;border-bottom:2px solid transparent;border-radius:0;padding:10px 2px;color:var(--muted)}.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.toolbar{display:flex;align-items:center;gap:12px;padding:8px 20px;color:var(--muted);font-size:13px;flex-wrap:wrap}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:16px;padding:16px 20px 24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
+.card-title{font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}.kpi{border:1px solid var(--border);border-radius:8px;padding:10px}.kpi span{display:block;color:var(--muted);font-size:12px}.kpi b{font-size:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.line{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;margin-top:8px;cursor:pointer}.line:hover{background:var(--badge)}
+.status{display:inline-block;border-radius:999px;padding:0 8px;font-size:12px;border:1px solid var(--border);color:var(--muted)}.status.ok{color:var(--ok);border-color:var(--ok)}.status.warn{color:var(--warn);border-color:var(--warn)}
+.tree ul{list-style:none;margin:0;padding:0}.tree .children{margin-left:28px;padding-left:6px;border-left:1px dashed var(--border)}.tree .row{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer}.tree .row:hover{background:var(--badge)}
+aside.drawer{position:fixed;top:var(--chrome);right:0;width:420px;height:calc(100vh - var(--chrome));background:var(--surface);border-left:1px solid var(--border);border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;flex-direction:column;z-index:35;overflow:hidden}
+aside.drawer>.card{border:0;border-radius:0;margin:0;display:flex;flex-direction:column;min-height:0;flex:1;padding:16px}
+#drawer-title{font-weight:600;padding:0 0 10px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:2}
+#drawer-body{overflow-y:auto;overscroll-behavior:contain;padding-top:10px;flex:1}
+.drawer-close{position:absolute;right:14px;top:14px;z-index:3;border:0;background:var(--surface);font-size:20px;color:var(--muted)}
+.group h4{margin:12px 0 4px;font-size:14px}.group h4:first-child{margin-top:0}.group .section{border:1px solid var(--border);border-radius:6px;padding:8px 10px}
+.kv2{display:grid;grid-template-columns:88px 1fr;gap:4px 10px}.kv2 .k{color:var(--muted)}.kv2 .v{font-weight:600}
+.hidden{display:none!important}.decision{border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chart{width:100%;height:260px}.chart-sm{width:100%;height:180px}
+.footer{padding:14px 20px;color:var(--muted);font-size:12px}
+@media(max-width:1023px){.layout{grid-template-columns:1fr;padding:12px}aside.drawer{top:auto;left:0;right:0;bottom:0;width:auto;height:70vh;border-radius:14px 14px 0 0;border-left:0;transform:translateY(100%);transition:transform .2s}aside.drawer.open{transform:none}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}#last-refresh{display:none}}
+</style>
+</head>
+<body data-view="overview">
+<div id="chrome">
+<div class="topbar"><span class="brand">dsh-agent-lines · 团队看板</span><span class="badge">只读</span><span class="badge">0.11.0</span><span class="muted" id="data-time">数据 —</span><span class="grow"></span><button class="range" id="refresh-btn">刷新</button><label class="muted"><input type="checkbox" id="auto-toggle" checked> 自动刷新</label><select id="interval"><option value="5000">5 秒</option><option value="10000" selected>10 秒</option><option value="30000">30 秒</option><option value="60000">60 秒</option><option value="300000">5 分钟</option></select><span class="muted" id="last-refresh">上次刷新 —</span><button class="range" id="theme">深色</button></div>
+<nav class="tabs" role="tablist"><button class="tab" data-view="overview" aria-selected="true">总览</button><button class="tab" data-view="org">组织</button><button class="tab" data-view="tasks">任务</button><button class="tab" data-view="data">数据</button><button class="tab" data-view="cost">消耗</button></nav>
+<div class="toolbar"><span id="crumb">总览</span><span class="grow"></span><span class="muted" id="err"></span></div>
+</div>
+<main><div class="layout"><div id="main"></div><aside class="drawer" id="drawer"><button class="drawer-close" id="drawer-close">×</button><div class="card"><div id="drawer-title">详情</div><div id="drawer-body"><div class="muted">加载中…</div></div></div></aside></div></main>
+<footer class="footer">只读 · 数据来自 lines.db / 官方 Agent Teams 投影 / 团队工作区（TEAM.md、charters、decisions）</footer>
+<script src="/vendor/echarts.min.js"></script>
 <script>
-const $=id=>document.getElementById(id)
-const S={board:null,metrics:null,lines:[],line:null,dept:null,view:'overview',expanded:{},busy:false,error:null}
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
-const val=(v,d='—')=>v===null||v===undefined||v===''?d:v
-const pill=(s,cls='')=>'<span class="pill '+cls+'">'+esc(val(s))+'</span>'
-const empty=(h,p)=>'<div class="empty"><h3>'+esc(h)+'</h3><p>'+esc(p)+'</p></div>'
-const get=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(u+' '+r.status);return r.json()}
-const count=t=>{const s={total:0,done:0,inProgress:0,blocked:0};(t||[]).forEach(x=>{s.total++;if(x.status==='completed')s.done++;else if(x.status==='in_progress')s.inProgress++;if(x.status==='pending'&&Array.isArray(x.blockedBy)&&x.blockedBy.length)s.blocked++});return s}
-const nodeSum=l=>l?.deptSummary||{total:0,done:0,inProgress:0,blocked:0,stale:0}
-async function load(){
-  S.busy=true;S.error=null;draw()
-  try{
-    S.board=await get('/api/team-board');S.lines=Array.isArray(S.board.lines)?S.board.lines:[]
-    S.line=S.line||S.board?.manager?.line||S.lines[0]?.label||'manager'
-    try{S.dept=await get('/api/team-board/'+encodeURIComponent(S.line))}catch{S.dept=null}
-    try{S.metrics=await get('/api/team-metrics')}catch{S.metrics=null}
-  }catch(e){S.error=String(e.message||e)}finally{S.busy=false;draw()}
-}
-function tree(){
-  const root=S.board?.manager?.line||'manager';const rc=count(S.board?.tasks)
-  let h='<li><div class="node" data-id="'+esc(root)+'" aria-selected="'+String(S.line===root)+'"><span>▾</span><span class="nm">'+esc(root)+'</span><span class="lvl">负责人</span><span class="n">'+rc.total+'</span></div><ul>'
-  S.lines.filter(l=>l.label!==root).forEach(l=>{const c=nodeSum(l);const open=S.expanded[l.label]!==false;h+='<li><div class="node" data-id="'+esc(l.label)+'" aria-selected="'+String(S.line===l.label)+'"><span data-toggle="'+esc(l.label)+'">'+(l.officialTeamAvailable?(open?'▾':'▸'):'·')+'</span><span class="nm">'+esc(l.label)+'</span><span class="lvl">角色线</span><span class="n">'+val(c.total,0)+'</span></div>';if(l.officialTeamAvailable&&open)h+='<ul><li><div class="node" data-id="'+esc(l.label)+'" aria-selected="'+String(S.line===l.label)+'"><span>·</span><span class="nm">'+esc(l.label)+' 官方团队</span><span class="lvl">团队</span><span class="n">'+val(c.total,0)+'</span></div></li></ul>';h+='</li>'})
-  $('tree').innerHTML=h+'</ul></li>'
-  $('tree').querySelectorAll('[data-toggle]').forEach(e=>e.onclick=ev=>{ev.stopPropagation();const id=e.dataset.toggle;S.expanded[id]=S.expanded[id]===false;tree()})
-  $('tree').querySelectorAll('.node').forEach(e=>e.onclick=async()=>{S.line=e.dataset.id;try{S.dept=await get('/api/team-board/'+encodeURIComponent(S.line))}catch{S.dept=null}draw()})
-  $('treeTime').textContent=S.board?.generatedAt?new Date(S.board.generatedAt).toLocaleString():'—'
-}
-function overview(){
-  const c=count(S.board?.tasks);let h='<div class="row">'+pill('任务 '+c.total)+pill('完成 '+c.done,'ok')+pill('进行 '+c.inProgress,'warn')+pill('阻塞 '+c.blocked,'bad')+'</div>'
-  h+='<h3 style="font-size:14px;margin:12px 0 6px">各线摘要（分别计数，不合并任务板）</h3><table><thead><tr><th>线</th><th>任务</th><th>完成</th><th>进行</th><th>阻塞</th><th>官方团队</th></tr></thead><tbody>'
-  S.lines.forEach(l=>{const d=nodeSum(l);h+='<tr><td>'+esc(l.label)+'</td><td>'+val(d.total,0)+'</td><td>'+val(d.done,0)+'</td><td>'+val(d.inProgress,0)+'</td><td>'+val(d.blocked,0)+'</td><td>'+(l.officialTeamAvailable?'是':'否')+'</td></tr>'})
-  $('mainBody').innerHTML=h+'</tbody></table>'
-}
-function tasks(){
-  const rows=S.line===(S.board?.manager?.line||'manager')?(S.board?.tasks||[]):(S.dept?.tasks||[])
-  if(!rows.length){$('mainBody').innerHTML=empty('暂无任务','该层没有返回任务；deleted 不返回。');return}
-  let h='<table><thead><tr><th>任务</th><th>状态</th><th>负责人</th><th>parent</th></tr></thead><tbody>'
-  rows.forEach(t=>h+='<tr><td>'+esc(t.subject||t.id)+'</td><td>'+pill(t.status)+(t.staleOwner?pill('stale','bad'):'')+'</td><td>'+esc(val(t.ownerName||t.ownerLine))+'</td><td>'+esc(val(t.parentTaskId))+'</td></tr>')
-  $('mainBody').innerHTML=h+'</tbody></table>'
-}
-function dept(){
-  if(!S.dept){$('mainBody').innerHTML=empty('该线未接官方团队','没有部门快照。');return}
-  const m=S.dept.officialTeam?.members||[],t=S.dept.tasks||[],a=S.dept.subteamAudit
-  let h='<div class="row">'+pill('成员 '+m.length)+pill('任务 '+t.length)+(a?pill('overLimit '+a.overLimit,a.overLimit?'bad':'ok'):'')+'</div>'
-  h+='<h3 style="font-size:14px;margin:12px 0 6px">成员</h3>'+(m.length?'<div class="row">'+m.map(x=>pill(x.name+' · '+x.role)).join('')+'</div>':empty('暂无成员','该线没有官方团队成员。'))
-  h+='<h3 style="font-size:14px;margin:12px 0 6px">任务</h3>'+(t.length?'<table><thead><tr><th>任务</th><th>状态</th><th>parent</th><th>策略</th></tr></thead><tbody>'+t.map(x=>'<tr><td>'+esc(x.subject||x.id)+'</td><td>'+pill(x.status)+'</td><td>'+esc(val(x.parentTaskId))+'</td><td>'+esc(val(x.subteamPolicy))+'</td></tr>').join('')+'</tbody></table>':empty('暂无部门任务','该线没有官方团队任务。'))
-  $('mainBody').innerHTML=h
-}
-function metrics(){
-  const m=S.metrics;if(!m){$('mainBody').innerHTML=empty('暂无数据快照','调用 line_metrics 生成 team-metrics.json。');return}
-  const b=m.tasks?.byLine||[],ls=m.lines||[]
-  let h='<div class="row">'+pill('任务 '+val(m.tasks?.manager?.total,0))+pill('线 '+val(m.sessions?.lines,0))+pill('成员 '+val(m.sessions?.officialMembers,0))+pill('消息 '+val(m.messages?.total,0))+pill('token '+val(m.tokens?.total,0))+'</div>'
-  h+='<table><thead><tr><th>线</th><th>任务</th><th>完成</th><th>进行</th><th>阻塞</th><th>token</th></tr></thead><tbody>'+b.map(x=>{const l=ls.find(y=>y.label===x.line);return '<tr><td>'+esc(x.line)+'</td><td>'+val(x.total,0)+'</td><td>'+val(x.done,0)+'</td><td>'+val(x.inProgress,0)+'</td><td>'+val(x.blocked,0)+'</td><td>'+val(l?.activity?.decodeTokens,0)+'</td></tr>'}).join('')+'</tbody></table><div class="note" style="margin-top:12px">'+esc((m.limitations||[]).join('；'))+'</div>'
-  $('mainBody').innerHTML=h
-}
-function side(){
-  const l=S.lines.find(x=>x.label===S.line);if(!l){$('sideBody').innerHTML=empty('未选择','点击组织树中的线。');return}
-  const d=nodeSum(l),m=S.dept?.officialTeam?.members||[]
-  let h='<div class="kv"><span>线</span><span>'+esc(l.label)+'</span></div><div class="kv"><span>状态</span><span>'+esc(val(l.status))+' · gen '+esc(val(l.generation))+'</span></div><div class="kv"><span>官方团队</span><span>'+(l.officialTeamAvailable?'是':'否')+'</span></div><div class="kv"><span>任务</span><span>'+val(d.total,0)+'</span></div><div class="kv"><span>策略</span><span>'+esc(val(l.subteamPolicy))+' / '+esc(val(l.maxMembers))+'</span></div><div class="kv"><span>subteamAudit</span><span>'+esc(val(S.dept?.subteamAudit?.overLimit))+'</span></div>'
-  h+='<h3 style="font-size:14px;margin:12px 0 6px">成员</h3>'+(m.length?'<div class="row">'+m.map(x=>pill(x.name)).join('')+'</div>':empty('无成员','该线没有官方团队成员。'))
-  $('sideBody').innerHTML=h
-}
-function full(){
-  const m=S.metrics
-  if(!m){$('fullBody').innerHTML=empty('暂无数据','调用 line_metrics 生成 team-metrics.json。');return}
-  const b=m.tasks?.byLine||[],ls=m.lines||[]
-  let h='<div class="row">'+pill('任务 '+val(m.tasks?.manager?.total,0))+pill('线 '+val(m.sessions?.lines,0))+pill('成员 '+val(m.sessions?.officialMembers,0))+pill('消息 '+val(m.messages?.total,0))+pill('token '+val(m.tokens?.total,0))+'</div>'
-  h+='<table><thead><tr><th>线</th><th>任务</th><th>完成</th><th>进行</th><th>阻塞</th><th>token</th></tr></thead><tbody>'+b.map(x=>{const l=ls.find(y=>y.label===x.line);return '<tr><td>'+esc(x.line)+'</td><td>'+val(x.total,0)+'</td><td>'+val(x.done,0)+'</td><td>'+val(x.inProgress,0)+'</td><td>'+val(x.blocked,0)+'</td><td>'+val(l?.activity?.decodeTokens,0)+'</td></tr>'}).join('')+'</tbody></table><div class="note" style="margin-top:12px">'+esc((m.limitations||[]).join('；'))+'</div>'
-  $('fullBody').innerHTML=h
-}
-function draw(){
-  $('src').textContent=S.error?'数据：错误':(S.busy?'数据：加载中':'数据：快照')
-  $('mainTime').textContent=S.board?.generatedAt?new Date(S.board.generatedAt).toLocaleString():'—';$('sideTime').textContent=$('mainTime').textContent;$('fullTime').textContent=$('mainTime').textContent
-  $('mainOwner').textContent=S.line||'负责人';$('sideOwner').textContent=S.line||'—';$('fullOwner').textContent=S.line||'—'
-  const labels={overview:'总览',tasks:'任务',dept:'部门',metrics:'数据'}
-  $('mainTitle').textContent=labels[S.view]+' · '+(S.line||'负责人');$('fullTitle').textContent='数据';$('crumb').textContent='团队 > '+(S.line||'负责人')+' > '+labels[S.view]
-  if(S.error){$('tree').innerHTML='';$('mainBody').innerHTML=empty('读取失败',S.error);$('sideBody').innerHTML='';$('fullBody').innerHTML='';return}
-  tree();side()
-  if(S.view==='overview')overview();else if(S.view==='tasks')tasks();else if(S.view==='dept')dept();else metrics()
-  full()
-}
-document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{S.view=t.dataset.view;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',String(x===t)));draw()})
-load()
-</script></body></html>
+(function(){
+ var state={live:null,board:null,metrics:null,view:'overview',ms:10000,auto:true,timer:null,etag:null,decision:null};
+ function $(s){return document.querySelector(s)}
+ function esc(v){return String(v==null?'':v).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+ function fmt(ts){var d=new Date(ts||Date.now());return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+ function badge(s){var t=String(s||'');var cls=(t==='active'||t==='完成'||t==='online'||t==='completed')?'ok':((t==='阻塞'||t==='hibernating'||t==='blocked')?'warn':'');return '<span class="status '+cls+'">'+esc(t)+'</span>'}
+ function setView(v){state.view=v;document.body.setAttribute('data-view',v);document.querySelectorAll('.tab[data-view]').forEach(function(t){t.setAttribute('aria-selected',String(t.getAttribute('data-view')===v))});$('#crumb').textContent={overview:'总览',org:'团队 > 组织',tasks:'团队 > 任务',data:'团队 > 数据',cost:'团队 > 消耗'}[v];render();if(v==='overview')renderGoal()}
+ function fetchLive(){return fetch('/api/live',{cache:'no-store',headers:state.etag?{'if-none-match':state.etag}:{}}).then(function(r){if(r.status===304)return null;if(!r.ok)throw new Error('live '+r.status);state.etag=r.headers.get('etag');return r.json()}).then(function(d){if(d)state.live=d})}
+ function fetchSnapshots(){return Promise.all([fetch('/api/team-board',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).catch(function(){return null}),fetch('/api/team-metrics',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).catch(function(){return null})]).then(function(a){state.board=a[0];state.metrics=a[1]})}
+ function refresh(){return Promise.all([fetchLive(),fetchSnapshots()]).then(function(){var l=state.live;if(l&&l.generatedAt)$('#data-time').textContent='数据 '+fmt(l.generatedAt);$('#last-refresh').textContent='上次刷新 刚刚';$('#err').textContent='';render();if(state.view==='overview')renderGoal()}).catch(function(e){$('#err').textContent='读取失败：'+e.message})}
+ function schedule(){clearTimeout(state.timer);if(!state.auto)return;if(document.visibilityState!=='visible')return;state.timer=setTimeout(function(){refresh().then(schedule)},state.ms)}
+ function goalHtml(){var g=(state.live&&state.live.teamGoal)||{};function v(k,m){return g[k]?esc(g[k]):('<span class="muted">'+m+'</span>')}
+  return '<div class="group"><h4>团队目标</h4><div class="section">'+v('objective','暂无整体目标')+'</div></div>'+'<div class="group"><h4>简介</h4><div class="section">'+v('summary','暂无简介')+'</div></div>'+'<div class="group"><h4>规划</h4><div class="section">'+v('plan','暂无规划')+'</div></div>'+'<div class="group"><h4>计划节奏</h4><div class="section">'+v('rhythm','暂无计划')+'</div></div>'+'<div class="group"><h4>来源</h4><div class="section"><span class="muted">'+esc(g.source||'teamRoot/TEAM.md')+'</span></div></div>'}
+ function renderGoal(){if(state.view!=='overview')return;$('#drawer-title').textContent='团队目标与计划';$('#drawer-body').innerHTML=goalHtml()}
+ function decisionDetail(d){state.decision=d;$('#drawer-title').textContent='决策：'+(d.title||d.id);var b=''+
+  '<div class="group"><h4>来源</h4><div class="section"><div class="kv2"><span class="k">类型</span><span>'+esc(d.sourceType||'沟通')+'</span><span class="k">来源</span><span>'+esc(d.sourceRef||d.source||'—')+'</span></div></div></div>'+
+  '<div class="group"><h4>背景</h4><div class="section">'+esc(d.background||'暂无背景')+'</div></div>'+
+  '<div class="group"><h4>AGENT 分析</h4><div class="section">'+esc(d.analysis||'暂无分析')+'</div></div>'+
+  '<div class="group"><h4>影响 / 效果</h4><div class="section">'+esc(d.impact||'暂无影响评估')+'</div></div>'+
+  '<div class="group"><h4>决策建议</h4><div class="section">'+esc(d.suggestion||'暂无建议')+'</div></div>'+
+  '<div class="group"><h4>处理</h4><div class="section"><button class="range" id="copy-decision">一键复制</button><span class="muted"> 两行：决策项 + 按建议处理</span></div></div>';$('#drawer-body').innerHTML=b;var cp=$('#copy-decision');if(cp)cp.onclick=function(){var NL=String.fromCharCode(10);copy('决策项：'+(d.title||d.id)+NL+'按建议处理')}}
+ function copy(t){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){toast('已复制')}).catch(function(){fallback(t)})}else fallback(t)}
+ function fallback(t){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('已复制')}catch(e){toast('复制失败')}ta.remove()}
+ function toast(m){var t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;right:20px;bottom:20px;background:#1f2328;color:#fff;padding:8px 12px;border-radius:8px;z-index:99';document.body.appendChild(t);setTimeout(function(){t.remove()},1600)}
+ function renderOverview(){var l=state.live||{};var m=(l.messages&&l.messages.byState)||[];var by={};m.forEach(function(x){by[x.state]=Number(x.count)});var count=(l.lines||[]).length;var decisions=(l.decisions||[]);var h='<div class="card"><div class="card-title">团队目标</div><div>'+esc((l.teamGoal&&l.teamGoal.objective)||'暂无整体目标')+'</div></div>';h+='<div class="kpis"><div class="kpi"><span>进行中</span><b>'+(by.delivered||by.claimed||0)+'</b></div><div class="kpi"><span>待处理</span><b>'+(by.queued||0)+'</b></div><div class="kpi"><span>失败</span><b>'+(by.failed||0)+'</b></div><div class="kpi"><span>线</span><b>'+count+'</b></div><div class="kpi"><span>消息</span><b>'+((l.messages&&l.messages.total)||0)+'</b></div><div class="kpi"><span>待决策</span><b>'+decisions.length+'</b></div></div>';h+='<div class="card"><div class="card-title">今日焦点 / 最近</div>'+(l.lines||[]).slice(0,5).map(function(x){return '<div class="line" data-line="'+esc(x.label)+'"><b>'+esc(x.title||x.label)+'</b><span class="muted">'+esc(x.label)+'</span><span class="grow"></span>'+badge(x.status)+'</div>'}).join('')+'</div>';h+='<div class="grid2"><div class="card"><div class="card-title">需要我决策</div>'+ (decisions.length?decisions.map(function(d){return '<div class="decision"><b>'+esc(d.title||d.id)+'</b><span class="badge">'+esc(d.sourceType||'决策')+'</span><span class="grow"></span><button class="range dec-view" data-id="'+esc(d.id)+'">查看</button></div>'}).join(''):'<div class="muted">暂无待决策</div>')+'</div><div class="card"><div class="card-title">最近交接</div><div class="muted">来自 taskRef 消息（如有）</div></div></div>';$('#main').innerHTML=h;document.querySelectorAll('.dec-view').forEach(function(b){b.onclick=function(){var d=(state.live.decisions||[]).filter(function(x){return x.id===b.getAttribute('data-id')})[0];if(d)decisionDetail(d)}})}
+ function renderOrg(){var l=state.live||{};var lines=l.lines||[];var charters=(l.teamWorkspace&&l.teamWorkspace.lines)||[];var h='<div class="card"><div class="card-title">组织图</div><div class="tree">';h+='<div class="row" data-line="manager"><b>manager</b><span class="muted">负责人</span><span class="grow"></span><span class="status ok">active</span></div><ul class="children">';lines.forEach(function(x){if(x.label==='manager')return;h+='<li><div class="row" data-line="'+esc(x.label)+'"><span class="status ok"></span><b>'+esc(x.title||x.label)+'</b><span class="muted">'+esc(x.label)+'</span><span class="grow"></span>'+badge(x.status)+'</div></li>'});h+='</ul></div></div>';$('#main').innerHTML=h;document.querySelectorAll('#main .row[data-line]').forEach(function(r){r.onclick=function(){var label=r.getAttribute('data-line');var info=(state.live.lines||[]).filter(function(x){return x.label===label})[0]||{label:label};var charter=((state.live.teamWorkspace||{}).lines||[]).filter(function(x){return x.label===label})[0]||{};$('#drawer-title').textContent=info.title||label;$('#drawer-body').innerHTML='<div class="group"><h4>身份</h4><div class="section"><div class="kv2"><span class="k">名称</span><span class="v">'+esc(info.title||label)+'</span><span class="k">label</span><span>'+esc(label)+'</span><span class="k">状态</span><span>'+badge(info.status)+'</span></div></div></div><div class="group"><h4>章程</h4><div class="section">'+esc(charter.status||'未采集')+' · '+esc(charter.source||('charters/'+label+'.md'))+'</div></div>'}})}
+ function renderTasks(){var tasks=(state.board&&state.board.tasks)||[];var h='<div class="card"><div class="card-title">任务</div>'+(tasks.length?tasks.map(function(t){return '<div class="line" data-task="'+esc(t.id||t.subject)+'"><b>'+esc(t.subject||t.title||t.id)+'</b>'+badge(t.status)+'<span class="muted">负责人：'+esc(t.ownerName||t.ownerLine||'—')+'</span><span class="grow"></span><span class="muted">创建：不可得</span></div>'}).join(''):'<div class="muted">暂无任务（官方投影未提供或未采集）</div>')+'</div>';$('#main').innerHTML=h;document.querySelectorAll('#main .line[data-task]').forEach(function(el){el.onclick=function(){var id=el.getAttribute('data-task');var t=tasks.filter(function(x){return (x.id||x.subject)===id})[0]||{};$('#drawer-title').textContent='任务：'+(t.subject||t.id);var rows=[['任务',t.subject||t.id],['状态',t.status||'—'],['负责人',t.ownerName||'—'],['线',t.ownerLine||'—'],['受谁管理','manager'],['创建','不可得（官方任务无时间戳）']];$('#drawer-body').innerHTML='<div class="group"><h4>任务概述</h4><div class="section"><div class="kv2">'+rows.map(function(r){return '<span class="k">'+esc(r[0])+'</span><span>'+esc(r[1])+'</span>'}).join('')+'</div></div></div>'}})}
+ function renderData(){var tasks=(state.board&&state.board.tasks)||[];var byLine={};tasks.forEach(function(t){var k=t.ownerLine||'未分配';byLine[k]=byLine[k]||{done:0,doing:0,blocked:0,overdue:0};var s=String(t.status||'');if(s==='completed'||s==='完成')byLine[k].done++;else if(s==='blocked'||s==='阻塞')byLine[k].blocked++;else byLine[k].doing++});var lines=Object.keys(byLine);var h='<div class="card"><div class="card-title">按线任务（官方投影）</div><div id="task-chart" class="chart"></div><div class="muted">任务创建/完成时间、每任务 token 官方未提供 → 不可得</div></div><div class="grid2"><div class="card"><div class="card-title">消息 / 日</div><div id="msg-chart" class="chart-sm"></div></div><div class="card"><div class="card-title">token / 日</div><div id="token-chart" class="chart-sm"></div></div></div>';$('#main').innerHTML=h;drawTaskChart(lines,byLine);drawTrend()}
+ function drawTaskChart(lines,byLine){if(typeof echarts==='undefined')return;var el=$('#task-chart');if(!el)return;var c=echarts.init(el);var defs=[['已完成','done','#1a7f37'],['进行中','doing','#0969da'],['阻塞','blocked','#9a6700'],['超时','overdue','#cf222e']];c.setOption({tooltip:{trigger:'axis'},legend:{top:0},grid:{left:40,right:20,top:40,bottom:30},xAxis:{type:'category',data:lines,splitLine:{show:false}},yAxis:{type:'value',splitLine:{show:false}},series:defs.map(function(d){return {name:d[0],type:'bar',stack:'total',itemStyle:{color:d[2]},data:lines.map(function(k){return byLine[k][d[1]]||0})}})})}
+ function drawTrend(){var l=state.live||{};var trend=(l.messages&&l.messages.trend)||[];if(typeof echarts==='undefined')return;var el=$('#msg-chart');if(el){var c=echarts.init(el);c.setOption({tooltip:{trigger:'axis'},grid:{left:40,right:16,top:16,bottom:26},xAxis:{type:'category',data:trend.map(function(x){return x.day})},yAxis:{type:'value',splitLine:{show:false}},series:[{type:'line',smooth:true,itemStyle:{color:'#0969da'},data:trend.map(function(x){return x.count})}]})}var tEl=$('#token-chart');if(tEl&&typeof echarts!=='undefined'){var c2=echarts.init(tEl);c2.setOption({title:{text:'暂不可得',left:'center',top:'middle',textStyle:{fontSize:12,color:'#57606a'}}})}}
+ function renderCost(){var m=state.metrics||{};var tokens=(m.tokens&&m.tokens.byLine)||[];var h='<div class="card"><div class="card-title">消耗总览（估算）</div><div class="kpis"><div class="kpi"><span>总 token</span><b>'+((m.tokens&&m.tokens.total)||0)+'</b></div><div class="kpi"><span>今日</span><b>'+((m.tokens&&m.tokens.today)||0)+'</b></div><div class="kpi"><span>口径</span><b>估算</b></div></div><div class="muted">成员级 token 不可得；按线数据来自 token_sample</div></div><div class="card"><div class="card-title">按线消耗</div><div id="cost-chart" class="chart"></div></div>';$('#main').innerHTML=h;if(typeof echarts!=='undefined'){var el=$('#cost-chart');if(el){var c=echarts.init(el);c.setOption({tooltip:{trigger:'axis'},grid:{left:50,right:20,top:20,bottom:30},xAxis:{type:'category',data:tokens.map(function(x){return x.label||x.line})},yAxis:{type:'value',splitLine:{show:false}},series:[{type:'bar',itemStyle:{color:'#1a7f37'},data:tokens.map(function(x){return x.window||x.decodeTokens||0})}]})}}}
+ function render(){if(state.view==='overview')renderOverview();else if(state.view==='org')renderOrg();else if(state.view==='tasks')renderTasks();else if(state.view==='data')renderData();else renderCost()}
+ function closeDrawer(){document.body.classList.remove('drawer-closing');$('#drawer').classList.remove('open')}
+ document.querySelectorAll('.tab[data-view]').forEach(function(t){t.onclick=function(){setView(t.getAttribute('data-view'))}});
+ $('#drawer-close').onclick=function(){if(state.view==='overview'&&state.decision){state.decision=null;renderGoal()}else closeDrawer()};
+ $('#refresh-btn').onclick=refresh;
+ $('#auto-toggle').onchange=function(e){state.auto=e.target.checked;if(state.auto){refresh();schedule()}else clearTimeout(state.timer)};
+ $('#interval').onchange=function(e){state.ms=Number(e.target.value)||10000;try{localStorage.setItem('board.refreshMs',String(state.ms))}catch(_){ };schedule()};
+ $('#theme').onclick=function(){document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'};
+ document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){refresh().then(schedule)}else clearTimeout(state.timer)});
+ try{var saved=localStorage.getItem('board.refreshMs');if(saved){state.ms=Number(saved);$('#interval').value=String(state.ms)}}catch(_){}
+ refresh().then(schedule);
+})();
+</script>
+</body>
+</html>

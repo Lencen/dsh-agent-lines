@@ -16,6 +16,7 @@ test('board server serves snapshots read-only', async () => {
     const html = await fetch(url)
     assert.equal(html.status, 200)
     assert.match(await html.text(), /团队看板/)
+    const vendor = await fetch(new URL('/vendor/echarts.min.js', url)); assert.equal(vendor.status, 200); assert.match(vendor.headers.get('content-type')||'', /javascript/)
     const board = await fetch(new URL('/api/team-board', url))
     assert.equal(board.status, 200)
     assert.equal((await board.json()).tasks[0].id, 't1')
