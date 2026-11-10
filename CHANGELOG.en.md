@@ -4,6 +4,14 @@ English | [中文](CHANGELOG.md)
 
 ## 0.9.0 (unreleased)
 
+### Protocol (S2a)
+
+- Envelope gains `protocolVersion` (`0.4`); legacy messages are treated as `0.3` (compatible).
+- Version negotiation: different `major` rejected (`LINE_PROTOCOL_MISMATCH`); a newer `minor` ignores unknown fields.
+- Messages gain a `protocol_version` column; schema **13 -> 14** (additive, old rows default `0.3`).
+- `claim()` does not deliver major-incompatible messages: marks them `failed` with `last_error=LINE_PROTOCOL_MISMATCH` plus an event (queryable, redeliver/purge available).
+- Tool outputs expose `protocolVersion` (`line_send` / `line_inbox` / `line_messages`).
+
 > Next train (protocol hardening) plus the **documentation optimization** folded into it: readable for humans, precise for AI (no behavior change). Docs-only changes are not released on their own (same rule that cancelled 0.7.1).
 
 - README (both languages): add a **Quick Context** block for AI assistants (runtime/storage/entities/hard constraints/zero-config/delivery semantics/entry points); turn "when to use it" into a **decision table** (choose lines / don't, pointing to the official Agent Teams plugin); add an **ASCII directory tree** to the architecture section (parseable by AI, not only Mermaid/screenshots).

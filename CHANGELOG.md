@@ -4,6 +4,14 @@
 
 ## 0.9.0 (未发布)
 
+### 协议（S2a）
+
+- 信封新增 `protocolVersion`（`0.4`）；旧消息按 `0.3` 兼容处理。
+- 版本协商：`major` 不同拒收（`LINE_PROTOCOL_MISMATCH`），`minor` 更高忽略未知字段。
+- 消息表新增 `protocol_version` 列；schema **13 -> 14**（additive，旧行默认 `0.3`）。
+- `claim()` 对 `major` 不兼容的消息不投递：落 `failed` + `last_error=LINE_PROTOCOL_MISMATCH` 并写事件（可查、可 redeliver/purge）。
+- 工具输出补 `protocolVersion`（`line_send` / `line_inbox` / `line_messages`）。
+
 > 下一车（协议与加固）+ 本车内并入的**文档优化**：让人看得懂、让 AI 读得准（无代码行为变更）。纯文档不单独发版（沿用"0.7.1 取消并入下一车"的口径）。
 
 - README（中/英）：新增「Quick Context（给 AI 助手）」结构化上下文块（运行环境/存储/核心实体/硬约束/零配置/投递语义/入口）；「什么时候用」改为**决策表**（选 lines / 不选 并指向官方 Agent Teams）；架构段补 **ASCII 目录树**（AI 可解析，替代仅靠 Mermaid/截图）。

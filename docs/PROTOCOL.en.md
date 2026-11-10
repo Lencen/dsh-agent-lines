@@ -1,4 +1,4 @@
-# Protocol (v0.3)
+# Protocol (v0.4)
 
 English | [中文](PROTOCOL.md)
 
@@ -13,6 +13,7 @@ English | [中文](PROTOCOL.md)
 
 ```json
 {
+  "protocolVersion": "0.4",
   "id": "msg_...",
   "idempotencyKey": "caller:retry-1",
   "from": { "agentId": "agent-demo", "line": "frontend", "sessionId": "session-..." },
@@ -26,6 +27,13 @@ English | [中文](PROTOCOL.md)
   "noReply": false
 }
 ```
+
+## Version negotiation
+
+- Every envelope carries `protocolVersion` (`major.minor`); `0.4` since 0.9.0.
+- Legacy messages without the field are treated as `0.3` (compatible).
+- A receiver with a different `major` rejects with `LINE_PROTOCOL_MISMATCH`; a newer `minor` ignores unknown fields and continues.
+- Internally: a message with an incompatible `major` is not delivered; it is marked `failed` with `last_error=LINE_PROTOCOL_MISMATCH`, visible via `line_messages`, and can be handled with `line_redeliver` / `line_purge`.
 
 ## State machine
 

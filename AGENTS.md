@@ -16,7 +16,7 @@
 | Runs inside | the DSH Host process (plugin), not a separate daemon |
 | Default DB | `DSH_HOME/agent-lines/lines.db` (`DSH_HOME` defaults to `~/.dsh`); override with config `dbPath` or env `DSH_AGENT_LINES_DB` |
 | DB mode | SQLite + WAL; file `0600`, directory `0700` |
-| Schema version | **13** (`PRAGMA user_version`); additive migrations only |
+| Schema version | **14** (`PRAGMA user_version`); additive migrations only |
 | Cross-machine | **not supported** (local lease + local SQLite by design) |
 
 ## 2. Configuration keys

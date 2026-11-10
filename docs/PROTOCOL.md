@@ -1,4 +1,4 @@
-# 协议（v0.3）
+# 协议（v0.4）
 
 [English](PROTOCOL.en.md) | 中文
 
@@ -12,6 +12,7 @@
 ## 信封
 
     {
+      "protocolVersion": "0.4",
       "id": "msg_...",
       "idempotencyKey": "caller:retry-1",
       "from": { "agentId": "agent-demo", "line": "frontend", "sessionId": "session-..." },
@@ -24,6 +25,13 @@
       "hop": 1,
       "noReply": false
     }
+
+## 版本协商
+
+- 信封携带 `protocolVersion`（`major.minor`）；0.9.0 起为 `0.4`。
+- 旧消息没有该字段：按 `0.3` 处理（兼容）。
+- 接收方 `major` 不同 -> 拒绝并返回 `LINE_PROTOCOL_MISMATCH`；`minor` 更高 -> 忽略未知字段继续处理。
+- 本实现内部：`major` 不兼容的消息不投递，落 `failed` + `last_error=LINE_PROTOCOL_MISMATCH`，可在 `line_messages` 查到并 `line_redeliver` / `line_purge` 处置。
 
 ## 状态机
 

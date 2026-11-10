@@ -15,11 +15,11 @@ function acquire(store, line, instanceId, sessionId = 'session-' + line) {
   return store.acquire({ agentId: 'agent-demo', line, sessionId, instanceId, ttlMs: 30000 })
 }
 
-test('schema user_version is 13 and message_events exists', () => {
+test('schema user_version is 14 and message_events exists', () => {
   const { store, cleanup } = tempStore()
   try {
     const v = store.db.prepare('PRAGMA user_version').get()
-    assert.equal(Object.values(v)[0], 13)
+    assert.equal(Object.values(v)[0], 14)
     const table = store.db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'message_events'").get()
     assert.equal(table.name, 'message_events')
   } finally { cleanup() }
@@ -92,7 +92,7 @@ test('migration is re-entrant and does not destroy data', () => {
     second.close()
     const third = new LineStore(path)
     const v = third.db.prepare('PRAGMA user_version').get()
-    assert.equal(Object.values(v)[0], 13)
+    assert.equal(Object.values(v)[0], 14)
     const table = third.db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'message_events'").get()
     assert.equal(table.name, 'message_events')
     third.close()
