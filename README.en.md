@@ -157,6 +157,10 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-16: board shows plugin version (unreleased)
+
+- Topbar "插件版本 v0.11.0-16" and footer both show the plugin version, sourced from `/api/health.version`.
+
 ### 0.11.0-15: board metric alignment (unreleased)
 
 - Overview "members" uses the official task-board projection (team-board.members); the data view shows both official-members (snapshot) and team-board members.

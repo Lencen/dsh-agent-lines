@@ -66,7 +66,7 @@ footer{padding:10px 20px 30px;color:var(--muted);font-size:12px}
 <body class="drawer-closed">
 <header class="topbar">
 <span class="brand">团队看板</span><span class="badge">只读</span>
-<span id="team-name" class="muted">未采集团队</span><span id="version-badge" class="badge">v未采集</span>
+<span id="team-name" class="muted">未采集团队</span><span id="version-badge" class="badge" title="插件版本（来自 /api/health）">插件版本 v未采集</span>
 <span class="grow"></span>
 <label class="muted"><input type="checkbox" id="auto-toggle" checked> 自动刷新</label>
 <select id="interval"><option value="5000">5 秒</option><option value="10000" selected>10 秒</option><option value="30000">30 秒</option><option value="60000">1 分钟</option></select>
@@ -120,7 +120,7 @@ footer{padding:10px 20px 30px;color:var(--muted);font-size:12px}
   <div id="drawer-body"><div class="empty">点击左侧条目查看详情</div></div>
 </aside>
 </main>
-<footer>只读 · 数据来源：lines.db（线/消息）、官方团队投影（任务/成员）、团队工作区（TEAM.md/charters/decisions）、team-metrics（token 估算）· 缺失一律显示「暂无 / 不可得 / 未采集」，不编造</footer>
+<footer>只读 · 插件版本 <span id="footer-version">未采集</span> · 数据来源：lines.db（线/消息）、官方团队投影（任务/成员）、团队工作区（TEAM.md/charters/decisions）、team-metrics（token 估算）· 缺失一律显示「暂无 / 不可得 / 未采集」，不编造</footer>
 <script src="/vendor/echarts.min.js"></script>
 <script>
 (function(){
@@ -212,7 +212,7 @@ function renderCost(){
 }
 function renderAll(){
   var name=teamName();document.title=name+' · 团队看板';$('#team-name').textContent=name;
-  var v=(state.health&&state.health.version)||null;var vb=$('#version-badge');vb.textContent=v?('v'+v):'v未采集';vb.className=v?'badge ok':'badge';
+  var v=(state.health&&state.health.version)||null;var vb=$('#version-badge');vb.textContent=v?('插件版本 v'+v):'插件版本 v未采集';vb.className=v?'badge ok':'badge';var fv=$('#footer-version');if(fv)fv.textContent=v?('0.11.0-'+String(v).split('-').pop()):'未采集';
   renderOverview();renderOrg();renderTasks();renderData();renderCost();
 }
 function openDrawer(title,blocks){

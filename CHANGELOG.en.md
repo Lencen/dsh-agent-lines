@@ -2,6 +2,13 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-16 (unreleased)
+
+### Board shows plugin version (S5c-3)
+
+- Topbar badge now reads "插件版本 v0.11.0-16" (sourced from `/api/health.version`); footer shows the plugin version too.
+- Note: 0.11.0-15 already had a version badge (v0.11.0-15); this release only makes the label explicit and shows it in two places.
+
 ## 0.11.0-15 (unreleased)
 
 ### Board metric alignment (S5c-2)
