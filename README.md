@@ -98,6 +98,12 @@ DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是
 
 ## 版本能力与业务场景
 
+### 0.7.0：只读 UIUX 看板
+
+**Breaking**：看板只读，移除操作与消息能力。
+用法：dsh-agent-lines board --port 4090。
+效果：组织树/总览/任务/部门/数据；固定四槽/bento；无 send/approve/reject/handoff。
+
 ### 0.6.6：Web 看板 UIUX 验收版
 
 场景：需要按 UIUX 0.6 的 bento 规范看组织/任务/部门/沟通/数据。

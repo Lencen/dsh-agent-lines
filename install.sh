@@ -6,7 +6,7 @@ set -euo pipefail
 # Override with: DSH_PROFILE=my-profile bash install.sh [package|tarball]
 
 DSH_BIN="${DSH_BIN:-dsh}"
-PKG="${1:-dsh-agent-lines@0.6.6}"
+PKG="${1:-dsh-agent-lines@0.7.0}"
 DSH_HOME="${DSH_HOME:-$HOME/.dsh}"
 PROFILES="$DSH_HOME/profiles"
 
@@ -16,8 +16,8 @@ for dir in "$HOME/.npm-global/bin" "$HOME/nodejs/bin" "$HOME/.local/bin"; do
   [ -d "$dir" ] && PATH="$dir:$PATH"
 done
 
-if [ "$PKG" = "dsh-agent-lines@0.6.6" ] && [ -f ./dsh-agent-lines-0.6.6.tgz ]; then
-  PKG=./dsh-agent-lines-0.6.6.tgz
+if [ "$PKG" = "dsh-agent-lines@0.7.0" ] && [ -f ./dsh-agent-lines-0.7.0.tgz ]; then
+  PKG=./dsh-agent-lines-0.7.0.tgz
 fi
 
 if ! command -v "$DSH_BIN" >/dev/null 2>&1; then

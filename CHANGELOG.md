@@ -2,6 +2,15 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.7.0 (2026-11-10)
+
+**Breaking**：Web 看板改为纯只读，移除看板侧操作与消息能力。
+
+- 移除沟通/消息视图、token 输入、send/approve/reject/handoff。
+- 移除 board 操作 API 与 /api/live。
+- 保留组织树/总览/任务/部门/数据视图。
+- 插件工具能力不变。
+
 ## 0.6.6 (2026-11-10)
 
 - Web 看板按 UIUX 0.6 的 8 条 bento 规则重做。
