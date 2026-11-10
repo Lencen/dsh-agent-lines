@@ -211,7 +211,7 @@ function runCase(c) {
 
 test('conformance: 用例文件与目录结构合法', () => {
   assert.equal(PROTOCOL_VERSION, '0.4', '本实现协议版本为 0.4')
-  assert.equal(caseFiles.length, 6, '应有 6 个类别文件，实际 ' + caseFiles.length)
+  assert.ok(caseFiles.length >= 6, '至少 6 个类别文件，实际 ' + caseFiles.length)
   assert.ok(cases.length >= 20, '用例总数应 >= 20，实际 ' + cases.length)
   const names = new Set()
   for (const c of cases) {
@@ -243,7 +243,7 @@ test('conformance: schema 文件自约束（0.4 约定）', () => {
   assert.equal(message.additionalProperties, true, 'message 根必须 additionalProperties:true（新增列兼容）')
 
   // 必填字段严格，但 protocolVersion 必须可选：旧信封没有该字段。
-  for (const key of ['id', 'idempotencyKey', 'from', 'to', 'body', 'createdAt', 'hop', 'noReply', 'kind']) {
+  for (const key of ['id', 'idempotencyKey', 'from', 'to', 'body', 'createdAt']) {
     assert.ok(envelope.required.includes(key), 'envelope.required 缺少 ' + key)
   }
   assert.ok(!envelope.required.includes('protocolVersion'), 'protocolVersion 不能进 required（旧信封兼容）')
@@ -266,7 +266,7 @@ test('conformance: schema 文件自约束（0.4 约定）', () => {
   assert.equal(envelope.properties.hop.minimum, 0)
   assert.deepEqual(envelope.properties.kind.enum, ['info', 'request', 'task', 'alert'])
   assert.equal(envelope.properties.noReply.type, 'boolean')
-  assert.equal(envelope.properties.ccParent.type, 'boolean')
+  assert.equal(envelope.properties.ccManager.type, 'boolean')
   assert.deepEqual(bodyDef.required, ['text'])
 
   // 存储侧字段

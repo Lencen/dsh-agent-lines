@@ -13,8 +13,7 @@
     "body",
     "createdAt",
     "hop",
-    "noReply",
-    "kind"
+    "noReply"
   ],
   "properties": {
     "id": {
@@ -89,7 +88,7 @@
         "alert"
       ]
     },
-    "ccParent": {
+    "ccManager": {
       "type": "boolean",
       "description": "可选：同时抄送上级线"
     }

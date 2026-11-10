@@ -23,7 +23,9 @@
       "replyTo": null,
       "rootMessageId": "msg_...",
       "hop": 1,
-      "noReply": false
+      "noReply": false,
+      "kind": "info",
+      "ccManager": false
     }
 
 ## 版本协商
@@ -151,6 +153,8 @@ line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作
 | LINE_SESSION_BOUND | claim 目标已绑定到另一条线 |
 | SESSION_NOT_LIVE / NOT_ROOT | claim 目标不是 live 根 Session |
 | LINE_INVALID_ARGUMENT | 工具参数非法，例如 limit |
+| LINE_PROTOCOL_MISMATCH | 信封 `protocolVersion` major 与本实现不同；消息不投递，落 failed |
+| LINE_CAPABILITY_MISSING | 运行 profile 缺少所需的 DSH 能力（见 line_status.capabilities） |
 | LINE_CLAIM_DISABLED | allowClaim 为 false |
 | LINE_CLAIM_CONFIRM_REQUIRED | confirm 不是 "bind-manager" |
 | LINE_NOT_ROOT | 非根 Session 尝试 claim manager |

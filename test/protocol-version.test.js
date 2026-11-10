@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { DatabaseSync } from 'node:sqlite'
 import {
   PROTOCOL_VERSION, LEGACY_PROTOCOL_VERSION, parseProtocolVersion,
   isProtocolCompatible, assertProtocolCompatible, LineError,
@@ -85,4 +86,45 @@ test('schema v14 has protocol_version column with legacy default', () => {
     const version = store.db.prepare('PRAGMA user_version').get()
     assert.equal(version.user_version, 14)
   } finally { cleanup() }
+})
+
+test('malformed protocol_version does not stall the whole claim batch', () => {
+  const { store, cleanup } = tempStore()
+  try {
+    acquire(store, 'frontend', 'i-a')
+    acquire(store, 'backend', 'i-b')
+    const bad = store.send({ agentId: 'agent-demo', fromLine: 'frontend', to: 'backend', text: 'bad-version' })
+    const good = store.send({ agentId: 'agent-demo', fromLine: 'frontend', to: 'backend', text: 'healthy' })
+    store.db.prepare("UPDATE messages SET protocol_version = 'abc' WHERE id = ?").run(bad.id)
+    const claimed = store.claim({ agentId: 'agent-demo', line: 'backend', instanceId: 'i-b', limit: 10 })
+    assert.equal(claimed.length, 1, 'healthy message must still be claimable')
+    assert.equal(claimed[0].id, good.id)
+    const failed = store.messagesByStates({ agentId: 'agent-demo', line: 'backend', states: ['failed'] })
+    assert.equal(failed.length, 1)
+    assert.match(failed[0].last_error, /LINE_PROTOCOL_MISMATCH/)
+  } finally { cleanup() }
+})
+
+test('v13 database migrates additively to v14 with protocol_version default 0.3', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-mig14-'))
+  const path = join(dir, 'lines.db')
+  try {
+    const first = new LineStore(path)
+    acquire(first, 'frontend', 'i-a')
+    acquire(first, 'backend', 'i-b')
+    const sent = first.send({ agentId: 'agent-demo', fromLine: 'frontend', to: 'backend', text: 'migrate-me' })
+    first.close()
+    const db = new DatabaseSync(path)
+    db.exec('ALTER TABLE messages DROP COLUMN protocol_version')
+    db.exec('PRAGMA user_version = 13')
+    db.close()
+    const reopened = new LineStore(path)
+    try {
+      const cols = reopened.db.prepare('PRAGMA table_info(messages)').all().map(c => c.name)
+      assert.ok(cols.includes('protocol_version'), 'protocol_version column must be re-added')
+      assert.equal(reopened.db.prepare('PRAGMA user_version').get().user_version, 14)
+      const row = reopened.messageById(sent.id)
+      assert.equal(row.protocol_version, '0.3', 'legacy rows default to 0.3')
+    } finally { reopened.close() }
+  } finally { rmSync(dir, { recursive: true, force: true }) }
 })

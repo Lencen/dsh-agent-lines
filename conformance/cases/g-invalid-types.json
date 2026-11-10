@@ -1,0 +1,94 @@
+{
+  "suite": "g-invalid-types",
+  "description": "非法类型/枚举必须被 schema 拒绝（对应 conformance/README.md 第 1 类补充）。",
+  "cases": [
+    {
+      "name": "g/envelope-id-not-string",
+      "note": "id 必须是 string",
+      "check": "schema",
+      "schema": "envelope.v0_4",
+      "input": {
+        "id": 123,
+        "idempotencyKey": "caller:x",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "s1"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "hi"
+        },
+        "createdAt": 1,
+        "hop": 0,
+        "noReply": false
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "SCHEMA_INVALID"
+      }
+    },
+    {
+      "name": "g/envelope-kind-invalid-enum",
+      "note": "kind 只允许 info/request/task/alert",
+      "check": "schema",
+      "schema": "envelope.v0_4",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "idempotencyKey": "caller:x",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "s1"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "hi"
+        },
+        "createdAt": 1,
+        "hop": 0,
+        "noReply": false,
+        "kind": "urgent"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "SCHEMA_INVALID"
+      }
+    },
+    {
+      "name": "g/envelope-body-text-not-string",
+      "note": "body.text 必须是 string",
+      "check": "schema",
+      "schema": "envelope.v0_4",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "idempotencyKey": "caller:x",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "s1"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": 42
+        },
+        "createdAt": 1,
+        "hop": 0,
+        "noReply": false
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "SCHEMA_INVALID"
+      }
+    }
+  ]
+}

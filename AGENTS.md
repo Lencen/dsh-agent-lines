@@ -98,12 +98,12 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 
 ## 5b. Capabilities and degradation
 
-`line_status.capabilities` reports what the running DSH profile exposes: `session.create`, `session.prompt`, `session.rename`, `session.isLive`, `session.persistence`, `workspace.resolveByPath`, `workspace.attach`. `true` = observed, `false` = unavailable, `null` = indirect/unknown. Missing `session.create` -> `LINE_CAPABILITY_MISSING` (clear error, not a crash); missing workspace registry -> `line_create` falls back to cwd and returns `workspaceFallback: 'registry-unavailable'`.
+`line_status.capabilities` reports what the running DSH profile exposes: `session.create`, `session.prompt`, `session.rename`, `session.isLive`, `session.persistence`, `workspace.resolveByPath`, `workspace.attach`. `true` = observed, `false` = unavailable, `null` = indirect/unknown. Missing `session.create` -> `LINE_CAPABILITY_MISSING` (clear error, not a crash); missing workspace registry AND an explicit `workspace` argument -> `line_create` falls back to cwd and returns `workspaceFallback: 'registry-unavailable'` (without an explicit workspace request, cwd is used silently).
 
 ## 6. Versioning and gates (before any release)
 
 ```bash
-npm test   # unit 72 + docs consistency 13 + bento 9 + business smoke 9
+npm test   # unit 97 + docs consistency 13 + bento 9 + business smoke 9
 ```
 
 - Breaking = envelope fields, state-machine semantics, error-code meaning, invariants → CHANGELOG "breaking" section + minor bump.

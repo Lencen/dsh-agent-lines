@@ -24,7 +24,9 @@ English | [中文](PROTOCOL.md)
   "replyTo": null,
   "rootMessageId": "msg_...",
   "hop": 1,
-  "noReply": false
+  "noReply": false,
+  "kind": "info",
+  "ccManager": false
 }
 ```
 
@@ -159,6 +161,8 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
 | `LINE_SESSION_BOUND` | Claim target is already bound to a different line |
 | `SESSION_NOT_LIVE` / `NOT_ROOT` | Claim target is not a live root Session |
 | `LINE_INVALID_ARGUMENT` | Invalid tool argument, e.g. limit |
+| `LINE_PROTOCOL_MISMATCH` | Envelope `protocolVersion` major differs from this implementation; the message is not delivered and is marked failed |
+| `LINE_CAPABILITY_MISSING` | The running profile lacks a required DSH capability (see line_status.capabilities) |
 | `LINE_CLAIM_DISABLED` | allowClaim is false |
 | `LINE_CLAIM_CONFIRM_REQUIRED` | confirm is not "bind-manager" |
 | `LINE_NOT_ROOT` | A non-root Session tried to claim manager |

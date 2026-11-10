@@ -124,7 +124,7 @@ print("conformance ok")
 > 版本规则只比 `major`：本实现是 `0.4`，所以 `0.3`/`0.5`/`0.12` 都兼容，`1.0`/`2.7` 不兼容。
 > 上面的骨架把 `address` 的错误码简化成统一字符串；严格实现应像 `lib/protocol.js` 一样区分 `LINE_INVALID_AGENT` 与 `LINE_INVALID_LINE`（本仓库 runner 就是这么断言的）。
 
-## 4. 用例覆盖
+## 4. 用例覆盖（7 组 / 25 条）
 
 | 文件 | 类别 | 用例数 |
 |---|---|---|
@@ -134,6 +134,7 @@ print("conformance ok")
 | `cases/d-major-mismatch.json` | major 不同 -> `LINE_PROTOCOL_MISMATCH` | 3 |
 | `cases/e-minor-newer-unknown-fields.json` | minor 更高 + 未知字段 -> 接受并忽略 | 3 |
 | `cases/f-legacy-without-version.json` | 旧消息无 `protocolVersion` -> 视为 `0.3` | 3 |
+| `cases/g-invalid-types.json` | 非法类型/枚举（id/kind/body.text）被 schema 拒绝 | 3 |
 
 ## 5. 新增用例
 

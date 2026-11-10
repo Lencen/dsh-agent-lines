@@ -27,13 +27,13 @@
 | G2 | ✅ 已在 **0.8.0** 关闭：没有 `line_redeliver` / `line_purge` | 已提供（purge 默认 dryRun、before 必填） | 0.8.0 |
 | G3 | ✅ 已在 **0.8.0** 关闭：`delivered` 没有 ack 超时 | `ackTimeoutMs` 只标记 + 报数（`line_metrics`），不自动重投 | 0.8.0 |
 | G4 | ✅ 已在 **0.8.0** 关闭：没有消息级事件流 | `message_events`（schema v13）+ `line_trace` | 0.8.0 |
-| G5 | 信封没有 `protocolVersion` | 不同版本实现之间无法协商/拒绝/降级 | 0.9.0 |
-| G6 | 协议文档不可校验 | 没有 JSON Schema，没有 conformance 用例 | 0.9.0 |
-| G7 | 没有 DSH 能力探测 | 靠版本区间 `>=0.2.1-rc.5 <0.3.0` 硬约束，新 rc 可能整体不可用而非降级 | 0.9.0（能力探测 + 优雅降级） |
+| G5 | ✅ 已在 **0.9.0** 关闭：信封没有 `protocolVersion` | 信封携带 `protocolVersion`（0.4）；major/minor 协商规则见 PROTOCOL「版本协商」 | 0.9.0 |
+| G6 | ✅ 已在 **0.9.0** 关闭：协议文档不可校验 | `schema/envelope.v0_4.json` + `schema/message.v0_4.json` + `conformance/`（7 组 25 条，任意语言可跑） | 0.9.0 |
+| G7 | ✅ 已在 **0.9.0** 关闭：没有 DSH 能力探测 | `line_status.capabilities`（三态）+ `LINE_CAPABILITY_MISSING` + workspace 降级；版本区间不放松 | 0.9.0 |
 | G8 | 没有成本控制 | `line_metrics` 有每线 `decodeTokens`，但没有按日增量/速率/上限/空闲休眠 | 0.10.0 |
 | G9 | 团队结构不是文件产物 | 团队靠对话现场生成，不可复现、不可 review、不可迁移 | 0.10.0 评估（`team.yaml`，须守 I5：只校验不拦截） |
 | G10 | 真实上下文使用率不可得 | 只有活跃度代理（turns/steps/lastActivityAt），DSH 未暴露每 Session 的窗口占用；不伪造百分比 | **阻塞**：等 DSH 上游；0.9.0 能力探测命中即显示 |
-| G11 | 没有稳定的状态 API | 外部消费方只能读 `team-board.json` 快照，没有 schema 承诺 | 0.9.0 随协议工作给快照定版本；0.10.0 评估只读状态接口 |
+| G11 | 部分关闭：快照已带 `schemaVersion` + `protocolVersion` 且字段只增不改（0.9.0 F7）；**只读状态 API 仍未提供** | 外部仍需读快照文件 | 0.10.0 评估只读状态接口 |
 | G12 | 消息优先级（插队）不支持 | 队列按时间顺序；P0 指令不能插队 | **不排期**：与 at-least-once + ack 顺序语义冲突，需先设计再谈 |
 | G13 | 线分组/子团队标签不支持 | 现有部门视图只表达"层级"，不表达"生产组/质检组"这类横切分组 | 0.10.0 评估 |
 | G14 | ✅ 已在 **0.8.1** 关闭：发布包不自带回测/门禁脚本 | 0.8.0 的 `files` 未含 `scripts/`，包内无法自跑 business-smoke/两个门禁 | 0.8.1 已把 `scripts` 纳入 `files` |
