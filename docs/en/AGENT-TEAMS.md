@@ -15,6 +15,7 @@ L1 manager session (the user only states goals)
 - L2 owns the work: decompose, decide "do it myself or open L3", produce and self-check, report back.
 - L3 owns parallelism: subtasks, cross-verification, one-off quality points.
 - The official task board owner can only be a teammate (L1/L2 cannot own tasks; read-only mapping).
+- **Task-tree parent/child relations are projected by the lines layer** (`parentTaskRef` → `parentTaskId`): the official board does not expose this field; the board only carries the reference.
 - Memory and evidence live in files (single source of truth).
 
 ## Who does the work: L2 or L3

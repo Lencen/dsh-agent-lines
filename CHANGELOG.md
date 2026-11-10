@@ -2,6 +2,15 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.7.1 (未发布)
+
+> 候选：仅文档修正，无代码行为变更。发布需用户批；执行由商业线排期、github-maintenance-line 执行（见 RELEASE-HANDOFF-2026-11-10）。
+
+- 修正 0.6.6 门禁措辞：`check-bento-alignment` 脚本存在但在 **lions 仓库**，不在插件包内、不属 `npm test`（跨仓库误引）；0.7.0 的 GitHub Release 说明已同步更正。
+- AGENT-TEAMS（中/英）：补"任务树父子关系由 lines 层投影（`parentTaskRef` → `parentTaskId`），官方任务板不提供该字段"。
+- PHILOSOPHY（中/英）术语表：补 L1/L2/L3 与管理线/角色线/官方团队（部门/部门团队）的对应关系。
+- README（中/英）：Bento 规范措辞由"UIUX 0.6 的 bento 规范"改为"UIUX 线的 Bento 规范（DESIGN-SPEC §11）"，避免被读成版本号。
+
 ## 0.7.0 (2026-11-10)
 
 本版是**文档立宪版**：无代码行为变更。

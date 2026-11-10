@@ -119,7 +119,7 @@ Note: the read-only board cut shipped in **0.6.6**; 0.7.0 does not declare it ag
 
 ### 0.6.6: Web board UIUX acceptance
 
-Scenario: review the org/tasks/department/communications/metrics board against the UIUX 0.6 bento rules.
+Scenario: review the org/tasks/department/communications/metrics board against the UIUX line's Bento spec (DESIGN-SPEC §11, finalized 2026-11-09).
 Use: dsh-agent-lines board --port 4090 --db $DSH_HOME/agent-lines/lines.db.
 Effect: read-only; fixed slots, equal-height rows, inner scrolling, data-level, breadcrumbs; no board-side actions or messages.
 

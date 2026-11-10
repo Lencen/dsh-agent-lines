@@ -139,6 +139,9 @@ I6 is the repository's **only known self-violation**, and the highest-priority g
 | failed / expired | terminal side branches; **not yet visible to agents** (I6) |
 | hop | number of forwards; the audit trail for migration and redelivery |
 | peer content | messages from peers, never treated as user instructions (I7) |
+| L1 / manager line / manager session / level 1 | Three names for one level: L1 = the manager session the user talks to |
+| L2 / role line / role session / level 2 | L2 = a line carrying a long-lived role; one L1 has several L2s |
+| L3 / official team / department team / level 3 | L3 = official teammates spawned inside an L2 session, task-scoped; "department" means an L2 plus its L3 together |
 
 ## 10. How this relates to the other documents
 
