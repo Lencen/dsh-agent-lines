@@ -43,6 +43,10 @@ Write ch027 and hand it to the writer and proofreader.
 
 The manager creates the Agent Teams task, creates/reuses line roles, calls ctx.agentTeams.listTasks/listMembers, maps teammate names to line labels, and returns line_team_board.
 
+## Host snapshot
+
+When the manager calls the board, the plugin writes DSH_HOME/agent-lines/team-board.json automatically (mode 0600, atomic replace); no export or config needed.
+
 ## Board data
 
 - tasks: id, subject, status, ownerName, ownerLine, blockedBy, staleOwner, **parentTaskId** (projected by the lines layer from `parentTaskRef`; the official board does not provide it);
@@ -61,3 +65,19 @@ The manager creates the Agent Teams task, creates/reuses line roles, calls ctx.a
 - ctx.agentTeams is an experimental internal service, not a stable public API;
 - unavailable is shown explicitly;
 - L2 bidirectional bridge is not approved.
+
+## Example
+
+~~~json
+{
+  "available": true,
+  "manager": { "line": "manager" },
+  "tasks": [
+    { "id": "task-1", "subject": "ch027 draft", "status": "pending", "ownerName": "writer", "ownerLine": "writer", "staleOwner": false, "blockedBy": [], "parentTaskId": null }
+  ],
+  "lines": [
+    { "label": "writer", "role": "writer", "status": "online", "unread": 0 }
+  ],
+  "inbox": []
+}
+~~~
