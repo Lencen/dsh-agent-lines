@@ -2,6 +2,13 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.6.6 (2026-11-10)
+
+- Rebuild the web board to the UIUX 0.6 eight-rule bento layout.
+- Org tree + overview/tasks/department/communications/metrics views; fixed slots; equal-height rows; inner scrolling; data-level; breadcrumbs.
+- Keep local manager actions visible across views.
+- Add browser E2E matrix and check-bento-alignment gate.
+
 ## 0.6.5 (2026-11-09)
 
 - Web board adds local manager actions: send message, approve/reject pending, handoff.
