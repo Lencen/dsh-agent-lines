@@ -112,7 +112,7 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
 
 `line_move_workspace({ line, workspace })` attaches an existing line Session to an existing workspace. DSH's `attachSession` validates that the Session's stored cwd resolves exactly to the workspace path; a different directory fails with `WORKSPACE_ATTACH_FAILED`. It does not move a Session between different directories. If Session creation succeeds but registration fails, the error carries `detail.sessionId` and the Session is not deleted automatically.
 
-## Line lifecycle (0.3.6)
+## Line lifecycle (since 0.3.6; hibernation added in 0.10.0)
 
     line_retire({ line, reason? })
     line_hibernate({ line, reason? })

@@ -104,7 +104,7 @@ line_create 通过 workspaceRegistry.resolveByPath(managerCwd) 解析管理线�
 
 line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作区。DSH 的 attachSession 要求 Session 存储的 cwd 与工作区 path 完全一致；不同目录会 WORKSPACE_ATTACH_FAILED，不会迁移 Session。如果 Session 创建成功但注册失败，错误里带 detail.sessionId，Session 不会自动删除。
 
-## 线生命周期（0.3.6）
+## 线生命周期（0.3.6 起，0.10.0 增休眠）
 
     line_retire({ line, reason? })
     line_hibernate({ line, reason? })

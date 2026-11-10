@@ -233,3 +233,37 @@ test('line_team_board reports unavailable without Agent Teams service', async ()
     assert.deepEqual(board.tasks, [])
   } finally { h.cleanup() }
 })
+test('line_create replace on a hibernating line fails fast without creating a Session (V1)', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const created = await h.tools.get('line_create').execute({ label: 'sleeper', bootstrap: false }, exec(h.manager))
+    assert.equal(created.created, true)
+    await h.tools.get('line_hibernate').execute({ line: 'sleeper' }, exec(h.manager))
+    const sessionsBefore = h.agents.size
+    await assert.rejects(
+      h.tools.get('line_create').execute({ label: 'sleeper', replace: true, force: true, bootstrap: false }, exec(h.manager)),
+      (error) => {
+        assert.equal(error.code, 'LINE_HIBERNATING')
+        assert.equal(error.detail.line, 'sleeper')
+        return true
+      },
+    )
+    assert.equal(h.agents.size, sessionsBefore, 'no orphan Session may be created for a failed replace')
+  } finally { h.cleanup() }
+})
+
+test('line_hibernate refuses a line that is rebinding (V7)', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const created = await h.tools.get('line_create').execute({ label: 'busy', bootstrap: false }, exec(h.manager))
+    assert.equal(created.created, true)
+    const store = new LineStore(h.config.dbPath)
+    try { store.setLifecycle({ agentId: 'agent-demo', line: 'busy', lifecycle: 'rebinding', reason: 'test' }) } finally { store.close() }
+    await assert.rejects(
+      h.tools.get('line_hibernate').execute({ line: 'busy' }, exec(h.manager)),
+      (error) => error.code === 'LINE_REBIND_BUSY',
+    )
+  } finally { h.cleanup() }
+})

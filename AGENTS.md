@@ -66,7 +66,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 | `line_purge` | manager | `before` (required), `states?`, `dryRun?` (default true) | Delete terminal messages; writes `purged` events |
 | `line_handoff` | manager | `line`, `format?(md|json)`, `limit?` | Structured handoff snapshot (no model call) |
 | `line_retire` | manager | `line`, `reason?` | Soft retire; keeps Session/history (terminal) |
-| `line_hibernate` | manager | `line`, `reason?` | Park an idle line: stop delivery, release the lease, keep Session/history; sends return `LINE_HIBERNATING` |
+| `line_hibernate` | manager | `line`, `reason?` | Park an idle line: stop delivery, release the lease, keep Session/history; inbound delivery and outbound sends return `LINE_HIBERNATING` |
 | `line_wake` | manager | `line`, `reason?` | Wake a hibernating line: re-acquire the lease, resume delivery, same Session; retired lines cannot be woken |
 | `line_rebind` | manager | `line`, `sessionId`, `migrate?`, `force?` | Point label at another Session |
 | `line_rename` | manager | `line`, `title?` | Sidebar title |
@@ -100,7 +100,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 
 `materialized` = the Session object exists in this process; `live` = it is currently running. `inactive` is **not** offline.
 
-Lifecycle three states (0.10.0+): `active` (delivering), `hibernating` (parked: no delivery, lease released, Session/history kept, explicit `line_wake` required), `retired` (terminal soft delete; cannot be woken). `inactive` is an activity flag, not a lifecycle.
+Lifecycle three states (0.10.0+): `active` (delivering), `hibernating` (parked: no inbound delivery and outbound sends rejected, lease released, Session/history kept, explicit `line_wake` required), `retired` (terminal soft delete; cannot be woken). `inactive` is an activity flag, not a lifecycle.
 
 ## 5b. Capabilities and degradation
 
