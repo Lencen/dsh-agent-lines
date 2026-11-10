@@ -5,7 +5,6 @@
  */
 import { existsSync } from 'node:fs'
 import { dirname } from 'node:path'
-import { randomBytes } from 'node:crypto'
 import { LineStore, defaultDbPath } from '../lib/store.js'
 import { LineError, lineId } from '../lib/protocol.js'
 import { startBoardServer } from '../lib/board-server.js'
@@ -20,7 +19,7 @@ function usage() {
   dsh-agent-lines [--db <path>] [--json] claim --line <line> --session <sessionId> [--agent <id>]
   dsh-agent-lines [--db <path>] [--json] doctor
   dsh-agent-lines [--db <path>] [--json] tail --line <line> [--agent <id>]
-  dsh-agent-lines board [--dir <snapshotDir>] [--host 127.0.0.1] [--port 4090] [--db <path>] [--token <token>] [--agent <id>] [--from <managerLine>]
+  dsh-agent-lines board [--dir <snapshotDir>] [--host 127.0.0.1] [--port 4090]
 
 Environment: DSH_AGENT_LINES_DB overrides the default DB path.
 `)
@@ -65,13 +64,10 @@ async function main() {
     const dir = String(opts.dir ?? dirname(opts.db))
     const host = String(opts.host ?? '127.0.0.1')
     const port = Number(opts.port ?? 4090)
-    const db = opts.db === undefined || !existsSync(opts.db) ? null : String(opts.db)
-    const token = String(opts.token ?? randomBytes(16).toString('hex'))
-    const { server, url } = await startBoardServer({ dir, host, port, db, token, agentId: opts.agent === undefined ? null : String(opts.agent), from: opts.from === undefined ? null : String(opts.from) })
+    const { server, url } = await startBoardServer({ dir, host, port })
     console.log(`[agent-lines] board: ${url}`)
     console.log(`[agent-lines] snapshots: ${dir}`)
-    console.log(`[agent-lines] actions: ${db === null ? 'disabled (no db)' : 'enabled (x-board-token required)'}`)
-    if (db !== null) console.log(`[agent-lines] token: ${token}`)
+    console.log('[agent-lines] read-only')
     process.on('SIGINT', () => { server.close(() => process.exit(0)) })
     return 0
   }

@@ -102,7 +102,7 @@ DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是
 
 场景：需要按 UIUX 0.6 的 bento 规范看组织/任务/部门/沟通/数据。
 用法：dsh-agent-lines board --port 4090 --db $DSH_HOME/agent-lines/lines.db。
-效果：固定四槽、同行等高、卡内滚动、data-level、面包屑；负责人操作跨视图可见。
+效果：只读；固定四槽、同行等高、卡内滚动、data-level、面包屑；看板侧不做操作/消息。
 
 ### 0.6.5：负责人本地操作
 

@@ -30,16 +30,16 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
 </style></head>
 <body>
 <div class="topbar"><span class="brand">dsh-agent-lines · 团队看板</span><span class="badge">0.6.6 · UIUX 验收版</span><span class="badge" id="src">数据：加载中</span><span class="crumb" id="crumb">团队 &gt; 负责人 &gt; 总览</span>
-<div class="tabs" role="tablist"><button class="tab" data-view="overview" aria-selected="true">总览</button><button class="tab" data-view="tasks" aria-selected="false">任务</button><button class="tab" data-view="dept" aria-selected="false">部门</button><button class="tab" data-view="comm" aria-selected="false">沟通</button><button class="tab" data-view="metrics" aria-selected="false">数据</button></div></div>
+<div class="tabs" role="tablist"><button class="tab" data-view="overview" aria-selected="true">总览</button><button class="tab" data-view="tasks" aria-selected="false">任务</button><button class="tab" data-view="dept" aria-selected="false">部门</button><button class="tab" data-view="metrics" aria-selected="false">数据</button></div></div>
 <div class="wrap"><div class="grid">
 <section class="card tree" data-level="root"><div class="slot-title"><h2>组织树</h2><span class="slot-status">只读</span></div><div class="slot-meta"><span class="slot-owner">负责人会话 → 角色线 → 官方团队</span><span class="slot-time" id="treeTime">—</span></div><div class="slot-body"><div class="sub">只到三级；成员进右侧详情。</div><ul id="tree"></ul></div><div class="slot-actions"><span class="slot-status">只读</span><button disabled>操作（0.6.5）</button></div></section>
 <section class="card main" data-level="root"><div class="slot-title"><h2 id="mainTitle">总览</h2><span class="slot-status">只读</span></div><div class="slot-meta"><span class="slot-owner" id="mainOwner">负责人</span><span class="slot-time" id="mainTime">—</span></div><div class="slot-body" id="mainBody"><div class="empty"><h3>加载中</h3><p>读取 team-board.json</p></div></div><div class="slot-actions"><span class="slot-status">只读</span><button disabled>操作（0.6.5）</button></div></section>
 <aside class="card side" data-level="root"><div class="slot-title"><h2>详情 / 收件箱</h2><span class="slot-status">只读</span></div><div class="slot-meta"><span class="slot-owner" id="sideOwner">—</span><span class="slot-time" id="sideTime">—</span></div><div class="slot-body" id="sideBody"><div class="empty"><h3>未选择</h3><p>点击组织树中的线</p></div></div><div class="slot-actions"><span class="slot-status">只读</span><button disabled>操作（0.6.5）</button></div></aside>
-<section class="card full" data-level="root"><div class="slot-title"><h2 id="fullTitle">沟通 / 数据</h2><span class="slot-status">只读</span></div><div class="slot-meta"><span class="slot-owner" id="fullOwner">—</span><span class="slot-time" id="fullTime">—</span></div><div class="slot-body" id="fullBody"></div><div class="slot-actions"><span class="slot-status">只读</span><button disabled>操作（0.6.5）</button></div></section>
-</div></div><div id="toast" class="note" style="position:fixed;right:16px;bottom:16px;background:var(--panel);border:1px solid var(--bd);padding:8px;border-radius:8px;display:none;z-index:20"></div>
+<section class="card full" data-level="root"><div class="slot-title"><h2 id="fullTitle">数据</h2><span class="slot-status">只读</span></div><div class="slot-meta"><span class="slot-owner" id="fullOwner">—</span><span class="slot-time" id="fullTime">—</span></div><div class="slot-body" id="fullBody"></div><div class="slot-actions"><span class="slot-status">只读</span><button disabled>操作（0.6.5）</button></div></section>
+</div></div>
 <script>
 const $=id=>document.getElementById(id)
-const S={board:null,metrics:null,live:null,lines:[],line:null,dept:null,view:'overview',expanded:{},busy:false,error:null}
+const S={board:null,metrics:null,lines:[],line:null,dept:null,view:'overview',expanded:{},busy:false,error:null}
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
 const val=(v,d='—')=>v===null||v===undefined||v===''?d:v
 const pill=(s,cls='')=>'<span class="pill '+cls+'">'+esc(val(s))+'</span>'
@@ -54,10 +54,8 @@ async function load(){
     S.line=S.line||S.board?.manager?.line||S.lines[0]?.label||'manager'
     try{S.dept=await get('/api/team-board/'+encodeURIComponent(S.line))}catch{S.dept=null}
     try{S.metrics=await get('/api/team-metrics')}catch{S.metrics=null}
-    try{S.live=await get('/api/live')}catch{S.live=null}
   }catch(e){S.error=String(e.message||e)}finally{S.busy=false;draw()}
 }
-async function live(){try{S.live=await get('/api/live')}catch{}if(S.view==='comm')draw()}
 function tree(){
   const root=S.board?.manager?.line||'manager';const rc=count(S.board?.tasks)
   let h='<li><div class="node" data-id="'+esc(root)+'" aria-selected="'+String(S.line===root)+'"><span>▾</span><span class="nm">'+esc(root)+'</span><span class="lvl">负责人</span><span class="n">'+rc.total+'</span></div><ul>'
@@ -88,13 +86,6 @@ function dept(){
   h+='<h3 style="font-size:14px;margin:12px 0 6px">任务</h3>'+(t.length?'<table><thead><tr><th>任务</th><th>状态</th><th>parent</th><th>策略</th></tr></thead><tbody>'+t.map(x=>'<tr><td>'+esc(x.subject||x.id)+'</td><td>'+pill(x.status)+'</td><td>'+esc(val(x.parentTaskId))+'</td><td>'+esc(val(x.subteamPolicy))+'</td></tr>').join('')+'</tbody></table>':empty('暂无部门任务','该线没有官方团队任务。'))
   $('mainBody').innerHTML=h
 }
-function comm(){
-  const rows=(S.view==='comm'&&S.dept?.messages)?S.dept.messages:(S.board?.messages||[])
-  if(!rows.length){$('mainBody').innerHTML=empty('暂无沟通消息','官方内部子 agent 私聊不暴露。');return}
-  let h='<table><thead><tr><th>时间</th><th>from → to</th><th>kind</th><th>state</th><th>taskRef</th><th>摘要</th></tr></thead><tbody>'
-  rows.slice(0,80).forEach(x=>h+='<tr><td>'+esc(new Date(x.at||x.created_at||0).toLocaleString())+'</td><td>'+esc(val(x.from||x.from_line))+' → '+esc(val(x.to||x.to_line))+'</td><td>'+esc(val(x.kind))+'</td><td>'+esc(val(x.state))+'</td><td>'+esc(val(x.taskRef))+'</td><td>'+esc(String(x.summary||x.body||'').slice(0,100))+'</td></tr>')
-  $('mainBody').innerHTML=h+'</tbody></table>'
-}
 function metrics(){
   const m=S.metrics;if(!m){$('mainBody').innerHTML=empty('暂无数据快照','调用 line_metrics 生成 team-metrics.json。');return}
   const b=m.tasks?.byLine||[],ls=m.lines||[]
@@ -104,47 +95,30 @@ function metrics(){
 }
 function side(){
   const l=S.lines.find(x=>x.label===S.line);if(!l){$('sideBody').innerHTML=empty('未选择','点击组织树中的线。');return}
-  const d=nodeSum(l),m=S.dept?.officialTeam?.members||[],inbox=S.board?.inbox||[]
-  let h='<div class="kv"><span>线</span><span>'+esc(l.label)+'</span></div><div class="kv"><span>状态</span><span>'+esc(val(l.status))+' · gen '+esc(val(l.generation))+'</span></div><div class="kv"><span>官方团队</span><span>'+(l.officialTeamAvailable?'是':'否')+'</span></div><div class="kv"><span>任务</span><span>'+val(d.total,0)+'</span></div><div class="kv"><span>策略</span><span>'+esc(val(l.subteamPolicy))+' / '+esc(val(l.maxMembers))+'</span></div>'
+  const d=nodeSum(l),m=S.dept?.officialTeam?.members||[]
+  let h='<div class="kv"><span>线</span><span>'+esc(l.label)+'</span></div><div class="kv"><span>状态</span><span>'+esc(val(l.status))+' · gen '+esc(val(l.generation))+'</span></div><div class="kv"><span>官方团队</span><span>'+(l.officialTeamAvailable?'是':'否')+'</span></div><div class="kv"><span>任务</span><span>'+val(d.total,0)+'</span></div><div class="kv"><span>策略</span><span>'+esc(val(l.subteamPolicy))+' / '+esc(val(l.maxMembers))+'</span></div><div class="kv"><span>subteamAudit</span><span>'+esc(val(S.dept?.subteamAudit?.overLimit))+'</span></div>'
   h+='<h3 style="font-size:14px;margin:12px 0 6px">成员</h3>'+(m.length?'<div class="row">'+m.map(x=>pill(x.name)).join('')+'</div>':empty('无成员','该线没有官方团队成员。'))
-  h+='<h3 style="font-size:14px;margin:12px 0 6px">待审批</h3>'+(inbox.length?'<div class="row">'+inbox.slice(0,5).map(x=>pill(x.id||x.messageId||'','warn')).join('')+'</div>':empty('无待审批','inbox 没有 pending_approval。'))
   $('sideBody').innerHTML=h
 }
 function full(){
-  const rows=(S.view==='comm'&&S.dept?.messages)?S.dept.messages:(S.board?.messages||[])
-  let content=''
-  if(S.view==='comm'){
-    content='<div class="note">沟通：线与线、线与部门；官方内部子 agent 私聊不暴露。</div><table><thead><tr><th>时间</th><th>from → to</th><th>kind</th><th>state</th><th>taskRef</th><th>摘要</th></tr></thead><tbody>'+rows.slice(0,80).map(x=>'<tr><td>'+esc(new Date(x.at||x.created_at||0).toLocaleString())+'</td><td>'+esc(val(x.from))+' → '+esc(val(x.to))+'</td><td>'+esc(val(x.kind))+'</td><td>'+esc(val(x.state))+'</td><td>'+esc(val(x.taskRef))+'</td><td>'+esc(String(x.summary||x.body||'').slice(0,100))+'</td></tr>').join('')+'</tbody></table>'
-  }else if(S.view==='metrics'){
-    content='<div class="note">数据视图在中间主区展示；这里是负责人本地操作入口。</div>'
-  }else{
-    content='<div class="note">本地负责人操作：token 保护，只绑 127.0.0.1。</div>'
-  }
-  content+='<div class="row" style="margin-top:8px"><input id="token" type="text" placeholder="board token"><input id="to" type="text" placeholder="to line"><input id="text" type="text" placeholder="消息正文"><button id="send">发送</button></div><div class="row"><input id="msgid" type="text" placeholder="pending message id"><button id="approve">批准</button><button id="reject">拒绝</button><button id="handoff">handoff</button></div><div id="action-result" class="note"></div>'
-  $('fullBody').innerHTML=content
-  $('send').onclick=()=>act('send',{to:$('to').value.trim(),text:$('text').value.trim(),kind:'info'})
-  $('approve').onclick=()=>act('approve',{messageId:$('msgid').value.trim()})
-  $('reject').onclick=()=>act('reject',{messageId:$('msgid').value.trim()})
-  $('handoff').onclick=()=>act('handoff',{line:$('to').value.trim()})
+  const m=S.metrics
+  if(!m){$('fullBody').innerHTML=empty('暂无数据','调用 line_metrics 生成 team-metrics.json。');return}
+  const b=m.tasks?.byLine||[],ls=m.lines||[]
+  let h='<div class="row">'+pill('任务 '+val(m.tasks?.manager?.total,0))+pill('线 '+val(m.sessions?.lines,0))+pill('成员 '+val(m.sessions?.officialMembers,0))+pill('消息 '+val(m.messages?.total,0))+pill('token '+val(m.tokens?.total,0))+'</div>'
+  h+='<table><thead><tr><th>线</th><th>任务</th><th>完成</th><th>进行</th><th>阻塞</th><th>token</th></tr></thead><tbody>'+b.map(x=>{const l=ls.find(y=>y.label===x.line);return '<tr><td>'+esc(x.line)+'</td><td>'+val(x.total,0)+'</td><td>'+val(x.done,0)+'</td><td>'+val(x.inProgress,0)+'</td><td>'+val(x.blocked,0)+'</td><td>'+val(l?.activity?.decodeTokens,0)+'</td></tr>'}).join('')+'</tbody></table><div class="note" style="margin-top:12px">'+esc((m.limitations||[]).join('；'))+'</div>'
+  $('fullBody').innerHTML=h
 }
-async function act(path,body){
-  const t=$('token').value.trim();if(!t){toast('请先填 board token');return}
-  const r=await fetch('/api/actions/'+path,{method:'POST',headers:{'content-type':'application/json','x-board-token':t},body:JSON.stringify(body)})
-  const d=await r.json().catch(()=>({}));const msg=r.ok?'OK '+JSON.stringify(d):'失败 '+JSON.stringify(d)
-  toast(msg);if(r.ok)await load();$('action-result')&&($('action-result').textContent=msg)
-}
-function toast(msg){const el=$('toast');if(!el)return;el.style.display='block';el.textContent=msg}
 function draw(){
   $('src').textContent=S.error?'数据：错误':(S.busy?'数据：加载中':'数据：快照')
   $('mainTime').textContent=S.board?.generatedAt?new Date(S.board.generatedAt).toLocaleString():'—';$('sideTime').textContent=$('mainTime').textContent;$('fullTime').textContent=$('mainTime').textContent
   $('mainOwner').textContent=S.line||'负责人';$('sideOwner').textContent=S.line||'—';$('fullOwner').textContent=S.line||'—'
-  const labels={overview:'总览',tasks:'任务',dept:'部门',comm:'沟通',metrics:'数据'}
-  $('mainTitle').textContent=labels[S.view]+' · '+(S.line||'负责人');$('fullTitle').textContent=S.view==='comm'?'沟通':'数据 / 操作';$('crumb').textContent='团队 > '+(S.line||'负责人')+' > '+labels[S.view]
+  const labels={overview:'总览',tasks:'任务',dept:'部门',metrics:'数据'}
+  $('mainTitle').textContent=labels[S.view]+' · '+(S.line||'负责人');$('fullTitle').textContent='数据';$('crumb').textContent='团队 > '+(S.line||'负责人')+' > '+labels[S.view]
   if(S.error){$('tree').innerHTML='';$('mainBody').innerHTML=empty('读取失败',S.error);$('sideBody').innerHTML='';$('fullBody').innerHTML='';return}
   tree();side()
-  if(S.view==='overview')overview();else if(S.view==='tasks')tasks();else if(S.view==='dept')dept();else if(S.view==='comm')comm();else metrics()
+  if(S.view==='overview')overview();else if(S.view==='tasks')tasks();else if(S.view==='dept')dept();else metrics()
   full()
 }
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{S.view=t.dataset.view;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',String(x===t)));draw()})
-load();setInterval(live,5000)
+load()
 </script></body></html>
