@@ -32,6 +32,10 @@ English | [中文](KNOWN_ISSUES.md)
 | G7 | No DSH capability probing | Hard version range `>=0.2.1-rc.5 <0.3.0`; a new rc may break everything instead of degrading | 0.9.0 (probe + graceful degradation) |
 | G8 | No cost controls | `line_metrics` exposes per-line `decodeTokens` but no daily deltas, rate, budget or idle hibernation | 0.10.0 |
 | G9 | Team shape is not a file artifact | Teams are generated in conversation; not reproducible, reviewable, or portable | 0.10.0 evaluation (`team.yaml`, must respect I5: validate, never intercept) |
+| G10 | Real context usage is unavailable | Only an activity proxy (turns/steps/lastActivityAt); DSH does not expose per-Session window occupancy, and we never fake a percentage | **Blocked** on DSH; surfaced as soon as 0.9.0 capability probing finds it |
+| G11 | No stable status API | External consumers can only read `team-board.json` snapshots, with no schema promise | 0.9.0 versions the snapshot schema with the protocol work; 0.10.0 evaluates a read-only status endpoint |
+| G12 | No message priority (jump the queue) | The queue is time-ordered; P0 instructions cannot jump ahead | **Not planned**: conflicts with at-least-once + ack ordering semantics until designed |
+| G13 | No line grouping / subteam labels | The department view expresses hierarchy, not cross-cutting groups like "production/QA" | 0.10.0 evaluation |
 
 ## 3. Known traps (usage and operations)
 
