@@ -34,6 +34,7 @@
 | `ackTimeoutMs` | int ms | `600000` (min 60000) | **Report-only**: flags overdue `delivered`, never auto-retries |
 | `tokenSampleMs` | int ms | `60000` (min 5000) | Samples cumulative session `decodeTokens` into the events table (line_events, action token_sample); unchanged values are skipped; token trend is an estimate, not billing (0.10.0+) |
 | `tokenRetentionDays` | int | `30` (min 1, max 365) | Token samples older than this are pruned hourly (keeps line_events bounded) |
+| `teamRoot` | path or null | `null` (off) | Optional team workspace dir (`registry.json` + `charters/*.md`); read-only role cards for board/status; no DB migration |
 | `dbPath` | path | see §1 | Must be a local filesystem |
 | `pollMs` | int ms | `500` | Delivery loop tick |
 | `leaseTtlMs` | int ms | `30000` | Owner lease heartbeat |
@@ -48,7 +49,7 @@
 | `childPreset` | string | `standard` | DSH agent preset for created lines |
 | `transport` | string | `sqlite` | `sqlite` or `memory` (in-memory SQLite; proves the transport seam and keeps tests instant) |
 
-## 3. Tool contracts (24 tools)
+## 3. Tool contracts (25 tools)
 
 Manager-only unless noted. "Delivered" = peer messages addressed to the calling line.
 
@@ -66,6 +67,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 | `line_purge` | manager | `before` (required), `states?`, `dryRun?` (default true) | Delete terminal messages; writes `purged` events |
 | `line_handoff` | manager | `line`, `format?(md|json)`, `limit?` | Structured handoff snapshot (no model call) |
 | `line_retire` | manager | `line`, `reason?` | Soft retire; keeps Session/history (terminal) |
+| `line_set_role` | manager | `line`, `role` | Update a line's short role text (persisted; used by org view/role cards) |
 | `line_hibernate` | manager | `line`, `reason?` | Park an idle line: stop delivery, release the lease, keep Session/history; inbound delivery and outbound sends return `LINE_HIBERNATING` |
 | `line_wake` | manager | `line`, `reason?` | Wake a hibernating line: re-acquire the lease, resume delivery, same Session; retired lines cannot be woken |
 | `line_rebind` | manager | `line`, `sessionId`, `migrate?`, `force?` | Point label at another Session |

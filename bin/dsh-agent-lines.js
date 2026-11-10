@@ -6,13 +6,15 @@
 import { existsSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { LineStore, defaultDbPath } from '../lib/store.js'
-import { LineError, lineId } from '../lib/protocol.js'
+import { LineError, PROTOCOL_VERSION, lineId } from '../lib/protocol.js'
+import { loadTeamWorkspace } from '../lib/team-workspace.js'
 import { startBoardServer } from '../lib/board-server.js'
 
 function usage() {
   console.error(`Usage:
   dsh-agent-lines [--db <path>] [--json] observe [--line <line>] [--since <epochMs>] [--limit N] [--agent <id>]
   dsh-agent-lines [--db <path>] [--json] list
+  dsh-agent-lines [--db <path>] [--json] status [--team-root <dir>] [--agent <id>]
   dsh-agent-lines [--db <path>] [--json] send --from <line> --to <line|agent#line> --text <text> [--agent <id>] [--key <key>] [--reply-to <id>]
   dsh-agent-lines [--db <path>] [--json] inbox --line <line> [--agent <id>] [--limit N] [--all]
   dsh-agent-lines [--db <path>] [--json] ack --line <line> --id <messageId> [--agent <id>]
@@ -89,6 +91,33 @@ async function main() {
     }
     if (command === 'list') {
       print({ db: store.dbPath, lines: store.listLines(), counts: store.counts() }, opts.json)
+      return 0
+    }
+    if (command === 'status') {
+      const lines = store.listLines()
+      const agent = opts.agent !== undefined ? String(opts.agent) : (lines.length > 0 ? String(lines[0].agent_id ?? 'agent-deepseek') : 'agent-deepseek')
+      const stats = store.messageStats({ agentId: agent })
+      const counts = store.counts()
+      const trend = store.messageTrend({ agentId: agent, days: 7 })
+      const tokenTrend = store.tokenTrend({ agentId: agent, lines: lines.map(line => line.label), days: 7 })
+      const teamRoot = opts['team-root'] !== undefined ? String(opts['team-root']) : process.env.DSH_AGENT_LINES_TEAM_ROOT
+      const workspace = teamRoot === undefined || String(teamRoot).trim() === '' ? { enabled: false } : loadTeamWorkspace({ teamRoot, lines })
+      const payload = {
+        schemaVersion: 1,
+        protocolVersion: PROTOCOL_VERSION,
+        generatedAt: Date.now(),
+        agent,
+        db: store.dbPath,
+        counts,
+        lines: lines.map(line => ({
+          label: line.label, role: line.role, title: line.title, lifecycle: line.lifecycle, status: line.status,
+          pending: line.pending, generation: line.generation, lastActivityAt: line.lastActivityAt,
+        })),
+        messages: { total: stats.total, byKind: stats.byKind, byState: stats.byState, trend },
+        tokens: { total: tokenTrend.lines.reduce((sum, item) => sum + (item.latest ?? 0), 0), today: tokenTrend.today, perDay: tokenTrend.perDay, byLine: tokenTrend.lines, basis: tokenTrend.basis },
+        teamWorkspace: { enabled: workspace.enabled, root: workspace.root ?? null, error: workspace.error ?? null, registryError: workspace.registryError ?? null, lines: workspace.lines ?? [] },
+      }
+      print(payload, opts.json)
       return 0
     }
     if (command === 'doctor') {
