@@ -215,7 +215,9 @@ const PAIRS = [
     if (claim === null) bad.push('AGENTS.md missing "(N tools)" claim')
     else if (Number(claim[1]) !== actualTools.length) bad.push('AGENTS.md claims ' + claim[1] + ' tools but code has ' + actualTools.length)
     // 2) 声明的工具都存在，且每个工具都被提到
-    const mentioned = new Set([...agents.matchAll(/`(line_[a-z_]+)`/g)].map(m => m[1]))
+    // 豁免 DB 表/列等非工具标识（工具名与表名都可能以 line_ 开头）
+    const NON_TOOL_IDS = new Set(['line_events', 'line_id', 'line_ids'])
+    const mentioned = new Set([...agents.matchAll(/`(line_[a-z_]+)`/g)].map(m => m[1]).filter(id => !NON_TOOL_IDS.has(id)))
     for (const t of mentioned) if (!actualTools.includes(t)) bad.push('AGENTS.md mentions unknown tool ' + t)
     for (const t of actualTools) if (!mentioned.has(t)) bad.push('AGENTS.md omits tool ' + t)
     // 3) schema 版本与代码一致
