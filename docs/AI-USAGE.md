@@ -12,7 +12,7 @@
    - 会在 `<teamRoot>/<团队名>/` 生成 `TEAM.md`、`charters/*.md`、`decisions/README.md`、`registry.json`；
    - 团队名 = 该根目录名；`TEAM.md` 的业务目标由 manager 从对话提炼后更新；
    - 已存在默认跳过，`overwrite:true` 才覆盖。
-5. 派单：`line_send({to, text, kind:"task", taskRef:"<任务名>"})`；跟踪用 `line_manage`? 不，用 `line_team_board` / `line_department_board` 读官方投影。
+5. 派单：`line_send({to, text, kind:"task", taskRef:"<任务名>"})`；跟踪用 `line_team_board` / `line_department_board` 读官方投影。
 6. 看板：`dsh-agent-lines board --db <lines.db> --dir <快照目录> --team-root <teamRoot>/<团队名> --port 4090`，浏览器打开。
 
 ## 2. 常用工具一览
