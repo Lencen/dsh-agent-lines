@@ -155,6 +155,14 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0: team workspace and board (unreleased)
+
+- Read-only teamRoot: registry.json, charters, TEAM.md (goal/summary/plan/cadence), decisions; missing shows unavailable.
+- New manager-only line_init_team (tools 25->26): idempotent init of TEAM.md, manager/line charters, decisions README, registry.
+- Zero-config manager role defaults to 负责人; charter is manage-only (no execution), coordinates resources, extracts goals and updates TEAM.md.
+- Board: five views, docked detail, ECharts, visible-only polling (10s adjustable, ETag).
+- status --json adds teamWorkspace/teamGoal/decisions; no DB migration, no protocol change.
+
 ### 0.10.0: cost trend and hibernation
 
 Scenario: a long-running team; you want to know daily token spend and how to park idle lines.

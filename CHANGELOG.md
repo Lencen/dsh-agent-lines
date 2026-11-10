@@ -2,6 +2,17 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.0 (未发布)
+
+### 团队工作区与看板（S5）
+
+- 新增 teamRoot 配置与只读读取：registry.json、charters/<label>.md、TEAM.md（团队目标/简介/规划/计划节奏）、decisions/<id>.md（决策来源/背景/分析/影响/建议）；缺失显示“暂无/不可得”，不编造。
+- 新工具 line_init_team（manager-only，工具 25→26）：幂等初始化/合并 TEAM.md、charters/manager.md、charters/<line>.md、decisions/README.md、registry.json；默认不覆盖（overwrite=true 才覆盖）。
+- 零配置 manager 默认 role=负责人；负责人章程明确“只管理不执行、协调资源、从对话提炼目标并更新 TEAM.md”。
+- 看板 web 重写：总览/组织/任务/数据/消耗五视图；停靠详情（固定 420、内部滚动）；总览默认团队目标与计划、点决策切换详情；组织 L1/L2/L3 + 交接链 + 历史线；任务卡创建时间（taskRef 估算，缺失不可得）；ECharts（本地 vendor）；刷新控件仅页面可见时轮询（默认 10s，可调，ETag 304）。
+- status --json 新增 teamWorkspace / teamGoal / decisions 摘要。
+- 无 DB 迁移（schema 14）、无协议变化（0.4）、全部 additive。
+
 ## 0.10.0 (2026-11-10)
 
 ### 评估（S3c，仅报告）

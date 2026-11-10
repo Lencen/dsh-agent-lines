@@ -2,6 +2,17 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0 (unreleased)
+
+### Team workspace and board (S5)
+
+- New optional teamRoot: read-only registry.json, charters, TEAM.md (goal/summary/plan/cadence), decisions/*.md; missing fields show not collected/unavailable, never invented.
+- New manager-only tool line_init_team (tool count 25->26): idempotent init/merge of TEAM.md, manager/line charters, decisions README, registry; no overwrite by default.
+- Zero-config manager defaults to role 负责人; manager charter states manage-only (no execution), resource coordination, goal extraction and TEAM.md updates.
+- Board rewrite: overview/org/tasks/data/cost, docked detail drawer, default team goal, decision detail, L1/L2/L3 org, handoff chain, history, ECharts, visible-only polling (10s default, adjustable, ETag).
+- status --json adds teamWorkspace/teamGoal/decisions.
+- No DB migration (schema 14), no protocol change (0.4).
+
 ## 0.10.0 (2026-11-10)
 
 ### Evaluation (S3c, report only)

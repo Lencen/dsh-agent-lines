@@ -156,6 +156,14 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
+### 0.11.0：团队工作区与看板（未发布）
+
+- teamRoot 只读读取：registry.json、charters、TEAM.md（目标/简介/规划/节奏）、decisions；缺失显示暂无/不可得。
+- 新工具 line_init_team（manager-only，工具 25→26）：幂等初始化 TEAM.md / manager 与线的章程 / decisions README / registry。
+- 零配置 manager 默认 role=负责人；章程明确只管理不执行、协调资源、从对话提炼目标并更新 TEAM.md。
+- 看板五视图（总览/组织/任务/数据/消耗）、停靠详情、ECharts、仅可见时轮询（10s 可调、ETag）。
+- status --json 增加 teamWorkspace/teamGoal/decisions；无 DB 迁移、无协议变化。
+
 ### 0.10.0：成本趋势与休眠
 
 场景：团队长期挂着，想知道每天花了多少 token、空闲线怎么停。
