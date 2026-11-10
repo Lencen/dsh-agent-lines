@@ -157,6 +157,10 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-17: footer version fix (unreleased)
+
+- Footer prints the raw `/api/health.version` value (no more hardcoded 0.11.0- prefix).
+
 ### 0.11.0-16: board shows plugin version (unreleased)
 
 - Topbar "插件版本 v0.11.0-16" and footer both show the plugin version, sourced from `/api/health.version`.

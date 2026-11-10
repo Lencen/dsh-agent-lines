@@ -212,7 +212,7 @@ function renderCost(){
 }
 function renderAll(){
   var name=teamName();document.title=name+' · 团队看板';$('#team-name').textContent=name;
-  var v=(state.health&&state.health.version)||null;var vb=$('#version-badge');vb.textContent=v?('插件版本 v'+v):'插件版本 v未采集';vb.className=v?'badge ok':'badge';var fv=$('#footer-version');if(fv)fv.textContent=v?('0.11.0-'+String(v).split('-').pop()):'未采集';
+  var v=(state.health&&state.health.version)||null;var vb=$('#version-badge');vb.textContent=v?('插件版本 v'+v):'插件版本 v未采集';vb.className=v?'badge ok':'badge';var fv=$('#footer-version');if(fv)fv.textContent=v||'未采集';
   renderOverview();renderOrg();renderTasks();renderData();renderCost();
 }
 function openDrawer(title,blocks){

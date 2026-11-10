@@ -2,6 +2,13 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-17 (unreleased)
+
+### Footer version fix (S5c-4)
+
+- The footer now prints the raw `/api/health.version` value instead of concatenating `0.11.0-<suffix>` (that only worked for 0.11.0-x and would be wrong for the next version).
+- The rest is the same as 0.11.0-16 (topbar/footer show the plugin version explicitly).
+
 ## 0.11.0-16 (unreleased)
 
 ### Board shows plugin version (S5c-3)
