@@ -55,3 +55,14 @@ test('readDecisions parses decision markdown files', () => {
     assert.equal(list[0].suggestion, '同意并补说明')
   } finally { rmSync(dir, { recursive: true, force: true }) }
 })
+
+test('readDecisions parses optional status (processed decisions)', () => {
+  const dir = temp()
+  try {
+    mkdirSync(join(dir, 'decisions'), { recursive: true })
+    writeFileSync(join(dir, 'decisions/d2.md'), '# 初始化留痕\n\n## 状态\n已采纳\n\n## 背景\n建团队\n\n## 决策建议\n已执行\n')
+    const list = readDecisions({ teamRoot: dir })
+    assert.equal(list.length, 1)
+    assert.equal(list[0].status, '已采纳')
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})

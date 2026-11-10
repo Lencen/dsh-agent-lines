@@ -436,16 +436,17 @@ function patchStatic(){
  st('#goal-badge',g.available?'来自 TEAM.md':'未采集');
  var pr=q('#overview-progress');if(pr)pr.style.width=(m.tasks>0?Math.round((m.done||0)/m.tasks*100):0)+'%';
  st('#kpi-doing',num(m.doing));st('#kpi-blocked',num(m.blocked));
- st('#kpi-overdue',num(m.overdue));st('#kpi-decisions',num((DATA.decisions||[]).length));
+ st('#kpi-overdue',num(m.overdue));st('#kpi-decisions',num(pendingDecisions().length));
  st('#kpi-cost-today',kfmt(tk.today));st('#kpi-cost-window',kfmt(tk.window));st('#kpi-cost-today2',kfmt(tk.today));st('#kpi-cost-window2',kfmt(tk.window));
  st('#org-title',name);st('#org-plan',g.plan||'未采集');st('#org-rhythm',g.rhythm||'未采集');
  var t=DATA.generatedAt?new Date(DATA.generatedAt).toTimeString().slice(0,5):'—';
  var dt=q('#data-time'),dt2=q('#data-time2');if(dt)dt.textContent='数据 '+t;if(dt2)dt2.textContent='数据 '+t;
  renderDecisionsReal();renderHandoffsReal();renderChipsReal();if(!(DATA.missions||[]).length){var f=q('#focus');if(f)f.innerHTML='<div class="section"><div class="muted">暂无任务（官方任务投影为空）</div></div>';var ms=q('#missions');if(ms)ms.innerHTML='<div class="section"><div class="muted">暂无任务（官方任务投影为空）</div></div>'}
 }
+function pendingDecisions(){return (DATA.decisions||[]).filter(function(d){return !/已采纳|已执行|已处理|已完成|adopted|done|resolved/i.test(String(d.status||'')+' '+String(d.title||''))})}
 function renderDecisionsReal(){
- var box=q('#decisions');if(!box)return;var list=DATA.decisions||[];
- if(!list.length){box.innerHTML='<div class="section"><div class="muted">暂无待决策</div></div>';return}
+ var box=q('#decisions');if(!box)return;var all=DATA.decisions||[];var list=pendingDecisions();var processed=all.length-list.length;
+ if(!list.length){box.innerHTML='<div class="section"><div class="muted">暂无待决策'+(processed?('（已处理 '+processed+' 条，见 decisions/）'):'')+'</div></div>';return}
  box.innerHTML=list.map(function(d){return '<div class="decision" data-dec="'+esc(d.id)+'"><div class="decision-head"><b>'+esc(d.title||d.id)+'</b><span class="badge badge-warn">'+esc(d.type||'决策')+'</span><span class="muted">负责人：manager</span><span class="grow"></span><button class="range view-dec" data-id="'+esc(d.id)+'">查看</button></div><div class="decision-body hidden" id="dec-'+esc(d.id)+'"><div>'+esc(d.detail||'不可得')+'</div><div class="decision-sug"><b>决策建议：</b>'+esc(d.suggestion||'不可得')+'</div></div></div>'}).join('');
  box.querySelectorAll('.view-dec').forEach(function(b){b.onclick=function(){var el=document.getElementById('dec-'+b.getAttribute('data-id'));if(el)el.classList.toggle('hidden')}});
 }
@@ -503,7 +504,7 @@ function mapData(live,board,metrics,health){
  DATA.team={name:(live&&live.teamName)||(board&&board.team&&board.team.name)||'团队',goal:(live&&live.teamGoal)||{}};
  DATA.metrics={tasks:totals.tasks,done:totals.done,doing:totals.doing,blocked:totals.blocked,overdue:totals.overdue,agents:((board&&board.members)||[]).length};
  DATA.missions=((board&&board.tasks)||[]).map(function(t){return {name:t.subject||t.name||t.id,status:(t.status==='blocked'?'阻塞':(t.status==='completed'||t.status==='done'?'完成':'进行中')),issuer:'manager',owner:t.ownerName||t.ownerLine||'—',ownerRole:'',started:'不可得',created:null,current:(t.status==='completed'?7:2),children:[],handoffs:[],messages:0,blockers:(t.blockedBy||[]).join(',')||''}});
- DATA.decisions=((live&&live.decisions)||[]).map(function(d){return {id:d.id,title:d.title,type:d.sourceType||'决策',owner:'manager',detail:d.background||d.analysis||'不可得',suggestion:d.suggestion||'不可得'}});
+ DATA.decisions=((live&&live.decisions)||[]).map(function(d){return {id:d.id,title:d.title,type:d.sourceType||'决策',status:d.status||null,owner:'manager',detail:d.background||d.analysis||'不可得',suggestion:d.suggestion||'不可得'}});
  DATA.retired=lineList.filter(function(l){return l.lifecycle==='retired'}).map(function(l){return {label:l.label,name:l.registryName||l.role||l.label,roleText:l.role||'',retiredAt:'不可得',reason:'不可得',generation:l.generation||1,oldSessionId:'不可得'}});
  var trend=((live&&live.messages&&live.messages.trend)||[]);
  DATA.trend.msgLab=trend.map(function(x){return x.day});DATA.trend.messages=trend.map(function(x){return Number(x.count)||0});

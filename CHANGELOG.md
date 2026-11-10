@@ -2,6 +2,15 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.0-23 (未发布)
+
+### line_init_team 参数修复 + 决策状态（S5g）
+
+- 修复：`line_init_team({teamRoot, teamName})` 同时给两个参数时，此前 teamRoot 直接生效、teamName 被忽略，文件被平铺到父目录（agent 只能"先生成再 mv"，并触发 DSH 覆盖写前需 read 的报错链）。现在 teamRoot 视为父目录、teamName 为子目录；只给其一行为不变。
+- `decisions/*.md` 支持可选 `## 状态`（如「已采纳」）；看板「需要我决策」只显示待决策项，已处理项不再当作待决策（显示"已处理 N 条"），KPI 待决策数同步修正。
+- docs：AI-USAGE 补参数规则与 decisions 约定（初始化留痕不要写 decisions/）；TEAM-WORKSPACE 补 decisions 状态小节。
+- 无 DB 迁移、无协议变化、只读。
+
 ## 0.11.0-22 (未发布)
 
 ### 看板按线图补负责人 + 低 token 建团队文档（S5f）

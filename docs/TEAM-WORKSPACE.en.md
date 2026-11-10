@@ -36,6 +36,19 @@ The manager is also a line (label from createFrom, default manager) and needs a 
 Only demand intake, task breakdown, dispatch, and coordination; does not execute tasks directly.
 ## 2. Responsibilities
 1) Receive demand and confirm goals/priority; 2) break down and assign tasks; 3) schedule cross-line dependencies; 4) track progress, escalations, acceptance.
+### 2d. decisions status (optional, 0.11.0-23+)
+
+A `decisions/<id>.md` file may include an optional section:
+
+```markdown
+## 状态
+已采纳
+```
+
+- Missing = pending; the board's "needs decision" card lists pending items only;
+- If status or title says 已采纳 / 已执行 / 已处理 / 已完成, the board does not count it as pending (shows "processed N" instead);
+- Do not put initialization audit notes under `decisions/` (that folder is user-facing decision cards); use `TEAM.md`/README.
+
 ### 2c. TEAM.md (team goal) is maintained by the manager
 
 Team goal / summary / plan / cadence come from teamRoot/TEAM.md. They are not hand-written by the user: the manager extracts them from conversations and writes/updates the file.

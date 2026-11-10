@@ -2,6 +2,15 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-23 (unreleased)
+
+### line_init_team parameter fix + decision status (S5g)
+
+- Fixed: when `line_init_team({teamRoot, teamName})` received both, teamRoot won and teamName was ignored, flattening files into the parent dir (agents had to "generate then mv", triggering the DSH read-before-overwrite error chain). Now teamRoot is the parent and teamName the subdir; passing only one behaves as before.
+- `decisions/*.md` supports an optional `## 状态` section (e.g. 已采纳); the board's "needs decision" card lists pending items only, processed items are counted but not shown as pending; the pending KPI is corrected.
+- docs: AI-USAGE adds the parameter rule and the decisions convention (do not put setup audit notes under decisions/); TEAM-WORKSPACE documents decision status.
+- No DB migration, no protocol change, read-only.
+
 ## 0.11.0-22 (unreleased)
 
 ### Board per-line chart includes manager + low-token setup docs (S5f)

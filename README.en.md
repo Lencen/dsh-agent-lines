@@ -157,6 +157,11 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-23: line_init_team parameter fix + decision status (unreleased)
+
+- `line_init_team({teamRoot, teamName})` now treats teamRoot as parent and teamName as subdir (fixes the "flatten to parent -> generate then mv -> overwrite errors" chain).
+- decisions support `## 状态`: 已采纳/已执行/已处理/已完成 are not counted as pending; do not put setup audit notes under decisions/.
+
 ### 0.11.0-22: per-line chart includes manager + low-token setup (unreleased)
 
 - Per-line chart includes the manager line; messages counted per line.

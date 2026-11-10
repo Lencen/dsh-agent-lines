@@ -267,3 +267,16 @@ test('line_hibernate refuses a line that is rebinding (V7)', async () => {
     )
   } finally { h.cleanup() }
 })
+
+test('line_init_team treats teamRoot as parent when teamName is also given', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const parent = join(h.dir, 'teams')
+    const res = await h.tools.get('line_init_team').execute({ teamRoot: parent, teamName: 'family-test' }, exec(h.manager))
+    assert.equal(res.teamName, 'family-test')
+    assert.ok(existsSync(join(parent, 'family-test', 'TEAM.md')), 'TEAM.md nested under parent/teamName')
+    assert.ok(existsSync(join(parent, 'family-test', 'charters', 'manager.md')))
+    assert.ok(!existsSync(join(parent, 'TEAM.md')), 'no flat TEAM.md at parent root')
+  } finally { h.cleanup() }
+})

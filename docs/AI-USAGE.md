@@ -17,7 +17,9 @@
    `line_init_team({ teamName: "<团队名>" })`
    - 在 `<teamRoot>/<团队名>/` 生成 `TEAM.md`、`charters/*.md`、`decisions/README.md`、`registry.json`；
    - **必须给 teamName**（只配了 teamRoot 时也不要把工作区根当团队根，会报 `LINE_TEAM_NAME_REQUIRED`）；
-   - 已存在默认跳过，`overwrite:true` 才覆盖。
+   - 已存在默认跳过，`overwrite:true` 才覆盖；
+   - **参数只给一种**：最终团队目录 `teamRoot`，或 `teamName`（配合配置 `teamRoot`）；两者同时给时 `teamRoot` 当父目录、`teamName` 当子目录（0.11.0-23 起）。不要"先生成到父目录再 mv"，那会触发覆盖写前的 read 校验错误链；
+   - `decisions/` 只放**待决策**事项；初始化留痕写 `TEAM.md`/README，已处理的决策在 md 里加 `## 状态` + `已采纳`（看板不再当作待决策）。
 5. 写目标并派单：
    - `<teamRoot>/<团队名>/TEAM.md` 四节：团队目标 / 简介 / 规划 / 计划节奏（manager 从对话提炼后更新）；
    - `charters/<label>.md` 四节：定位 / 职责 / 标准产出 / 边界（缺节看板显示「未采集」或「缺小节」）；
