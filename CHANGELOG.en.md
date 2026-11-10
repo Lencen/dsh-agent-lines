@@ -2,6 +2,15 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.7.0 (2026-11-10)
+
+**Breaking**: the web board is now read-only; board-side actions and messages are removed.
+
+- Remove communications view, token input, send/approve/reject/handoff.
+- Remove board action API and /api/live.
+- Keep org tree/overview/tasks/department/metrics views.
+- Plugin tools remain unchanged.
+
 ## 0.6.6 (2026-11-10)
 
 - Rebuild the web board to the UIUX 0.6 eight-rule bento layout.
