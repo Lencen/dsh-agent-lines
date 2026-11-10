@@ -2,7 +2,7 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.9.0 (unreleased)
+## 0.9.0 (2026-11-10)
 
 ### Protocol (S2a)
 
