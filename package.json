@@ -42,7 +42,9 @@
     "dsh": ">=0.2.1-rc.5 <0.3.0"
   },
   "scripts": {
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js && node scripts/check-docs-consistency.mjs",
+    "test:unit": "node --test test/*.test.js",
+    "check:docs": "node scripts/check-docs-consistency.mjs"
   },
   "keywords": [
     "dsh-plugin",

@@ -23,6 +23,38 @@ Use it when:
 - You want one lead agent to decompose work, create the team, track progress, collect results, and report back.
 
 
+## How the two team shapes look
+
+### Official "Agent Teams" plugin
+
+~~~text
+one DSH session
+  └─ several subagents inside that session
+~~~
+
+- One session is one official team.
+- Subagents are task-scoped members: started around a task, usually released or reused when it ends.
+- A subagent is not a long-lived role; do not treat it as a fixed member with long-term memory.
+- The official team has a task board, task dependencies and a web panel.
+- Subtasks run concurrently inside the team.
+
+### dsh-agent-lines
+
+~~~text
+several DSH sessions form a team
+  ├─ manager session
+  ├─ developer role session
+  ├─ tester role session
+  └─ proofreader role session
+~~~
+
+- The team is made of sessions, not "one session stuffed with subagents".
+- Each session has its own durable memory.
+- A role can work continuously in its session, or come back later.
+- When a session fills up, swap the session — never the role.
+- The manager decomposes, dispatches and accepts results in its own session.
+- dsh-agent-lines itself provides no task board.
+
 ## How it differs from official Agent Teams
 
 Not a replacement: they complement each other. One line: **Agent Teams owns the work, dsh-agent-lines owns the people and the messages.**
@@ -122,6 +154,30 @@ Note: the read-only board cut shipped in **0.6.6**; 0.7.0 does not declare it ag
 Scenario: review the org/tasks/department/communications/metrics board against the UIUX line's Bento spec (DESIGN-SPEC §11, finalized 2026-11-09).
 Use: dsh-agent-lines board --port 4090 --db $DSH_HOME/agent-lines/lines.db.
 Effect: read-only; fixed slots, equal-height rows, inner scrolling, data-level, breadcrumbs; no board-side actions or messages.
+
+### 0.6.5: manager local actions
+
+Scenario: the manager wants to send, approve/reject pending tasks, or hand off directly from the browser board.
+Use: board actions require `x-board-token`; still bound to 127.0.0.1; without a token the board is read-only.
+Effect: functional version only; no hard subteam blocking (still waiting on the official API).
+
+### 0.6.4: built-in read-only web board
+
+Scenario: the manager does not want to call tools every time and wants to see team tasks/departments in a browser.
+Use: `dsh-agent-lines board` on 127.0.0.1:4090, reading `team-board.json` / `team-board.<line>.json`.
+Effect: org tree, tasks and department drawers; no write API; never exposed to the public network automatically.
+
+### 0.6.3: unified data board
+
+Scenario: the manager needs a read-only data surface for tasks, lines, subteams and message trends.
+Use: `line_metrics({ days })` returns task/line/subteam stats, message kind/state with daily trends, and per-line current tokens.
+Effect: official tasks have no timestamp and no per-task tokens; trends are never faked.
+
+### 0.6.2: communication board
+
+Scenario: the manager needs to see messages between lines and between a line and its official team.
+Use: `line_communications` filters by line, task, kind and state.
+Effect: read-only work trail; internal private chats of official subagents are declared unreadable, never fabricated.
 
 ### 0.6.1: internal team policy and audit
 
@@ -265,6 +321,11 @@ The lead creates the team first; the work comes next.
 6. You see the lead's summary; each member keeps its own context and message history.
 
 This is a prompt-driven team pattern, not a built-in org chart: the lead model decides how to split work. Technical details are in "Use" and "Delivery semantics" below.
+
+## Context activity
+
+line_status / line_list return activity: turns/steps/decodeTokens/level/lastActivityAt.
+level is an activity proxy (low/medium/high), not a context-usage percentage; DSH does not expose the context window today.
 
 ## Use
 
