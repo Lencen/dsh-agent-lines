@@ -417,7 +417,7 @@ renderOrgChart();renderRetired();renderTasks(false);
  function mapLive(l,board,metrics){
   if(!l)return;
   var lines=(l.lines||[]).map(function(x){
-   return {id:x.label,name:x.name||x.title||x.label,status:x.status==='online'?'active':(x.status||'active'),tasks:0,generation:x.generation||1,roleText:x.role||'',
+   return {id:x.label,name:x.registryName||x.name||x.title||x.label,status:x.status==='online'?'active':(x.status||'active'),tasks:0,generation:x.generation||1,roleText:x.role||'',
     members:[],rebinds:[],
     charter:{source:'charters/'+x.label+'.md',updated:'',sections:(x.sections||{})}}};
   });
@@ -436,7 +436,8 @@ renderOrgChart();renderRetired();renderTasks(false);
   try{if(typeof renderRetired==='function')renderRetired()}catch(e){}
   try{if(typeof v5RenderData==='function')v5RenderData()}catch(e){}
   try{if(typeof v5SetView==='function')v5SetView('overview')}catch(e){}
-  try{document.title=(l.teamName||'团队')+' · 团队看板';var tt=document.querySelector('.card-title .muted')}catch(e){}
+  try{document.title=(l.teamName||'团队')+' · 团队看板';
+   var oc=document.querySelector('#view-overview .card');if(oc){var ot=oc.querySelector('.card-title');if(ot)ot.textContent=(l.teamName||'团队')+' · 团队目标';var ms=oc.querySelectorAll('.muted');if(ms[0]&&l.teamGoal&&l.teamGoal.objective)ms[0].textContent=l.teamGoal.objective;if(ms[1]&&l.teamGoal&&(l.teamGoal.summary||l.teamGoal.plan))ms[1].textContent=l.teamGoal.summary||l.teamGoal.plan;var pb=oc.querySelector('.progress');if(pb)pb.style.display='none';}var tt=document.querySelector('.card-title .muted')}catch(e){}
   try{document.querySelectorAll('*').forEach(function(n){if(n.childNodes.length===1&&n.firstChild.nodeType===3&&n.firstChild.nodeValue.indexOf('线路中心 · dsh-agent-lines 团队')>=0)n.firstChild.nodeValue=n.firstChild.nodeValue.replace('线路中心 · dsh-agent-lines 团队',(l.teamName||'团队'))})}catch(e){}
   var t=document.querySelector('#data-time');if(t)t.textContent='数据 '+(l.generatedAt?new Date(l.generatedAt).toTimeString().slice(0,5):'--');
  }
