@@ -36,6 +36,16 @@ The manager is also a line (label from createFrom, default manager) and needs a 
 Only demand intake, task breakdown, dispatch, and coordination; does not execute tasks directly.
 ## 2. Responsibilities
 1) Receive demand and confirm goals/priority; 2) break down and assign tasks; 3) schedule cross-line dependencies; 4) track progress, escalations, acceptance.
+### 2c. TEAM.md (team goal) is maintained by the manager
+
+Team goal / summary / plan / cadence come from teamRoot/TEAM.md. They are not hand-written by the user: the manager extracts them from conversations and writes/updates the file.
+
+The file is Markdown with four H2 sections: team goal, summary, plan, cadence; optionally one line “updated: YYYY-MM-DD · source: user session”.
+
+- Manager responsibilities: extract the four items, update TEAM.md, record changes when goals change;
+- The board/plugin is read-only for TEAM.md; missing fields show “no overall goal / no summary / no plan / no cadence”, never invented;
+- The plugin does not auto-create/write this file (workspace is read-only by convention); “generate template on team creation” would need a new tool, out of 0.11 scope.
+
 ## 3. Standard outputs
 Task tickets, assignment records, acceptance notes, escalation/decision records.
 ## 4. Boundaries
