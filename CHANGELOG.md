@@ -2,6 +2,16 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.0-26 (未发布)
+
+### 修复 line_create 批量 replace 输出非 lossless JSON（S5j）
+
+- 现象：`line_create({lines:[...], replace:true, ...})` 在 DSH 里报 `tool "line_create" returned invalid output: value is not lossless JSON`。
+- 原因：批量返回的每个 item 里 `lifecycle` 取自 create/replace 结果；replace 路径没有 `lifecycle` 字段 → `undefined`，DSH 工具输出要求 lossless JSON，拒绝并报错。**操作本身已执行完**（rebind/title 事件已落库），只是返回校验失败。
+- 修复：批量 item 统一做 JSON-safe 归一（`sessionId/role/title/lifecycle` 缺失给 null，新增 `replaced:true|false`），不再出现 undefined。
+- 新增回归测试：batch replace 输出可 JSON round-trip 且递归无 undefined。
+- 无 DB 迁移、无协议变化。
+
 ## 0.11.0-25 (未发布)
 
 ### token 统计切到 totalTokens（输入+输出+缓存）（S5i）

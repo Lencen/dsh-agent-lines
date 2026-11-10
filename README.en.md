@@ -157,6 +157,11 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-26: fix batch replace returning non-lossless JSON (unreleased)
+
+- Batch items are JSON-safe (missing lifecycle → null, added replaced flag); the replace operations themselves always ran, only the return failed validation.
+- Regression test added.
+
 ### 0.11.0-25: token metrics now use totalTokens (unreleased)
 
 - line_metrics/board default to totalTokens (uncached input + output + cache); output buckets kept.

@@ -158,6 +158,11 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
+### 0.11.0-26：修复批量 replace 输出非 lossless JSON（未发布）
+
+- line_create 批量 item 统一 JSON-safe（lifecycle 缺失给 null，新增 replaced 标记）；replace 操作本身一直会执行，只是返回校验失败。
+- 新增回归测试。
+
 ### 0.11.0-25：token 统计切到 totalTokens（未发布）
 
 - line_metrics/看板默认按 totalTokens（未缓存输入+输出+缓存读写）统计；保留 decodeTokens/output 分桶。

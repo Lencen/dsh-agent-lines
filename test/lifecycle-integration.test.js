@@ -299,3 +299,19 @@ test('line_create batch creates multiple lines and reports skipped/failed', asyn
     await assert.rejects(() => h.tools.get('line_create').execute({ label: 'x', lines: [{ label: 'y' }] }, exec(h.manager)), error => error.code === 'LINE_INVALID_ARGUMENT')
   } finally { h.cleanup() }
 })
+
+test('line_create batch replace output is lossless JSON', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    await h.tools.get('line_create').execute({ lines: [{ label: 'rb1', role: '开发' }], bootstrap: false }, exec(h.manager))
+    const out = await h.tools.get('line_create').execute({ lines: [{ label: 'rb1', role: '开发', title: '开发' }], replace: true, force: true, migrate: 'none', bootstrap: false }, exec(h.manager))
+    assert.equal(out.counts.created, 1)
+    assert.equal(out.created[0].replaced, true)
+    assert.equal(out.created[0].lifecycle, null)
+    const round = JSON.parse(JSON.stringify(out))
+    assert.deepEqual(round, out)
+    const walk = (value, path) => { if (value === undefined) throw new Error('undefined at ' + path); if (value !== null && typeof value === 'object') for (const key of Object.keys(value)) walk(value[key], path + '.' + key) }
+    walk(out, 'root')
+  } finally { h.cleanup() }
+})

@@ -2,6 +2,16 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-26 (unreleased)
+
+### Fix line_create batch replace returning non-lossless JSON (S5j)
+
+- Symptom: `line_create({lines:[...], replace:true, ...})` failed in DSH with `tool "line_create" returned invalid output: value is not lossless JSON`.
+- Cause: each batch item copied `lifecycle` from the create/replace result; the replace path has no `lifecycle` field → `undefined`, which DSH rejects as non-lossless JSON. **The operations themselves had already been applied** (rebind/title events persisted); only the return value failed validation.
+- Fix: normalize each batch item to JSON-safe values (`sessionId/role/title/lifecycle` default null, add `replaced:true|false`), no undefined.
+- New regression test: batch replace output round-trips through JSON with no undefined values.
+- No DB migration, no protocol change.
+
 ## 0.11.0-25 (unreleased)
 
 ### Token metrics now use totalTokens (input + output + cache) (S5i)
