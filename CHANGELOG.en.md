@@ -2,6 +2,17 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-18 (unreleased)
+
+### Restore high-fidelity UIUX + real-data adapter (S5d)
+
+- **Restored** `web/board.html` to the approved high-fidelity prototype (layout, components, interactions, themes unchanged): overview, org (chart/tree/search/retired), tasks, data (ECharts), cost, docked detail drawer, mobile sheet, light/dark.
+- Rewrote the data adapter: keeps the prototype's `DATA` render model, synchronously clears demo data, then fills real data from `/api/live` + `/api/team-board` + `/api/team-metrics` + `/api/health` and re-renders (team goal/org/tasks/data/cost/decisions/handoffs/charters).
+- Demo static copy replaced with real data slots (topbar/overview/org/data/cost/footer); the "UIUX demo" footer wording is removed; footer shows the plugin version.
+- Missing data renders as "no data / unavailable / not collected"; if an API fails the page stays in the empty state (fail-closed).
+- Removed the substitute hacks (`showOrg` view replacement, TreeWalker text patches).
+- No DB migration (schema v14), no protocol change (0.4), read-only.
+
 ## 0.11.0-17 (unreleased)
 
 ### Footer version fix (S5c-4)

@@ -157,6 +157,11 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-18: restore high-fidelity UIUX + real-data adapter (unreleased)
+
+- Board restored to the approved high-fidelity prototype (layout/components/interactions/themes unchanged); only the data layer was rebuilt with real team goal/org/tasks/data/cost/charters.
+- Footer shows the plugin version; substitute hacks and demo copy removed.
+
 ### 0.11.0-17: footer version fix (unreleased)
 
 - Footer prints the raw `/api/health.version` value (no more hardcoded 0.11.0- prefix).

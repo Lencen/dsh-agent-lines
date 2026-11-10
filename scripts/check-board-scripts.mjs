@@ -32,7 +32,7 @@ scripts.forEach((src, i) => {
   catch (error) { bad.push('script#' + (i + 1) + ': ' + String((error && error.message) || error)) }
 })
 check('B1 内联脚本语法 (' + syntax + ' 段)', bad.length === 0, bad.join(' | '))
-check('B2 无原型演示数据残留', !/DATA\.missions|演示值|高保真演示/.test(html))
+check('B2 真实数据适配层存在（同步清空演示数据）', /__REAL_ADAPTER__/.test(html) && /resetData\(\)/.test(html) && !/function showOrg\b/.test(html))
 check('B3 无写接口调用', !/\/api\/actions/.test(html))
 check('B4 只读声明 >=2', (html.match(/只读/g) || []).length >= 2)
 check('B5 必备视图与详情槽', html.includes('data-view="overview"') && html.includes('data-view="org"') && html.includes('data-view="tasks"') && html.includes('data-view="data"') && html.includes('data-view="cost"') && html.includes('drawer-title') && html.includes('drawer-body'))
