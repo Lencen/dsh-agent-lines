@@ -202,6 +202,57 @@ const PAIRS = [
   else fail('C12 philosophy web pages', bad.join('; '))
 }
 
+// ---------- C13 AGENTS.md 与代码一致（防 AI 契约漂移） ----------
+{
+  const bad = []
+  if (!existsSync(resolve(ROOT, 'AGENTS.md'))) bad.push('AGENTS.md missing')
+  else {
+    const agents = read('AGENTS.md')
+    const tools = read('lib/tools.js')
+    const actualTools = [...new Set([...tools.matchAll(/name: '(line_[a-z_]+)'/g)].map(m => m[1]))].sort()
+    // 1) 工具数量声明
+    const claim = agents.match(/\((\d+) tools\)/)
+    if (claim === null) bad.push('AGENTS.md missing "(N tools)" claim')
+    else if (Number(claim[1]) !== actualTools.length) bad.push('AGENTS.md claims ' + claim[1] + ' tools but code has ' + actualTools.length)
+    // 2) 声明的工具都存在，且每个工具都被提到
+    const mentioned = new Set([...agents.matchAll(/`(line_[a-z_]+)`/g)].map(m => m[1]))
+    for (const t of mentioned) if (!actualTools.includes(t)) bad.push('AGENTS.md mentions unknown tool ' + t)
+    for (const t of actualTools) if (!mentioned.has(t)) bad.push('AGENTS.md omits tool ' + t)
+    // 3) schema 版本与代码一致
+    const sv = agents.match(/Schema version \| \*\*(\d+)\*\*/)
+    const codeSv = (read('lib/store.js').match(/PRAGMA user_version = (\d+);/) || [])[1]
+    if (sv === null) bad.push('AGENTS.md missing schema version')
+    else if (sv[1] !== codeSv) bad.push('AGENTS.md schema ' + sv[1] + ' != store.js ' + codeSv)
+    // 4) 引擎版本与 package.json 一致
+    const pkg = JSON.parse(read('package.json'))
+    for (const [label, ver] of [['node', pkg.engines?.node], ['dsh', pkg.engines?.dsh]]) {
+      if (ver !== undefined && !agents.includes(ver)) bad.push('AGENTS.md missing ' + label + ' range ' + ver)
+    }
+    // 5) 配置键表与代码一致
+    const section = (agents.split('## 2. Configuration keys')[1] || '').split('\n## ')[0]
+    const keys = [...section.matchAll(/^\| `([a-zA-Z][a-zA-Z0-9]*)` \|/gm)].map(m => m[1])
+    if (keys.length === 0) bad.push('AGENTS.md config table not parsed')
+    const indexJs = read('lib/index.js')
+    for (const k of keys) {
+      const known = k === 'lines' || new RegExp('(^|[^a-zA-Z])' + k + '([^a-zA-Z]|$)').test(indexJs)
+      if (!known) bad.push('AGENTS.md documents unknown config key ' + k)
+    }
+    for (const k of ['createFrom', 'allowCreate', 'allowClaim', 'maxLines', 'ackTimeoutMs', 'bootstrapOnCreate', 'dbPath', 'transport']) {
+      if (!keys.includes(k)) bad.push('AGENTS.md config table omits ' + k)
+    }
+    // 6) AGENTS.md 内相对链接可解析
+    for (const m of agents.matchAll(/\]\(([^)]+)\)/g)) {
+      const href = m[1]
+      if (/^(https?:|mailto:|#)/.test(href)) continue
+      const target = href.split('#')[0]
+      if (!target) continue
+      if (!existsSync(resolve(ROOT, target))) bad.push('AGENTS.md broken link ' + href)
+    }
+  }
+  if (bad.length === 0) ok('C13 AGENTS.md matches code (tools/schema/engines/config keys/links)')
+  else fail('C13 AGENTS.md matches code', bad.join('; '))
+}
+
 // ---------- 输出 ----------
 const json = process.argv.includes('--json')
 if (json) {

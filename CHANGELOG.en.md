@@ -8,6 +8,7 @@ English | [中文](CHANGELOG.md)
 
 - README (both languages): add a **Quick Context** block for AI assistants (runtime/storage/entities/hard constraints/zero-config/delivery semantics/entry points); turn "when to use it" into a **decision table** (choose lines / don't, pointing to the official Agent Teams plugin); add an **ASCII directory tree** to the architecture section (parseable by AI, not only Mermaid/screenshots).
 - Add root `AGENTS.md`: the machine-facing operation contract (config semantics and defaults, 22 tool contracts and permissions, `line_status` field table, MUST/MUST NOT, hallucination checklist); linked from both READMEs.
+- Docs gate gains **C13**: checks `AGENTS.md` against code (tool count/unknown/missing tools, schema version, Node/DSH ranges, config keys, relative links) — changing code without updating AGENTS.md fails the gate.
 
 ## 0.8.1 (2026-11-10)
 
