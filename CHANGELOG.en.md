@@ -2,14 +2,24 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.7.1 (unreleased)
+## 0.8.0 (unreleased)
 
-> Candidate: docs-only, no behavior change. Release requires user approval; execution is scheduled by the commercialization line and performed by github-maintenance-line (see RELEASE-HANDOFF-2026-11-10).
+> Next train. User decision 2026-11-10: **no separate 0.7.1**; docs fixes are folded into this release. Release is scheduled by the commercialization line and performed by github-maintenance-line (see RELEASE-HANDOFF-2026-11-10).
+
+### Documentation fixes (landed; folded from the former 0.7.1 candidate)
 
 - Fix the 0.6.6 gate wording: the `check-bento-alignment` script exists but in the **lions repository**, not in this package and not part of `npm test` (cross-repository reference); the 0.7.0 GitHub Release notes were corrected too.
-- AGENT-TEAMS (both languages): note that task-tree parent/child relations are projected by the lines layer (`parentTaskRef` → `parentTaskId`); the official board does not expose that field.
+- AGENT-TEAMS (both languages): task-tree parent/child relations are projected by the lines layer (`parentTaskRef` → `parentTaskId`); the board field table now lists `parentTaskId`.
 - PHILOSOPHY (both languages) glossary: map L1/L2/L3 to manager line / role line / official team (department / department team).
-- README (both languages): "UIUX 0.6 bento rules" → "the UIUX line's Bento spec (DESIGN-SPEC §11)" to avoid reading it as a version number.
+- README (both languages): "UIUX 0.6 bento rules" → "the UIUX line's Bento spec (DESIGN-SPEC §11)".
+
+### Visibility and remediation (S1, in progress)
+
+- `line_messages` (query by state, including failed/expired), `line_trace` + `message_events` (message-level event stream), `line_redeliver`, `line_purge` (required `before`, `dryRun` default true).
+- `ackTimeout`: flag and count only, never auto-redeliver (preserves I2).
+- `doctor` reports failed/expired/stale counts; an in-package bento gate wired into `npm test`.
+- Crash-injection test matrix (kill -9 ×100 converges).
+- Details: `dsh-agent-lines-internal/DESIGN-0.8.0-S1-2026-11-10.md` and `TRAIN-0.8.0-2026-11-10.md`.
 
 ## 0.7.0 (2026-11-10)
 

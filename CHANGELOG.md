@@ -2,14 +2,24 @@
 
 [English](CHANGELOG.en.md) | 中文
 
-## 0.7.1 (未发布)
+## 0.8.0 (未发布)
 
-> 候选：仅文档修正，无代码行为变更。发布需用户批；执行由商业线排期、github-maintenance-line 执行（见 RELEASE-HANDOFF-2026-11-10）。
+> 下一车。用户 2026-11-10 决定：**不单独发 0.7.1**，文档修正并入本版。发布由商业线排期、github-maintenance-line 执行（见 RELEASE-HANDOFF-2026-11-10）。
+
+### 文档修正（已落地，原 0.7.1 候选并入）
 
 - 修正 0.6.6 门禁措辞：`check-bento-alignment` 脚本存在但在 **lions 仓库**，不在插件包内、不属 `npm test`（跨仓库误引）；0.7.0 的 GitHub Release 说明已同步更正。
-- AGENT-TEAMS（中/英）：补"任务树父子关系由 lines 层投影（`parentTaskRef` → `parentTaskId`），官方任务板不提供该字段"。
+- AGENT-TEAMS（中/英）：补"任务树父子关系由 lines 层投影（`parentTaskRef` → `parentTaskId`），官方任务板不提供该字段"；字段表补 `parentTaskId`。
 - PHILOSOPHY（中/英）术语表：补 L1/L2/L3 与管理线/角色线/官方团队（部门/部门团队）的对应关系。
-- README（中/英）：Bento 规范措辞由"UIUX 0.6 的 bento 规范"改为"UIUX 线的 Bento 规范（DESIGN-SPEC §11）"，避免被读成版本号。
+- README（中/英）：Bento 规范措辞改为"UIUX 线的 Bento 规范（DESIGN-SPEC §11）"。
+
+### 可见性与处置（S1，开发中）
+
+- `line_messages`（按状态查，含 failed/expired）、`line_trace` + `message_events`（消息级事件流）、`line_redeliver`、`line_purge`（before 必填、dryRun 默认 true）。
+- `ackTimeout` 只标记 + 报数，不自动重投（守 I2）。
+- `doctor` 输出 failed/expired/stale 三类计数；插件包内 bento 门禁脚本并接入 `npm test`。
+- 崩溃注入测试矩阵（kill -9 ×100 收敛）。
+- 详见 `dsh-agent-lines-internal/DESIGN-0.8.0-S1-2026-11-10.md` 与 `TRAIN-0.8.0-2026-11-10.md`。
 
 ## 0.7.0 (2026-11-10)
 
