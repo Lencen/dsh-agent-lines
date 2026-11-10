@@ -1,6 +1,6 @@
 # AGENTS.md — operation contract for AI assistants
 
-> **Read this before driving or editing dsh-agent-lines.** Human-facing docs live in [README](README.md); design rationale in [PHILOSOPHY](docs/PHILOSOPHY.md); wire format in [PROTOCOL](docs/PROTOCOL.md); known gaps in [KNOWN_ISSUES](docs/KNOWN_ISSUES.md).
+> **Read this before driving or editing dsh-agent-lines.** Agent quickstart: [docs/AI-USAGE.md](docs/AI-USAGE.md)（第一次建团队先读这一页，不要扫源码）。 Human-facing docs live in [README](README.md); design rationale in [PHILOSOPHY](docs/PHILOSOPHY.md); wire format in [PROTOCOL](docs/PROTOCOL.md); known gaps in [KNOWN_ISSUES](docs/KNOWN_ISSUES.md).
 > This file is the canonical machine-facing contract. When README prose and this file disagree, **this file wins for operational details** (and the mismatch is a docs bug).
 
 ## 0. Project identity
@@ -68,7 +68,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 | `line_handoff` | manager | `line`, `format?(md|json)`, `limit?` | Structured handoff snapshot (no model call) |
 | `line_retire` | manager | `line`, `reason?` | Soft retire; keeps Session/history (terminal) |
 | `line_set_role` | manager | `line`, `role` | Update a line's short role text (persisted; used by org view/role cards) |
-| `line_init_team` | manager | `overwrite?` | Initialize/merge team workspace files: `TEAM.md`, `charters/manager.md`, `charters/<line>.md`, `decisions/README.md`, `registry.json` (idempotent; needs `teamRoot`) |
+| `line_init_team` | manager | `overwrite?`, `teamRoot?`, `teamName?` | Initialize/merge team workspace files: `TEAM.md`, `charters/manager.md`, `charters/<line>.md`, `decisions/README.md`, `registry.json` (idempotent; needs `teamRoot`) |
 | `line_hibernate` | manager | `line`, `reason?` | Park an idle line: stop delivery, release the lease, keep Session/history; inbound delivery and outbound sends return `LINE_HIBERNATING` |
 | `line_wake` | manager | `line`, `reason?` | Wake a hibernating line: re-acquire the lease, resume delivery, same Session; retired lines cannot be woken |
 | `line_rebind` | manager | `line`, `sessionId`, `migrate?`, `force?` | Point label at another Session |
