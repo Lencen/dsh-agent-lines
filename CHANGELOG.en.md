@@ -2,6 +2,15 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.7.1 (unreleased)
+
+> Candidate: docs-only, no behavior change. Release requires user approval; execution is scheduled by the commercialization line and performed by github-maintenance-line (see RELEASE-HANDOFF-2026-11-10).
+
+- Fix the 0.6.6 gate wording: the `check-bento-alignment` script exists but in the **lions repository**, not in this package and not part of `npm test` (cross-repository reference); the 0.7.0 GitHub Release notes were corrected too.
+- AGENT-TEAMS (both languages): note that task-tree parent/child relations are projected by the lines layer (`parentTaskRef` → `parentTaskId`); the official board does not expose that field.
+- PHILOSOPHY (both languages) glossary: map L1/L2/L3 to manager line / role line / official team (department / department team).
+- README (both languages): "UIUX 0.6 bento rules" → "the UIUX line's Bento spec (DESIGN-SPEC §11)" to avoid reading it as a version number.
+
 ## 0.7.0 (2026-11-10)
 
 This release is a **design-constitution release**: no behavior change.

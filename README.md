@@ -152,7 +152,7 @@ L1 管理线会话（用户只说目标）
 
 ### 0.6.6：Web 看板 UIUX 验收版
 
-场景：需要按 UIUX 0.6 的 bento 规范看组织/任务/部门/沟通/数据。
+场景：需要按 UIUX 线的 Bento 规范（DESIGN-SPEC §11，2026-11-09 定稿）看组织/任务/部门/沟通/数据。
 用法：dsh-agent-lines board --port 4090 --db $DSH_HOME/agent-lines/lines.db。
 效果：只读；固定四槽、同行等高、卡内滚动、data-level、面包屑；看板侧不做操作/消息。
 
