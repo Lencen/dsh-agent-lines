@@ -157,6 +157,10 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-21: agent usage manual v2 (unreleased)
+
+- Rewrote docs/AI-USAGE.md: five-step setup, board guide, common errors → next step, acceptance checklist, doc index; aligned with real data and plugin version display.
+
 ### 0.11.0-20: board detail fixes (unreleased)
 
 - Goal badge restored; progress reflects real completion; cost chart includes the manager line.

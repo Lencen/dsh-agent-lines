@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-21 (unreleased)
+
+### Docs: agent usage manual v2 (S5e)
+
+- Rewrote `docs/AI-USAGE.md`: five-step team setup (teamName required; TEAM.md and charter sections), board guide (start command, five views, version source, data sources and unavailable-state rules, `status --json`), tool table, key rules, **common error codes → next step**, acceptance checklist, and doc index.
+- Aligned with the 0.11.0-20 board behavior (real data, plugin version badge, empty task state is real).
+- Docs only; no code behavior change; no DB migration, no protocol change.
+
 ## 0.11.0-20 (unreleased)
 
 ### Board detail fixes (S5d-3)
