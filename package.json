@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-lines",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "DSH Agent 的持久、可寻址消息线（社区插件）。",
   "type": "module",
   "license": "Apache-2.0",
@@ -15,6 +15,7 @@
   "files": [
     "lib",
     "bin",
+    "scripts",
     "cordis.patch.yml",
     "README.md",
     "README.en.md",

@@ -2,6 +2,19 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.8.1 (2026-11-10)
+
+> Packaging self-containment patch: **no behavior change**; it only lets the published package run its own verification gates (DEC-18/19: no new features).
+
+### Non-breaking
+
+- `package.json files` now includes `scripts`: the published package ships `business-smoke.mjs`, `check-docs-consistency.mjs` and `check-bento-alignment.mjs`, so post-release verification needs no copy from the repo.
+- Version 0.8.0 → 0.8.1; no code behavior change, no schema change.
+
+### Breaking
+
+- None.
+
 ## 0.8.0 (2026-11-10)
 
 > User decision 2026-11-10: no separate 0.7.1; docs fixes are folded into this release; **ship as soon as dev+tests (including business tests) are done, no fixed window**. Release execution is scheduled by the commercialization line and performed by github-maintenance-line.
