@@ -4,6 +4,7 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { startBoardServer } from '../lib/board-server.js'
+import { LineStore } from '../lib/store.js'
 
 test('board server serves snapshots read-only', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-'))
@@ -33,3 +34,44 @@ test('board server serves snapshots read-only', async () => {
     rmSync(dir, { recursive: true, force: true })
   }
 })
+test('board server /api/live reads lines.db read-only', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-live-'))
+  const dbPath = join(dir, 'lines.db')
+  const store = new LineStore(dbPath)
+  store.acquire({ agentId: 'agent-demo', line: 'manager', sessionId: 's-m', instanceId: 'i-m', ttlMs: 60000 })
+  store.acquire({ agentId: 'agent-demo', line: 'writer', sessionId: 's-w', instanceId: 'i-w', ttlMs: 60000 })
+  store.send({ agentId: 'agent-demo', fromLine: 'manager', to: 'writer', text: 'hello' })
+  store.close()
+  const { server, url } = await startBoardServer({ dir, dbPath, host: '127.0.0.1', port: 0 })
+  try {
+    const live = await fetch(new URL('/api/live', url))
+    assert.equal(live.status, 200)
+    const payload = await live.json()
+    assert.equal(payload.available, true)
+    assert.equal(payload.schemaVersion, 1)
+    assert.deepEqual(payload.lines.map(line => line.label).sort(), ['manager', 'writer'])
+    assert.equal(payload.messages.total, 1)
+    assert.ok(Array.isArray(payload.messages.trend))
+    const etag = live.headers.get('etag')
+    assert.ok(etag)
+    const cached = await fetch(new URL('/api/live', url), { headers: { 'if-none-match': etag } })
+    assert.equal(cached.status, 304)
+  } finally {
+    await new Promise(resolve => server.close(resolve))
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+test('board server /api/live reports unavailable without a db', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-nodb-'))
+  const { server, url } = await startBoardServer({ dir, host: '127.0.0.1', port: 0 })
+  try {
+    const live = await fetch(new URL('/api/live', url))
+    assert.equal(live.status, 503)
+    assert.equal((await live.json()).available, false)
+  } finally {
+    await new Promise(resolve => server.close(resolve))
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+

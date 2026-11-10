@@ -66,9 +66,12 @@ async function main() {
     const dir = String(opts.dir ?? dirname(opts.db))
     const host = String(opts.host ?? '127.0.0.1')
     const port = Number(opts.port ?? 4090)
-    const { server, url } = await startBoardServer({ dir, host, port })
-    console.log(`[agent-lines] board: ${url}`)
-    console.log(`[agent-lines] snapshots: ${dir}`)
+    const teamRoot = opts['team-root'] !== undefined ? String(opts['team-root']) : process.env.DSH_AGENT_LINES_TEAM_ROOT
+    const { server, url } = await startBoardServer({ dir, dbPath: opts.db, teamRoot, host, port })
+    console.log('[agent-lines] board: ' + url)
+    console.log('[agent-lines] snapshots: ' + dir)
+    console.log('[agent-lines] live: /api/live (db: ' + opts.db + ')')
+    console.log('[agent-lines] teamRoot: ' + (teamRoot ?? '(off)'))
     console.log('[agent-lines] read-only')
     process.on('SIGINT', () => { server.close(() => process.exit(0)) })
     return 0

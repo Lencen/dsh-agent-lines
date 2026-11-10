@@ -2,3 +2,8 @@ dsh-agent-lines
 Copyright 2026 Lencen and dsh-agent-lines contributors
 
 This package is designed for DeepSeek Harness (MIT). No DeepSeek Harness source code is copied into this package.
+
+Bundled third-party software in web/vendor/:
+- Apache ECharts 5.5.1 (echarts.min.js), Apache License 2.0.
+  Copyright 2017-2025 The Apache Software Foundation / Apache ECharts contributors.
+  Source: https://github.com/apache/echarts
