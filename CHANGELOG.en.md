@@ -24,7 +24,7 @@ English | [中文](CHANGELOG.md)
 ### Capabilities and transport (S2c)
 
 - `lib/capabilities.js`: `probeCapabilities(ctx)` three-state table (true/false/null) plus `requireCapability` (missing `session.create` -> `LINE_CAPABILITY_MISSING` with a hint).
-- `line_status` returns `capabilities`; without a workspace registry, `line_create` falls back to cwd and returns `workspaceFallback: registry-unavailable` instead of failing wholesale.
+- `line_status` returns `capabilities`; when an **explicit** `workspace` is requested but the registry is missing, `line_create` falls back to cwd and returns `workspaceFallback: registry-unavailable` instead of failing wholesale (without an explicit workspace request, cwd is used silently).
 - New `memory` transport (in-memory SQLite): proves the transport seam is swappable and makes tests instant (no pretend second engine).
 - Snapshots (team-board/team-metrics) carry `protocolVersion`; consumers ignore unknown fields (F7).
 

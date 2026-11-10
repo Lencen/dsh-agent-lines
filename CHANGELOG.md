@@ -24,7 +24,7 @@
 ### 能力探测与传输（S2c）
 
 - `lib/capabilities.js`：`probeCapabilities(ctx)` 三态能力表（true/false/null）+ `requireCapability`（缺 `session.create` -> `LINE_CAPABILITY_MISSING`，带 hint）。
-- `line_status` 返回 `capabilities`；缺 workspace registry 时 `line_create` 降级到 cwd 并返回 `workspaceFallback: registry-unavailable`（不整体失败）。
+- `line_status` 返回 `capabilities`；**显式**传 `workspace` 且 registry 缺失时 `line_create` 降级到 cwd 并返回 `workspaceFallback: registry-unavailable`（不整体失败；未显式传 workspace 时按 cwd 静默处理）。
 - 新增 `memory` transport（内存 SQLite）：证明 transport seam 可换、测试秒级起停（不假装第二种引擎）。
 - 快照（team-board/team-metrics）增加 `protocolVersion`，消费方忽略未知字段（F7）。
 

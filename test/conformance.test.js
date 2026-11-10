@@ -6,6 +6,10 @@
  *   address         -> lib/protocol.js validateAgentId / validateLineLabel
  *   protocolVersion -> lib/protocol.js assertProtocolCompatible / parseProtocolVersion
  *
+ * 注意：本文件保留一份内联最小校验器，目的是让 conformance 用例集在单文件内自包含；
+ * test/helpers/schema-lint.js 是等价的测试用校验器（schema-live.test.js 使用）。
+ * 两份都只支持本仓库 schema 实际用到的子集；本仓库 schema 的 additionalProperties 只用了布尔形式。
+ *
  * 最小校验器只支持本仓库 schema 用到（另加文件内 $ref）的子集：
  *   type（含 type 数组）/ required / properties / additionalProperties /
  *   pattern / enum / minimum / items / $ref（仅本文件内 #/... JSON Pointer）。
