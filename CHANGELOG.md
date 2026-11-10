@@ -24,7 +24,7 @@
 - 看板只读裁剪**实际已在 0.6.6 发布**（见 0.6.6 条目），0.7.0 不再重复声明该 breaking。
 - 文档站此前链接到尚不存在的 `v0.7.0` Release，改为 `releases/latest`。
 - README「限制」段删除过期的「不做交接」（0.3.6 起已有 handoff / rebind / replace）；状态版本号 `0.3.x` → `0.7.x`。
-- 0.6.6 条目原写「check-bento-alignment 门禁」，但仓库无 `scripts/` 目录、全盘无该脚本，且 E2E 不在 `npm test` 内 → 该声明不可复跑，已改为如实描述；补门禁脚本并接进 `npm test` 列入 0.8.0。
+- 0.6.6 条目原写「check-bento-alignment 门禁」：该脚本**确实存在**，但位于 **lions 仓库**（`lions/scripts/check-bento-alignment.cjs`），不在本插件包内、也不属于 `npm test`（`test/*.test.js`）的范畴 → 对插件发布属**跨仓库误引**、无法在插件侧复跑；已改为如实描述，补一个**插件包内**的门禁并接进 `npm test` 列入 0.8.0。
 
 ## 0.6.6 (2026-11-10)
 
