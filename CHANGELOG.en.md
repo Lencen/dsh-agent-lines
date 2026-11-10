@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-22 (unreleased)
+
+### Board per-line chart includes manager + low-token setup docs (S5f)
+
+- The data/cost "per-line tasks / messages / cost" chart now includes the **manager** line (previously DATA.agg excluded it); "messages" is counted per line from team-board.messages (from/to) instead of always 0.
+- `docs/AI-USAGE.md` adds "low-token team setup": pass `bootstrap:false` on line_create (measured ~65k tokens saved for 8 lines), one `line_status` only, no metrics/board calls during setup, use low reasoning/cheap model for mechanical setup.
+- No DB migration, no protocol change, read-only.
+
 ## 0.11.0-21 (unreleased)
 
 ### Docs: agent usage manual v2 (S5e)

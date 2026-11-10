@@ -2,6 +2,14 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.0-22 (未发布)
+
+### 看板按线图补负责人 + 低 token 建团队文档（S5f）
+
+- 数据/消耗视图「按线任务 / 消息 / 消耗」补上 **manager（负责人）** 一条（此前 DATA.agg 只含角色线，manager 被排除）；「消息数」改为按线真实统计（来自 team-board.messages 的 from/to），不再恒为 0。
+- `docs/AI-USAGE.md` 新增「低 token 建团队」：建线传 `bootstrap:false`（实测 8 条线省约 6.5 万 tokens）、建团队只调一次 `line_status`、阶段内不调 metrics/board、机械流程用低 reasoning/便宜模型。
+- 无 DB 迁移、无协议变化、只读。
+
 ## 0.11.0-21 (未发布)
 
 ### 文档：agent 使用手册 v2（S5e）

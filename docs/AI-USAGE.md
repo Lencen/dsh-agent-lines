@@ -23,6 +23,13 @@
    - `charters/<label>.md` 四节：定位 / 职责 / 标准产出 / 边界（缺节看板显示「未采集」或「缺小节」）；
    - `line_send({to, text, kind:"task", taskRef:"<任务名>"})`；跟踪用 `line_team_board` / `line_department_board`。
 
+## 1b. 低 token 建团队（实测）
+
+- **建线时传 `bootstrap:false`**（或配置 `bootstrapOnCreate:false`）：默认会给每条新线发 onboarding 并**唤醒该线 agent 跑一个回合**；实测 8 条线约多花 6.5 万 tokens。关掉后新线保持安静，等第一条任务再唤醒。
+- 建团队全程**只调一次** `line_status`；不要在建团队阶段调 `line_metrics` / `line_team_board` / `line_messages`（输出大、不参与建团队）。
+- 机械建团队可用低 reasoning / 便宜模型（配置层 `agent-default-model`），完成后再切回；
+- 顺序建议：先 `line_create`（`bootstrap:false`）→ `line_init_team` → 写 TEAM.md/charters → 只给要开工的线下第一条任务（唤醒本身就是 token 开销）。
+
 ## 2. 看板（只读，主要给用户看）
 
 ```bash

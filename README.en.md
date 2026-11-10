@@ -157,6 +157,11 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-22: per-line chart includes manager + low-token setup (unreleased)
+
+- Per-line chart includes the manager line; messages counted per line.
+- AI-USAGE adds low-token setup: bootstrap:false (~65k tokens saved for 8 lines), one status call, no metrics during setup.
+
 ### 0.11.0-21: agent usage manual v2 (unreleased)
 
 - Rewrote docs/AI-USAGE.md: five-step setup, board guide, common errors → next step, acceptance checklist, doc index; aligned with real data and plugin version display.
