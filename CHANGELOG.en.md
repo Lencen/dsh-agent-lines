@@ -4,18 +4,30 @@ English | [中文](CHANGELOG.md)
 
 ## 0.7.0 (2026-11-10)
 
-**Breaking**: the web board is now read-only; board-side actions and messages are removed.
+This release is a **design-constitution release**: no behavior change.
 
-- Remove communications view, token input, send/approve/reject/handoff.
-- Remove board action API and /api/live.
-- Keep org tree/overview/tasks/department/metrics views.
-- Plugin tools remain unchanged.
+### Breaking
+
+- None.
+
+### Non-breaking
+
+- Add `docs/PHILOSOPHY.md` / `docs/PHILOSOPHY.en.md`: design philosophy, the pivot (label + sessionId), invariants I1–I7, five tradeoffs, non-goals, evolution rules, glossary.
+- Add `docs/KNOWN_ISSUES.md` / `.en`: design boundaries (B1–B8), known gaps (G1–G9, with target versions), known traps (K1–K8), and what to include in a report.
+- README (both languages) gains a "Design philosophy" section; the docs site nav and footer link to it.
+- CHANGELOG now separates breaking and non-breaking changes.
+
+### Corrections to earlier wording
+
+- The read-only board cut **already shipped in 0.6.6** (see the 0.6.6 entry); 0.7.0 no longer declares it again.
+- The docs site linked to a `v0.7.0` Release that did not exist; it now points to `releases/latest`.
+- README "Limitations" no longer claims "no handover" (handoff / rebind / replace exist since 0.3.6); status version `0.3.x` → `0.7.x`.
 
 ## 0.6.6 (2026-11-10)
 
 - Rebuild the web board to the UIUX 0.6 eight-rule bento layout.
 - Org tree + overview/tasks/department/communications/metrics views; fixed slots; equal-height rows; inner scrolling; data-level; breadcrumbs.
-- Keep local manager actions visible across views.
+- The read-only board cut **ships in this version** (0.7.0 does not declare it again).
 - Add browser E2E matrix and check-bento-alignment gate.
 
 ## 0.6.5 (2026-11-09)
