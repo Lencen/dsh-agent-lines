@@ -422,7 +422,7 @@ renderOrgChart();renderRetired();renderTasks(false);
     charter:{source:'charters/'+x.label+'.md',updated:'',sections:{positioning:'（见章程）',responsibilities:'（见章程）',outputs:'（见章程）',quality:'',boundaries:''}}};
   });
   DATA.lines=lines;
-  DATA.team={name:'线路中心 · dsh-agent-lines 团队',goal:l.teamGoal||{}};
+  DATA.team={name:(l.teamName||'团队'),goal:l.teamGoal||{}};
   DATA.metrics={tasks:(board&&board.tasks?board.tasks.length:0),done:0,doing:0,blocked:0,overdue:0,agents:lines.length};
   var tasks=(board&&board.tasks)||[];
   tasks.forEach(function(t){var s2=(t.status||'');if(s2==='completed')DATA.metrics.done++;else if(s2==='blocked')DATA.metrics.blocked++;else DATA.metrics.doing++});
@@ -436,6 +436,8 @@ renderOrgChart();renderRetired();renderTasks(false);
   try{if(typeof renderRetired==='function')renderRetired()}catch(e){}
   try{if(typeof v5RenderData==='function')v5RenderData()}catch(e){}
   try{if(typeof v5SetView==='function')v5SetView('overview')}catch(e){}
+  try{document.title=(l.teamName||'团队')+' · 团队看板';var tt=document.querySelector('.card-title .muted')}catch(e){}
+  try{document.querySelectorAll('*').forEach(function(n){if(n.childNodes.length===1&&n.firstChild.nodeType===3&&n.firstChild.nodeValue.indexOf('线路中心 · dsh-agent-lines 团队')>=0)n.firstChild.nodeValue=n.firstChild.nodeValue.replace('线路中心 · dsh-agent-lines 团队',(l.teamName||'团队'))})}catch(e){}
   var t=document.querySelector('#data-time');if(t)t.textContent='数据 '+(l.generatedAt?new Date(l.generatedAt).toTimeString().slice(0,5):'--');
  }
  function load(){Promise.all([fetch('/api/live',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).catch(function(){return null}),fetch('/api/team-board',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).catch(function(){return null}),fetch('/api/team-metrics',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).catch(function(){return null})]).then(function(a){mapLive(a[0],a[1],a[2])})}
