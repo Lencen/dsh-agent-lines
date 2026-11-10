@@ -20,6 +20,18 @@ line_create 不会创建独立进程/profile/端口。如果需要进程隔离�
 - 默认：~/.dsh/agent-lines/lines.db。
 - 父目录权限 0700，数据库权限 0600。
 
+## 团队工作区（teamRoot，可选）
+
+团队档案（TEAM.md / charters / decisions / registry）默认跟随 manager 当前工作区：不配置 `teamRoot` 时，`line_init_team({teamName})` 落在 `<manager cwd>/<团队名>`。
+
+也可以显式配置：
+
+- `teamRoot` 配成工作区父目录：团队目录 = `<teamRoot>/<团队名>`；`line_status` 和看板会自动解析最新子团队；
+- `teamRoot` 配成团队目录本身：直接使用该目录；
+- 看板 `--team-root` 也可给父目录，团队新建后刷新即可跟随。
+
+生产建议：一个工作区一个团队；需要固定归档位置时再显式配 `teamRoot`。
+
 ## Session 所有权
 
 一个 DSH Session 同时只有一个 writer。线的 Session 正在被某个进程服务时，不要在另一个 DSH 进程（例如 3080 的主 Web UI）里打开它。DSH 会以 session/writer-held 拒绝插件 prompt，消息在重试预算耗尽后失败。

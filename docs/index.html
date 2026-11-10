@@ -47,7 +47,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
 <div class="wrap">
 <header>
   <a class="brand" href="./"><span class="mark"></span>dsh-agent-lines</a>
-  <nav><a href="#two-ways">两种用法</a><a href="philosophy.html">设计思想</a><a href="philosophy-plain.html">白话版</a><a href="en/index.html">English</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a></nav>
+  <nav><a href="#two-ways">两种用法</a><a href="#reading">阅读顺序</a><a href="philosophy.html">设计思想</a><a href="philosophy-plain.html">白话版</a><a href="en/index.html">English</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a></nav>
 </header>
 <main>
 <section class="hero" style="border:0;padding-bottom:20px">
@@ -59,11 +59,23 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
       <a class="btn primary" href="#start">怎么开始</a>
       <a class="btn" href="#install">安装插件</a>
     </div>
-    <p class="note" style="margin-top:10px">最新版本：<b>v0.10.0</b>（npm latest / GitHub Release），下方介绍按此版本写。</p>
+    <p class="note" style="margin-top:10px">最新版本：<b>v0.11.0</b>（GitHub Release / npm），下方介绍按此版本写；0.11.0 新增：团队工作区与真实数据看板、成员建完即见、团队目录跟随当前工作区。</p>
   </div>
   <div class="shot">
     <img src="assets/first-use.gif" alt="负责人创建成员线并收到确认">
     <div class="caption">演示环境 · 通用角色 · 不含内部数据</div>
+  </div>
+</section>
+
+<section id="reading">
+  <h2>阅读顺序：先看哪一页</h2>
+  <p class="note">第一次用不需要全读。按你的角色挑一条路径即可；完整目录见 GitHub 仓库的 README。</p>
+  <div class="cards">
+    <div class="card"><b>第一次了解</b><p>本页「它能帮你做什么」「两种用法」→ 安装 → 快速开始。</p></div>
+    <div class="card"><b>让 AI 建团队</b><p><a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/AI-USAGE.md">AI 使用手册</a>（五步）→ AGENTS.md 契约。</p></div>
+    <div class="card"><b>部署 / 排障</b><p><a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/DEPLOY.md">部署</a> → <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/KNOWN_ISSUES.md">已知问题</a> → CHANGELOG。</p></div>
+    <div class="card"><b>团队工作区 / 看板</b><p><a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/TEAM-WORKSPACE.md">团队工作区</a> → 插件看板与 /api/live 说明。</p></div>
+    <div class="card"><b>设计 / 贡献</b><p><a href="philosophy.html">设计文档</a> → 架构 / 协议 / 已知问题。</p></div>
   </div>
 </section>
 

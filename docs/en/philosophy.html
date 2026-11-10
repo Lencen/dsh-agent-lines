@@ -92,13 +92,15 @@ session full -> open a fresh session, keep the name -> work continues,
 </section>
 
 <section>
-  <h2>4. Five tradeoffs: chosen, given up, and why</h2>
+  <h2>4. Seven tradeoffs: chosen, given up, and why</h2>
   <div class="cards">
     <div class="card"><b>Roles live in sessions, not subagents</b><p>Gave up instant spawning; gained memory and lossless replacement.</p></div>
     <div class="card"><b>At-least-once + request-level idempotency</b><p>No fake distributed exactly-once; idempotency is delegated to the session log.</p></div>
     <div class="card"><b>Local leases, no distributed coordination</b><p>Gave up active-active/cross-machine; gained simplicity and cost.</p></div>
     <div class="card"><b>Local-first, no multi-backend</b><p>The SPI is kept, but we don't build five implementations to look generic.</p></div>
     <div class="card"><b>Read-only fusion with the official board</b><p>No write-back, so ownership conflicts and two boards never fight.</p></div>
+    <div class="card"><b>Visibility before token cost</b><p>Members must be visible right after creation; never hide them to save a first turn.</p></div>
+    <div class="card"><b>Team dir follows the workspace</b><p>No fixed dir; team files live in the current workspace, and the board shows real data or "not collected", never a demo.</p></div>
   </div>
 </section>
 
@@ -138,7 +140,7 @@ session full -> open a fresh session, keep the name -> work continues,
 </section>
 </main>
 <footer>
-  <p>dsh-agent-lines 0.11.0-30 · Apache-2.0 · Community plugin for DeepSeek Harness, not an official DeepSeek product. Design details follow <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PHILOSOPHY.en.md">PHILOSOPHY.en.md</a>.</p>
+  <p>dsh-agent-lines 0.11.0 · Apache-2.0 · Community plugin for DeepSeek Harness, not an official DeepSeek product. Design details follow <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PHILOSOPHY.en.md">PHILOSOPHY.en.md</a>.</p>
 </footer>
 </div>
 </body>

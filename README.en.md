@@ -6,6 +6,8 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
+> Current version: v0.11.0 (2026-11-10) — team workspace with a real-data board, members visible right after creation, team dirs follow the current workspace.
+
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
 > **100% Vibe Coding.** The architecture, code, tests, and docs were produced in AI agent sessions. It is experimental: review the code and run an integration test before production use.
@@ -24,8 +26,18 @@ Stop reopening sessions and copying context by hand. Give one lead agent a long-
 - **Hard constraints**: only the `createFrom` line (with `allowCreate: true`) may call `line_create`; **do not enable `allowCreate` on worker profiles**; one writer per Session; never open a line's Session in another DSH process (`session/writer-held`).
 - **Zero-config**: an unbound root Session can bind itself with `line_claim_manager({ confirm: "bind-manager" })` (needs `allowClaim`; on by default in zero-config).
 - **Delivery semantics**: at-least-once; idempotency authority is DSH's `requestId`; failed states are queryable and recoverable (`line_messages` / `line_trace` / `line_redeliver`); **ack timeout is reported, never auto-retried**.
-- **AI operation contract**: [AGENTS.md](AGENTS.md) (config keys, 22 tools, `line_status` fields, hard rules). Design: [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) | [web](https://lencen.github.io/dsh-agent-lines/en/philosophy.html).
+- **AI operation contract**: [AGENTS.md](AGENTS.md) (config keys, 26 tools, `line_status` fields, hard rules). Design: [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) | [web](https://lencen.github.io/dsh-agent-lines/en/philosophy.html).
 
+## Reading order (what to read first)
+
+| You are | Read first | Then |
+|---|---|---|
+| New, deciding whether it is useful | "When to use it" and "How the two team shapes look" below | "Install" and "Quick start" |
+| Asking an AI to build a team | [docs/AI-USAGE.md](docs/AI-USAGE.md) (five steps; do not scan source) | [AGENTS.md](AGENTS.md) (tools/config contract) |
+| Deploying / configuring | [docs/DEPLOY.md](docs/DEPLOY.md) | [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) |
+| Team workspace / board | [docs/TEAM-WORKSPACE.md](docs/TEAM-WORKSPACE.md) | the board section below |
+| Design / contributing | [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) | [docs/ARCHITECTURE.en.md](docs/ARCHITECTURE.en.md), [docs/PROTOCOL.en.md](docs/PROTOCOL.en.md) |
+| Troubleshooting / upgrades | [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md) | [CHANGELOG.en.md](CHANGELOG.en.md) |
 ## When to use it / when not to
 
 | Scenario | Choose dsh-agent-lines | Don't (better fit) |
@@ -157,89 +169,96 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.11.0-30: unified teamRoot semantics (unreleased)
+### 0.11.0: team workspace + visible on creation + real-data board (current release)
+
+- **Team workspace**: `line_init_team` creates TEAM.md / charters / decisions / registry; the board has five views (overview/org/tasks/data/cost) from real data, and the org view renders the goal and optional `## 协作流程` from TEAM.md.
+- **Visible on creation**: `line_create` always bootstraps and waits until the Session is `blank=false`, so members appear in the DSH sidebar immediately; per-call `bootstrap:false` no longer hides lines (0.11.0 behavior change).
+- **Team dir follows the workspace**: `teamRoot` is optional; without it the team is created under the manager cwd, and a parent `teamRoot` resolves the newest child team for the board/status.
+- **Token basis**: `line_metrics`/board default to totalTokens (uncached input + output + cache), with output buckets kept.
+- Batch line creation, JSON-safe batch results, removal of all prototype demo data, and restored high-fidelity UIUX.
+### 0.11.0-30: unified teamRoot semantics  (internal build)
 
 - Team dir = explicit/config teamRoot or manager cwd, plus teamName; parent dirs resolve newest child; line_status discovers teams under cwd.
 
-### 0.11.0-29: board follows newest team under a parent teamRoot (unreleased)
+### 0.11.0-29: board follows newest team under a parent teamRoot  (internal build)
 
 - Parent `--team-root` resolves to the newest child team; each team reads its own TEAM.md goal/flow.
 
-### 0.11.0-28: new lines are visible immediately (unreleased)
+### 0.11.0-28: new lines are visible immediately  (internal build)
 
 - line_create always bootstraps and waits until blank=false (visibleInSidebar); per-call bootstrap:false ignored.
 - Visibility beats token; docs updated.
 
-### 0.11.0-27: board collaboration flow is data-driven (unreleased)
+### 0.11.0-27: board collaboration flow is data-driven  (internal build)
 
 - Org view reads optional `TEAM.md` `## 协作流程`; no more fixed dev flow; missing shows "not collected".
 - docs updated.
 
-### 0.11.0-26: fix batch replace returning non-lossless JSON (unreleased)
+### 0.11.0-26: fix batch replace returning non-lossless JSON  (internal build)
 
 - Batch items are JSON-safe (missing lifecycle → null, added replaced flag); the replace operations themselves always ran, only the return failed validation.
 - Regression test added.
 
-### 0.11.0-25: token metrics now use totalTokens (unreleased)
+### 0.11.0-25: token metrics now use totalTokens  (internal build)
 
 - line_metrics/board default to totalTokens (uncached input + output + cache); output buckets kept.
 - Sampling reads DSH tokenUsage projection; docs updated.
 
-### 0.11.0-24: batch line creation + sampling-short display + token basis (unreleased)
+### 0.11.0-24: batch line creation + sampling-short display + token basis  (internal build)
 
 - line_create accepts lines[] batch (returns created/skipped/failed/counts).
 - Cost card shows "sampling not ready" + cumulative decodeTokens when samples<2 instead of a misleading 0k.
 - docs add the token basis: decodeTokens counts output only; DSH total (input/cache) measured 30–80× larger.
 
-### 0.11.0-23: line_init_team parameter fix + decision status (unreleased)
+### 0.11.0-23: line_init_team parameter fix + decision status  (internal build)
 
 - `line_init_team({teamRoot, teamName})` now treats teamRoot as parent and teamName as subdir (fixes the "flatten to parent -> generate then mv -> overwrite errors" chain).
 - decisions support `## 状态`: 已采纳/已执行/已处理/已完成 are not counted as pending; do not put setup audit notes under decisions/.
 
-### 0.11.0-22: per-line chart includes manager + low-token setup (unreleased)
+### 0.11.0-22: per-line chart includes manager + low-token setup  (internal build)
 
 - Per-line chart includes the manager line; messages counted per line.
 - AI-USAGE adds low-token setup: bootstrap:false (~65k tokens saved for 8 lines), one status call, no metrics during setup.
 
-### 0.11.0-21: agent usage manual v2 (unreleased)
+### 0.11.0-21: agent usage manual v2  (internal build)
 
 - Rewrote docs/AI-USAGE.md: five-step setup, board guide, common errors → next step, acceptance checklist, doc index; aligned with real data and plugin version display.
 
-### 0.11.0-20: board detail fixes (unreleased)
+### 0.11.0-20: board detail fixes  (internal build)
 
 - Goal badge restored; progress reflects real completion; cost chart includes the manager line.
 - High-fidelity layout unchanged.
 
-### 0.11.0-19: board static slots and asset fix (unreleased)
+### 0.11.0-19: board static slots and asset fix  (internal build)
 
 - All static data slots (topbar/overview/org/data/cost/footer) now bind to real data; fixed the ECharts asset path (/vendor/echarts.min.js) so data/cost charts render.
 - High-fidelity layout unchanged.
 
-### 0.11.0-18: restore high-fidelity UIUX + real-data adapter (unreleased)
+### 0.11.0-18: restore high-fidelity UIUX + real-data adapter  (internal build)
 
 - Board restored to the approved high-fidelity prototype (layout/components/interactions/themes unchanged); only the data layer was rebuilt with real team goal/org/tasks/data/cost/charters.
 - Footer shows the plugin version; substitute hacks and demo copy removed.
 
-### 0.11.0-17: footer version fix (unreleased)
+### 0.11.0-17: footer version fix  (internal build)
 
 - Footer prints the raw `/api/health.version` value (no more hardcoded 0.11.0- prefix).
 
-### 0.11.0-16: board shows plugin version (unreleased)
+### 0.11.0-16: board shows plugin version  (internal build)
 
 - Topbar "插件版本 v0.11.0-16" and footer both show the plugin version, sourced from `/api/health.version`.
 
-### 0.11.0-15: board metric alignment (unreleased)
+### 0.11.0-15: board metric alignment  (internal build)
 
 - Overview "members" uses the official task-board projection (team-board.members); the data view shows both official-members (snapshot) and team-board members.
 - The rest is the same as 0.11.0-14.
 
-### 0.11.0-14: board real-data fix (unreleased)
+### 0.11.0-14: board real-data fix  (internal build)
 
 Scenario: after 0.11.0-13, a hard refresh still showed prototype demo content (team goal / focus / org detail / tasks).
 Fix: repaired the inline adapter syntax error in `web/board.html`; removed all demo data; five views are pure data-driven (`/api/live` + `/api/team-board` + `/api/team-metrics`); line detail reads real charter sections; tasks view shows the official task projection; added the `check-board-scripts` gate.
 Effect: no prototype residue; missing data renders as "no data / unavailable / not collected" instead of fabricated values.
 
-### 0.11.0-13: team workspace and board (unreleased)
+### 0.11.0-13: team workspace and board  (internal build)
 
 - Read-only teamRoot: registry.json, charters, TEAM.md (goal/summary/plan/cadence), decisions; missing shows unavailable.
 - New manager-only line_init_team (tools 25->26): idempotent init of TEAM.md, manager/line charters, decisions README, registry.

@@ -6,6 +6,8 @@
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
+> 当前版本：v0.11.0（2026-11-10）——团队工作区与真实数据看板、成员建完即见、团队目录跟随当前工作区。
+
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
 > **100% Vibe Coding。** 架构、代码、测试、文档都在 AI agent 会话中完成。它是实验性项目：生产使用前请审阅代码并跑一遍集成测试。
@@ -24,8 +26,18 @@ DSH 的 super agent 平替插件。
 - **关键约束**：只有 `createFrom` 线（且 `allowCreate: true`）能调用 `line_create`；**worker profile 不要开 `allowCreate`**；一个 Session 同时只有一个 writer；不要在另一个 DSH 进程打开线 Session（会 `session/writer-held`）。
 - **零配置行为**：未绑定根会话可调用 `line_claim_manager({ confirm: "bind-manager" })` 自行绑定（需 `allowClaim: true`，零配置下默认开启）。
 - **投递语义**：至少一次；幂等权威是 DSH 的 `requestId`；失败态可查可救（`line_messages` / `line_trace` / `line_redeliver`），**ack 超时只报数不自动重投**。
-- **AI 操作契约**：[AGENTS.md](AGENTS.md)（配置字段、22 个工具、`line_status` 字段、硬性约束）；设计思想：[docs/PHILOSOPHY.md](docs/PHILOSOPHY.md)｜[网页版](https://lencen.github.io/dsh-agent-lines/philosophy.html)。
+- **AI 操作契约**：[AGENTS.md](AGENTS.md)（配置字段、26 个工具、`line_status` 字段、硬性约束）；设计思想：[docs/PHILOSOPHY.md](docs/PHILOSOPHY.md)｜[网页版](https://lencen.github.io/dsh-agent-lines/philosophy.html)。
 
+## 阅读顺序（先看哪一页）
+
+| 你是 | 先读 | 需要时再看 |
+|---|---|---|
+| 第一次听说，判断值不值得用 | 本文「什么时候用」「两种团队」 | 「安装」「快速开始」 |
+| 让 AI 帮你建团队 | [docs/AI-USAGE.md](docs/AI-USAGE.md)（五步，别扫源码） | [AGENTS.md](AGENTS.md)（工具/配置契约） |
+| 部署与配置 | [docs/DEPLOY.md](docs/DEPLOY.md) | [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) |
+| 团队工作区与看板 | [docs/TEAM-WORKSPACE.md](docs/TEAM-WORKSPACE.md) | 本文「看板」 |
+| 设计 / 贡献 | [docs/PHILOSOPHY.md](docs/PHILOSOPHY.md) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)、[docs/PROTOCOL.md](docs/PROTOCOL.md) |
+| 排障 / 升级 | [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) | [CHANGELOG.md](CHANGELOG.md) |
 ## 什么时候用 / 什么时候不用
 
 | 场景 | 选 dsh-agent-lines | 不选（更适合别的方案） |
@@ -158,89 +170,96 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
-### 0.11.0-30：teamRoot 语义统一（未发布）
+### 0.11.0：团队工作区 + 建完即见 + 数据驱动看板（当前发布）
+
+- **团队工作区**：`line_init_team` 生成 TEAM.md / charters / decisions / registry；看板五视图（总览/组织/任务/数据/消耗）读真实数据，组织页按 TEAM.md 渲染目标与「协作流程」。
+- **建线即见**：`line_create` 默认 onboarding 并等会话 `blank=false` 才返回，成员建完立即出现在 DSH 侧栏；逐次 `bootstrap:false` 不再生效（0.11.0 行为变更）。
+- **团队目录跟随工作区**：`teamRoot` 可选；不配时团队落在 manager 当前工作区，配父目录时看板/状态自动解析最新子团队，避免"建到不知道的目录"。
+- **token 口径**：`line_metrics`/看板默认 totalTokens（未缓存输入+输出+缓存读写），保留 output 分桶。
+- **批量建线**、JSON-safe 批量返回、看板静态演示数据全部清除、UIUX 恢复高保真原型。
+### 0.11.0-30：teamRoot 语义统一（内测构建）
 
 - 团队目录 = 显式 teamRoot / 配置 teamRoot / manager 当前工作区 + teamName；父目录自动解析最新子团队；line_status 也按 cwd 找团队。
 
-### 0.11.0-29：看板父目录自动跟随团队（未发布）
+### 0.11.0-29：看板父目录自动跟随团队（内测构建）
 
 - --team-root 给父目录时自动取最新子团队；各团队目标/协作流程各读自己 TEAM.md。
 
-### 0.11.0-28：建线默认立即可见（未发布）
+### 0.11.0-28：建线默认立即可见（内测构建）
 
 - line_create 始终 onboarding 并等待 blank=false 后返回（visibleInSidebar）；逐次 bootstrap:false 被忽略。
 - 可见性优先于 token；文档改为不要靠隐藏线省 token。
 
-### 0.11.0-27：看板协作流程改为数据驱动（未发布）
+### 0.11.0-27：看板协作流程改为数据驱动（内测构建）
 
 - 「组织 → 协作流程」改读 TEAM.md 可选 `## 协作流程`，不再显示固定开发流程；缺省「未采集」。
 - 文档补协作流程写法。
 
-### 0.11.0-26：修复批量 replace 输出非 lossless JSON（未发布）
+### 0.11.0-26：修复批量 replace 输出非 lossless JSON（内测构建）
 
 - line_create 批量 item 统一 JSON-safe（lifecycle 缺失给 null，新增 replaced 标记）；replace 操作本身一直会执行，只是返回校验失败。
 - 新增回归测试。
 
-### 0.11.0-25：token 统计切到 totalTokens（未发布）
+### 0.11.0-25：token 统计切到 totalTokens（内测构建）
 
 - line_metrics/看板默认按 totalTokens（未缓存输入+输出+缓存读写）统计；保留 decodeTokens/output 分桶。
 - 采样读取 DSH tokenUsage 投影；文档口径更新。
 
-### 0.11.0-24：批量建线 + 采样不足显示 + token 口径（未发布）
+### 0.11.0-24：批量建线 + 采样不足显示 + token 口径（内测构建）
 
 - line_create 支持 lines[] 批量建线（一次调用返回 created/skipped/failed/counts）。
 - 成本卡在样本<2 时显示「采样不足」+ 累计 decodeTokens，不再显示误导性的 0k。
 - 文档补 token 口径：decodeTokens 仅输出 token，DSH 总 token 含输入/缓存，实测差 30–80 倍。
 
-### 0.11.0-23：line_init_team 参数修复 + 决策状态（未发布）
+### 0.11.0-23：line_init_team 参数修复 + 决策状态（内测构建）
 
 - `line_init_team({teamRoot, teamName})` 同时给两个参数时，teamRoot 当父目录、teamName 当子目录（修"平铺到父目录→先生成再 mv→覆盖写报错"链）。
 - decisions 支持 `## 状态`：已采纳/已执行/已处理/已完成 不再计为待决策；初始化留痕不要写 decisions/。
 
-### 0.11.0-22：按线图补负责人 + 低 token 建团队（未发布）
+### 0.11.0-22：按线图补负责人 + 低 token 建团队（内测构建）
 
 - 「按线任务 / 消息 / 消耗」补 manager 一条，消息数按线真实统计。
 - AI-USAGE 新增低 token 建团队：bootstrap:false（实测省约 6.5 万 tokens/8 线）、只调一次 status、阶段内不调 metrics。
 
-### 0.11.0-21：agent 使用手册 v2（未发布）
+### 0.11.0-21：agent 使用手册 v2（内测构建）
 
 - 重写 docs/AI-USAGE.md：五步建团队、看板说明、常见错误码→下一步、验收清单、文档索引；对齐真实数据与插件版本显示。
 
-### 0.11.0-20：看板细节修正（未发布）
+### 0.11.0-20：看板细节修正（内测构建）
 
 - 目标卡徽标恢复、进度按真实完成率；消耗图包含 manager 线。
 - 高保真原型版式不变。
 
-### 0.11.0-19：看板静态标记与资源修正（未发布）
+### 0.11.0-19：看板静态标记与资源修正（内测构建）
 
 - 顶栏/总览/组织/数据/消耗/页脚的全部静态数据位接入真实数据；修复 ECharts 资源路径（/vendor/echarts.min.js），数据/消耗图表恢复。
 - 高保真原型版式不变。
 
-### 0.11.0-18：恢复高保真 UIUX + 真实数据适配层（未发布）
+### 0.11.0-18：恢复高保真 UIUX + 真实数据适配层（内测构建）
 
 - 看板恢复为已确认的高保真原型（版式/组件/交互/主题不变），只重做数据层：真实团队目标/组织/任务/数据/消耗/章程详情，缺失显示「暂无/不可得/未采集」。
 - 页脚显示插件版本；移除替身逻辑与演示文案。
 
-### 0.11.0-17：页脚版本口径修正（未发布）
+### 0.11.0-17：页脚版本口径修正（内测构建）
 
 - 页脚直接显示 `/api/health.version` 原值（不再拼接 0.11.0-后缀）。
 
-### 0.11.0-16：看板显示插件版本（未发布）
+### 0.11.0-16：看板显示插件版本（内测构建）
 
 - 顶栏「插件版本 v0.11.0-16」+ 页脚同步显示，来源 `/api/health.version`。
 
-### 0.11.0-15：看板口径修正（未发布）
+### 0.11.0-15：看板口径修正（内测构建）
 
 - 总览「成员」改用官方任务板投影（team-board.members）；数据视图并列展示「官方成员（快照）」与「团队板成员」，差异可见。
 - 其余同 0.11.0-14。
 
-### 0.11.0-14：看板真实数据修复（未发布）
+### 0.11.0-14：看板真实数据修复（内测构建）
 
 场景：0.11.0-13 的看板硬刷新后仍显示原型演示内容（团队目标/今日焦点/组织详情/任务）。
 改法：修掉 `web/board.html` 内联适配脚本的语法错误；删除全部演示数据，五视图改为纯数据驱动（`/api/live` + `/api/team-board` + `/api/team-metrics`）；组织详情读真实章程 sections；任务视图显示官方任务投影；新增 `check-board-scripts` 门禁。
 效果：页面不再残留原型数据；缺失数据显示「暂无 / 不可得 / 未采集」，不编造。
 
-### 0.11.0-13：团队工作区与看板（未发布）
+### 0.11.0-13：团队工作区与看板（内测构建）
 
 - teamRoot 只读读取：registry.json、charters、TEAM.md（目标/简介/规划/节奏）、decisions；缺失显示暂无/不可得。
 - 新工具 line_init_team（manager-only，工具 25→26）：幂等初始化 TEAM.md / manager 与线的章程 / decisions README / registry。

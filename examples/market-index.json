@@ -34,8 +34,8 @@
         "zh": "Agent 线"
       },
       "description": {
-        "en": "Durable, addressable peer messaging between DSH processes.",
-        "zh": "DSH 进程间可寻址、持久化的同级消息层。"
+        "en": "Durable, addressable peer messaging lines with team workspaces and a read-only board for DSH agents.",
+        "zh": "DSH agent 的持久化同级消息线：长期角色、团队工作区与只读看板。"
       },
       "author": "Lencen",
       "metadata": {
@@ -50,12 +50,12 @@
         ]
       },
       "dist-tags": {
-        "latest": "0.7.0"
+        "latest": "0.11.0"
       },
       "versions": [
         {
-          "version": "0.7.0",
-          "publishTimestamp": 1793771000,
+          "version": "0.11.0",
+          "publishTimestamp": 1794321790,
           "source": {
             "type": "npm"
           },

@@ -43,7 +43,7 @@
 | # | 坑 | 处置 |
 |---|---|---|
 | K1 | 没有 `line_delete` | 建线产生持久行，测试也会留真实记录；测试请用独立 `--db` 路径 |
-| K2 | 空白线 Session 可能要等第一条任务才落盘 | 默认会排一条 onboarding 消息（可用 `bootstrap:false` 关掉，但侧边栏可能不显示该线） |
+| K2 | 空会话在跑首个回合前不会出现在侧栏 | 0.11.0 起 `line_create` 默认 onboarding 并等待 `blank=false`；逐次 `bootstrap:false` 已被忽略；只有部署级 `bootstrapOnCreate:false` 才会让线保持隐藏 |
 | K3 | `line_create` 建好 Session 但 `attachSession` 失败会留孤儿 Session | 错误里带 `detail.sessionId`，不自动删除；按需手动清理 |
 | K4 | 同名 label 不能重建 | `line_create` 返回 `created:false`；换人用 `line_create({ replace: true })` / `line_rebind` |
 | K5 | `inactive` 不是下线 | 只是当前没有 turn 在跑；消息一到会唤醒 |

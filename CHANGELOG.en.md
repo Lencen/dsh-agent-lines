@@ -2,7 +2,19 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.11.0-30 (unreleased)
+## 0.11.0 (2026-11-10)
+
+### Team workspace, real-data board, and "visible on creation"
+
+- New team workspace (line_init_team): TEAM.md / charters / decisions / registry; the board has five real-data views, and the org view renders the goal and optional collaboration flow from TEAM.md.
+- **Visibility behavior change**: line_create always bootstraps and waits until the Session is blank=false; per-call bootstrap:false is ignored (deployment-level bootstrapOnCreate:false still disables it). A UX change, not a protocol break.
+- **Team dir follows the workspace**: teamRoot is optional; without it the team is created under the manager cwd; a parent dir resolves the newest child team and line_status discovers it too.
+- **Token basis**: line_metrics/board default to totalTokens (uncached input + output + cache read/write), output buckets kept.
+- Batch line creation, JSON-safe batch replace results, removal of all prototype demo data; missing data shows "no data / unavailable / not collected".
+- No DB migration, no protocol change (schema v14 unchanged).
+
+**0.11.0 is authoritative; 0.10.0 is the fallback.**
+## 0.11.0-30 (internal build, included in 0.11.0)
 
 ### Unified teamRoot semantics: workspace parent / cwd fallback (S5n)
 
@@ -12,7 +24,7 @@ English | [中文](CHANGELOG.md)
 - docs updated (AI-USAGE / AGENTS).
 - No DB migration, no protocol change.
 
-## 0.11.0-29 (unreleased)
+## 0.11.0-29 (internal build, included in 0.11.0)
 
 ### Board --team-root accepts a parent dir and follows the newest team (S5m)
 
@@ -20,7 +32,7 @@ English | [中文](CHANGELOG.md)
 - Team goal/collaboration flow still come from that team's own TEAM.md (`## 协作流程`); teams never share a flow.
 - No DB migration, no protocol change, read-only.
 
-## 0.11.0-28 (unreleased)
+## 0.11.0-28 (internal build, included in 0.11.0)
 
 ### New lines are visible immediately (bootstrap:false no longer hides them) (S5l)
 
@@ -29,7 +41,7 @@ English | [中文](CHANGELOG.md)
 - Per-call `bootstrap:false` is accepted for compatibility but ignored; docs now say do not hide lines to save tokens.
 - No DB migration, no protocol change.
 
-## 0.11.0-27 (unreleased)
+## 0.11.0-27 (internal build, included in 0.11.0)
 
 ### Board collaboration-flow card is data-driven (S5k)
 
@@ -38,7 +50,7 @@ English | [中文](CHANGELOG.md)
 - docs: TEAM-WORKSPACE 2e; AI-USAGE optional fifth section.
 - No DB migration, no protocol change, read-only.
 
-## 0.11.0-26 (unreleased)
+## 0.11.0-26 (internal build, included in 0.11.0)
 
 ### Fix line_create batch replace returning non-lossless JSON (S5j)
 
@@ -48,7 +60,7 @@ English | [中文](CHANGELOG.md)
 - New regression test: batch replace output round-trips through JSON with no undefined values.
 - No DB migration, no protocol change.
 
-## 0.11.0-25 (unreleased)
+## 0.11.0-25 (internal build, included in 0.11.0)
 
 ### Token metrics now use totalTokens (input + output + cache) (S5i)
 
@@ -58,7 +70,7 @@ English | [中文](CHANGELOG.md)
 - docs: AI-USAGE updated (totalTokens is the DSH-basis number; output alone is not total cost).
 - No DB migration, no protocol change, read-only.
 
-## 0.11.0-24 (unreleased)
+## 0.11.0-24 (internal build, included in 0.11.0)
 
 ### Batch line creation + sampling-short display + token basis (S5h)
 
@@ -67,7 +79,7 @@ English | [中文](CHANGELOG.md)
 - docs: AI-USAGE adds the batch example and the token basis note — decodeTokens counts output tokens only; DSH total (input + cache) measured 30–80× larger (clean env: manager session 64 steps, output 71,400, cacheRead 5,758,848, total 5,916,491).
 - No DB migration, no protocol change, read-only.
 
-## 0.11.0-23 (unreleased)
+## 0.11.0-23 (internal build, included in 0.11.0)
 
 ### line_init_team parameter fix + decision status (S5g)
 
@@ -76,7 +88,7 @@ English | [中文](CHANGELOG.md)
 - docs: AI-USAGE adds the parameter rule and the decisions convention (do not put setup audit notes under decisions/); TEAM-WORKSPACE documents decision status.
 - No DB migration, no protocol change, read-only.
 
-## 0.11.0-22 (unreleased)
+## 0.11.0-22 (internal build, included in 0.11.0)
 
 ### Board per-line chart includes manager + low-token setup docs (S5f)
 
@@ -84,7 +96,7 @@ English | [中文](CHANGELOG.md)
 - `docs/AI-USAGE.md` adds "low-token team setup": pass `bootstrap:false` on line_create (measured ~65k tokens saved for 8 lines), one `line_status` only, no metrics/board calls during setup, use low reasoning/cheap model for mechanical setup.
 - No DB migration, no protocol change, read-only.
 
-## 0.11.0-21 (unreleased)
+## 0.11.0-21 (internal build, included in 0.11.0)
 
 ### Docs: agent usage manual v2 (S5e)
 
@@ -92,7 +104,7 @@ English | [中文](CHANGELOG.md)
 - Aligned with the 0.11.0-20 board behavior (real data, plugin version badge, empty task state is real).
 - Docs only; no code behavior change; no DB migration, no protocol change.
 
-## 0.11.0-20 (unreleased)
+## 0.11.0-20 (internal build, included in 0.11.0)
 
 ### Board detail fixes (S5d-3)
 
@@ -100,7 +112,7 @@ English | [中文](CHANGELOG.md)
 - Cost view "per-line cost" includes the manager line (previously only 8 role lines; manager's 21k tokens were not shown).
 - The rest is the same as 0.11.0-19 (high-fidelity UIUX unchanged, real data).
 
-## 0.11.0-19 (unreleased)
+## 0.11.0-19 (internal build, included in 0.11.0)
 
 ### Board static slots and asset fix (S5d-2)
 
@@ -108,7 +120,7 @@ English | [中文](CHANGELOG.md)
 - Fixed the ECharts asset path: the prototype referenced `echarts.min.js` but the board server only serves `/vendor/echarts.min.js`, so data/cost charts were blank; now uses `/vendor/echarts.min.js`.
 - High-fidelity layout/components/interactions unchanged; no DB migration, no protocol change, read-only.
 
-## 0.11.0-18 (unreleased)
+## 0.11.0-18 (internal build, included in 0.11.0)
 
 ### Restore high-fidelity UIUX + real-data adapter (S5d)
 
@@ -119,21 +131,21 @@ English | [中文](CHANGELOG.md)
 - Removed the substitute hacks (`showOrg` view replacement, TreeWalker text patches).
 - No DB migration (schema v14), no protocol change (0.4), read-only.
 
-## 0.11.0-17 (unreleased)
+## 0.11.0-17 (internal build, included in 0.11.0)
 
 ### Footer version fix (S5c-4)
 
 - The footer now prints the raw `/api/health.version` value instead of concatenating `0.11.0-<suffix>` (that only worked for 0.11.0-x and would be wrong for the next version).
 - The rest is the same as 0.11.0-16 (topbar/footer show the plugin version explicitly).
 
-## 0.11.0-16 (unreleased)
+## 0.11.0-16 (internal build, included in 0.11.0)
 
 ### Board shows plugin version (S5c-3)
 
 - Topbar badge now reads "插件版本 v0.11.0-16" (sourced from `/api/health.version`); footer shows the plugin version too.
 - Note: 0.11.0-15 already had a version badge (v0.11.0-15); this release only makes the label explicit and shows it in two places.
 
-## 0.11.0-15 (unreleased)
+## 0.11.0-15 (internal build, included in 0.11.0)
 
 ### Board metric alignment (S5c-2)
 
@@ -141,7 +153,7 @@ English | [中文](CHANGELOG.md)
 - Data view shows both "official members (snapshot)" and "team-board members" so source differences are visible, never merged.
 - The rest is the same as 0.11.0-14 (pure data-driven board, real charters, official task projection, gates).
 
-## 0.11.0-14 (unreleased)
+## 0.11.0-14 (internal build, included in 0.11.0)
 
 ### Board real-data fix (S5c)
 
@@ -154,7 +166,7 @@ English | [中文](CHANGELOG.md)
 - `/api/health` now exposes `version`; the board version badge is no longer hardcoded; `/api/live` teamWorkspace line entries add `header`/`missingSections` (additive).
 - No DB migration (schema v14), no protocol change (0.4), read-only.
 
-## 0.11.0-13 (unreleased)
+## 0.11.0-13 (internal build, included in 0.11.0)
 
 ### Team workspace and board (S5)
 

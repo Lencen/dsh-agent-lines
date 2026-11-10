@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { apply } from '../lib/index.js'
@@ -341,5 +341,19 @@ test('line_init_team defaults to the manager cwd when teamRoot is not configured
     assert.equal(res.teamName, 'cwd-team')
     assert.ok(existsSync(join(h.dir, 'cwd-team', 'TEAM.md')))
     assert.ok(existsSync(join(h.dir, 'cwd-team', 'charters', 'manager.md')))
+  } finally { h.cleanup() }
+})
+
+test('line_status discovers the team under the manager cwd when teamRoot is unset', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const teamDir = join(h.dir, 'video-team')
+    mkdirSync(teamDir, { recursive: true })
+    writeFileSync(join(teamDir, 'TEAM.md'), ['# 团队目标','','## 团队目标','短视频团队','## 简介','短视频','## 规划','周更','## 计划节奏','每周三条','## 协作流程','选题 → 脚本 → 拍摄'].join(String.fromCharCode(10)))
+    writeFileSync(join(teamDir, 'registry.json'), JSON.stringify({ version: 1, lines: [] }))
+    const status = await h.tools.get('line_status').execute({}, exec(h.manager))
+    assert.equal(status.teamWorkspace.enabled, true)
+    assert.equal(status.teamGoal.objective, '短视频团队')
   } finally { h.cleanup() }
 })

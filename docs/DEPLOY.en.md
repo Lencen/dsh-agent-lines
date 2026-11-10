@@ -22,6 +22,18 @@ DSH process C (profile lines-c, port 3083, line asset)    ─┘
 - Default: `~/.dsh/agent-lines/lines.db`.
 - The directory is created `0700`; the DB is chmod `0600`.
 
+## Team workspace (teamRoot, optional)
+
+Team files (TEAM.md / charters / decisions / registry) follow the manager workspace by default: without `teamRoot`, `line_init_team({teamName})` creates `<manager cwd>/<teamName>`.
+
+You can also configure it explicitly:
+
+- `teamRoot` as a workspace parent: team dir = `<teamRoot>/<teamName>`; `line_status` and the board resolve the newest child team;
+- `teamRoot` as the team dir itself: used directly;
+- the board `--team-root` may also be a parent; refresh after creating a team to follow it.
+
+Production advice: one team per workspace; set `teamRoot` explicitly only when you need a fixed archive location.
+
 ## Session ownership
 
 A DSH Session has one active writer. Never open a line's Session in another DSH process (for example, the main Web UI at 3080) while the line process is serving it. DSH will reject the plugin's prompt with `session/writer-held`, and the queued message will eventually fail after the retry budget.

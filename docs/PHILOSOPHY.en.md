@@ -74,13 +74,15 @@ The task tree mirrors it: **total task → line task → official team task**, d
 
 I6 is the repository's **only known self-violation**, and the highest-priority gap to close: errors must be explainable, not discovered by someone reporting "I never got it".
 
-## 4. Five tradeoffs (what was chosen / what was given up / why not the other option)
+## 4. Seven tradeoffs (what was chosen / what was given up / why not the other option)
 
 - **T1 Carry roles in Sessions, not subagents.** Gave up: lightweight, instant creation inside a process. Reason: only Sessions carry cross-turn memory in DSH.
 - **T2 at-least-once + request-level idempotency, not exactly-once.** Gave up: a distributed "exactly once" promise. Reason: do not fake a guarantee you cannot deliver; hand idempotency authority back to the Session log, so effects are effectively once.
 - **T3 Local leases, not distributed coordination.** Gave up: active-active and cross-machine queues. Reason: one writer per Session is a fact of DSH; within that boundary, a local file lock plus a lease is the cheapest correct design. The cost is written into [ARCHITECTURE](ARCHITECTURE.en.md) instead of being hidden.
 - **T4 Local-first, single transport (SQLite + WAL), not pluggable backends.** Gave up: out-of-the-box Redis/Postgres. Reason: the SPI shape is kept, but **an SPI with no second implementation is an assumption, not an interface**. Wait until a second party actually needs it.
 - **T5 Read-only fusion with the official plugin, not bidirectional write-back.** Gave up: one merged task board. Reason: write-back means ownership conflicts, concurrent overwrites and chasing the official schema — going from "complement" to "fight".
+- **T6 Visibility before token savings; do not hide members to save cost.** Gave up: silent line creation that saves a first-turn token bill. Reason: if users cannot see members, they think the team was not created; token is explainable, missing is not. Since 0.11.0 `line_create` always bootstraps and waits for visibility; per-call `bootstrap:false` no longer applies.
+- **T7 Team dir follows the workspace, and the board shows the truth instead of a fixed demo.** Gave up: a fixed teamRoot and static prototype flows/demo data. Reason: teams landing in "a directory I do not know" and a novel team showing a development flow are product incidents; since 0.11.0 teamRoot is optional and aligned with the current workspace, and the board/org view reads only the real TEAM.md, showing "not collected" when absent.
 
 ## 5. Non-goals
 
@@ -116,6 +118,8 @@ I6 is the repository's **only known self-violation**, and the highest-priority g
 
 **The self-violation to close soon**: the I6 visibility gap (query messages by state, redeliver failed ones, explicit purge, ack-timeout reporting). The principle stays the same: the plugin **reports anomalies, it does not decide for the human** — an ack timeout never auto-redelivers (that would break I2); it is flagged and counted, and the manager decides.
 
+The 0.11.0 change "per-call bootstrap:false is ignored" is a visibility behavior change; it touches no envelope, state machine or error code, so it is treated as a compatible enhancement and listed separately in the CHANGELOG.
+
 ## 8. Bento UI principles (board, 0.6.6+)
 
 - information blocks in the same row keep equal height;
@@ -124,7 +128,9 @@ I6 is the repository's **only known self-violation**, and the highest-priority g
 - upper levels show department summaries only; child tasks load when a line is opened;
 - technical vocabulary comes last — say "on duty / working memory / handoff", not Session or context window;
 - empty, unavailable, offline and stale states all need a place;
-- read-only boundaries must be labelled explicitly.
+- read-only boundaries must be labelled explicitly;
+- the board is a read-only projection of real data, never demo data; missing data shows "not collected / unavailable", never fabricated;
+- the org collaboration flow comes from the team own TEAM.md (`## 协作流程`), never a built-in fixed flow.
 
 ## 9. Glossary
 

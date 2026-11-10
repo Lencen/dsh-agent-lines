@@ -43,7 +43,7 @@ English | [中文](KNOWN_ISSUES.md)
 | # | Trap | Handling |
 |---|---|---|
 | K1 | No `line_delete` | Creating lines leaves durable rows; tests leave real data. Use a separate `--db` for tests |
-| K2 | A blank line Session may only persist after its first task | An onboarding message is queued by default (disable with `bootstrap:false`, but the line may then be missing from the sidebar) |
+| K2 | A blank Session is hidden from the sidebar until its first turn | Since 0.11.0 `line_create` always bootstraps and waits for `blank=false`; per-call `bootstrap:false` is ignored; only deployment-level `bootstrapOnCreate:false` keeps a line hidden |
 | K3 | `line_create` may succeed while `attachSession` fails, leaving an orphan Session | The error carries `detail.sessionId`; nothing is deleted automatically |
 | K4 | Duplicate labels cannot be recreated | `line_create` returns `created:false`; use `line_create({ replace: true })` / `line_rebind` |
 | K5 | `inactive` does not mean offline | It only means no turn is currently running; a message wakes the line |
