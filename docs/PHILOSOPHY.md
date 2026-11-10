@@ -147,6 +147,8 @@ I6 是本仓**唯一一条已知的自我违反**，也是后续排期里优先�
 
 ## 10. 与其它文档的关系
 
+> 融合后的"谁干活"（二级线 vs 线内团队）由 [DELEGATION-POLICY](DELEGATION-POLICY.md) 给出判断口径；插件只记录/展示/审计，不自动派发（I5）。
+
 | 文档 | 回答什么 |
 |---|---|
 | [README](../README.md) | 这是什么、怎么装、各版本有什么能力 |
@@ -155,7 +157,8 @@ I6 是本仓**唯一一条已知的自我违反**，也是后续排期里优先�
 | [PROTOCOL](PROTOCOL.md) | 信封、状态机、错误码、租约、幂等键 |
 | [SECURITY](SECURITY.md) | 信任模型、静态数据、网络、对端内容、DoD |
 | [DEPLOY](DEPLOY.md) | 部署与运维 |
-| [AGENT-TEAMS](AGENT-TEAMS.md) | 与官方智能体团队插件的只读融合 |
+| [AGENT-TEAMS](AGENT-TEAMS.md) | 与官方智能体团队插件的只读融合（三级组织、字段、看板） |
+| [DELEGATION-POLICY](DELEGATION-POLICY.md) | 二级线自己做还是开线内团队（7 维判定、A/B 规则、`subteamPolicy` 语义、持续更新） |
 
 ---
 

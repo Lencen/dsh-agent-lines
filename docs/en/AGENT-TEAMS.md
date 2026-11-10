@@ -3,6 +3,30 @@
 One line: lines own people, Agent Teams owns tasks, files own memory.
 The user only sends a task to the manager; no export, no config, no plugin buttons.
 
+## The three levels after integration
+
+~~~~text
+L1 manager session (the user only states goals)
+  └─ L2 role session (long-lived role, durable memory)
+       └─ L3 official Agent Teams team inside that role session (teammates, task-scoped, parallel, released after use)
+~~~~
+
+- L1 owns lines: create lines, dispatch, approve `subteamPolicy`, accept results.
+- L2 owns the work: decompose, decide "do it myself or open L3", produce and self-check, report back.
+- L3 owns parallelism: subtasks, cross-verification, one-off quality points.
+- The official task board owner can only be a teammate (L1/L2 cannot own tasks; read-only mapping).
+- Memory and evidence live in files (single source of truth).
+
+## Who does the work: L2 or L3
+
+Default: L2 does it. Open L3 only when one of these holds and no prohibition applies: parallel verification (≥2 independent proposals/angles), chunked production (≥3 independent output units), an independent quality point (review/proofread/fact-check), a long critical path where parallelism clearly helps.
+
+Always L2: long-lived role memory, same-file write conflicts, smaller than one turn, final acceptance to the user, cross-session handoff.
+
+Full policy (seven dimensions, A/B rules, `subteamPolicy` semantics, standard steps, update loop): [DELEGATION-POLICY.en.md](../DELEGATION-POLICY.en.md).
+
+> The plugin does not auto-detect, dispatch, or hard-block; the L2 agent decides by that policy and the plugin records, displays and audits (invariant I5).
+
 ## Precondition
 
 - The manager line must also be the Agent Teams Lead or member.
