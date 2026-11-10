@@ -2,6 +2,15 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-27 (unreleased)
+
+### Board collaboration-flow card is data-driven (S5k)
+
+- The org view's "collaboration flow" card was a **static prototype demo** (需求/架构/开发/评审/测试/验收/发布 + README.md·2026-11-04); it stayed visible for non-dev teams. It now reads the optional `TEAM.md` section `## 协作流程` (`→` / 、 / commas / one per line); missing shows "not collected".
+- `parseTeamGoal` adds `workflow`; `/api/live` teamGoal carries it.
+- docs: TEAM-WORKSPACE 2e; AI-USAGE optional fifth section.
+- No DB migration, no protocol change, read-only.
+
 ## 0.11.0-26 (unreleased)
 
 ### Fix line_create batch replace returning non-lossless JSON (S5j)

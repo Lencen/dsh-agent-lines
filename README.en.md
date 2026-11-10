@@ -157,6 +157,11 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-27: board collaboration flow is data-driven (unreleased)
+
+- Org view reads optional `TEAM.md` `## 协作流程`; no more fixed dev flow; missing shows "not collected".
+- docs updated.
+
 ### 0.11.0-26: fix batch replace returning non-lossless JSON (unreleased)
 
 - Batch items are JSON-safe (missing lifecycle → null, added replaced flag); the replace operations themselves always ran, only the return failed validation.

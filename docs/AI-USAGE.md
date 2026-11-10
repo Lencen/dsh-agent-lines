@@ -21,7 +21,7 @@
    - **参数只给一种**：最终团队目录 `teamRoot`，或 `teamName`（配合配置 `teamRoot`）；两者同时给时 `teamRoot` 当父目录、`teamName` 当子目录（0.11.0-23 起）。不要"先生成到父目录再 mv"，那会触发覆盖写前的 read 校验错误链；
    - `decisions/` 只放**待决策**事项；初始化留痕写 `TEAM.md`/README，已处理的决策在 md 里加 `## 状态` + `已采纳`（看板不再当作待决策）。
 5. 写目标并派单：
-   - `<teamRoot>/<团队名>/TEAM.md` 四节：团队目标 / 简介 / 规划 / 计划节奏（manager 从对话提炼后更新）；
+   - `<teamRoot>/<团队名>/TEAM.md` 四节：团队目标 / 简介 / 规划 / 计划节奏（manager 从对话提炼后更新）；可选第五节「协作流程」（如「设定 → 大纲 → 初稿 → 编辑 → 校对 → 发布」）供看板组织页渲染；
    - `charters/<label>.md` 四节：定位 / 职责 / 标准产出 / 边界（缺节看板显示「未采集」或「缺小节」）；
    - `line_send({to, text, kind:"task", taskRef:"<任务名>"})`；跟踪用 `line_team_board` / `line_department_board`。
 

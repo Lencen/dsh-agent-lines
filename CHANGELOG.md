@@ -2,6 +2,15 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.0-27 (未发布)
+
+### 看板「协作流程」改为数据驱动（S5k）
+
+- 「组织 → 协作流程」此前是原型里的**静态 demo**（需求/架构/开发/评审/测试/验收/发布 + 来源 README.md·2026-11-04），换团队后仍显示开发流程；现改为读取 `TEAM.md` 可选小节 `## 协作流程`（`→`/顿号/逗号/每行一条皆可），缺省显示「未采集」。
+- `parseTeamGoal` 新增 `workflow` 字段；`/api/live` 的 teamGoal 随之带出。
+- 文档：TEAM-WORKSPACE 补 2e 协作流程小节；AI-USAGE 补「可选第五节」。
+- 无 DB 迁移、无协议变化、只读。
+
 ## 0.11.0-26 (未发布)
 
 ### 修复 line_create 批量 replace 输出非 lossless JSON（S5j）

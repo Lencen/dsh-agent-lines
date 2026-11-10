@@ -66,3 +66,11 @@ test('readDecisions parses optional status (processed decisions)', () => {
     assert.equal(list[0].status, '已采纳')
   } finally { rmSync(dir, { recursive: true, force: true }) }
 })
+
+test('parseTeamGoal reads optional workflow section', () => {
+  const goal = parseTeamGoal('# 团队目标\n\n## 团队目标\n写小说\n## 简介\n科幻\n## 规划\n分卷\n## 计划节奏\n日更\n## 协作流程\n设定 → 大纲 → 初稿 → 编辑 → 校对 → 审读 → 发布\n')
+  assert.equal(goal.workflow, '设定 → 大纲 → 初稿 → 编辑 → 校对 → 审读 → 发布')
+  assert.deepEqual(goal.missing, [])
+  const bare = parseTeamGoal('# 团队目标\n\n## 团队目标\n写小说\n')
+  assert.equal(bare.workflow, null)
+})

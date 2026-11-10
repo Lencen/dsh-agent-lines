@@ -49,6 +49,18 @@ A `decisions/<id>.md` file may include an optional section:
 - If status or title says 已采纳 / 已执行 / 已处理 / 已完成, the board does not count it as pending (shows "processed N" instead);
 - Do not put initialization audit notes under `decisions/` (that folder is user-facing decision cards); use `TEAM.md`/README.
 
+### 2e. Collaboration flow (optional, 0.11.0-27+)
+
+`TEAM.md` may include a section rendered as chips on the board's org view:
+
+```markdown
+## 协作流程
+设定 → 大纲 → 初稿 → 编辑 → 校对 → 审读 → 发布
+```
+
+- Use `→`, `、`, commas, or one item per line; the board splits them into chips.
+- Missing → "not collected" (no fixed demo workflow anymore).
+
 ### 2c. TEAM.md (team goal) is maintained by the manager
 
 Team goal / summary / plan / cadence come from teamRoot/TEAM.md. They are not hand-written by the user: the manager extracts them from conversations and writes/updates the file.
