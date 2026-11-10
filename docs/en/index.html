@@ -46,7 +46,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
 <div class="wrap">
 <header>
   <a class="brand" href="../"><span class="mark"></span>dsh-agent-lines</a>
-  <nav><a href="../">中文</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PHILOSOPHY.en.md">Philosophy</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a></nav>
+  <nav><a href="#two-ways">Two ways</a><a href="../">中文</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PHILOSOPHY.en.md">Philosophy</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a></nav>
 </header>
 <main>
 <section class="hero" style="border:0;padding-bottom:20px">
@@ -85,15 +85,42 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
   <p class="note" style="margin-top:14px">You do not need to know the roles first. Say “build a novel team and set up its workflow and mechanisms”; the lead proposes the team shape first.</p>
 </section>
 
-<section>
-  <h2>How it differs from official Agent Teams</h2>
-  <p class="note">Not a replacement: Agent Teams owns the work, dsh-agent-lines owns the people and the messages.</p>
+<section id="two-ways">
+  <h2>Two ways to use it: lines only, or lines plus the official team</h2>
+  <p class="note">One sentence: <b>a line is a long-term employee</b> (remembers the work, replaceable); <b>official Agent Teams are temporary helpers</b> (released when done). Start with either; both are explained below.</p>
   <div class="cards">
-    <div class="card"><b>Official Agent Teams</b><p>Task board, dependencies, named teammates and Web panel; best for short multi-agent orchestration.</p></div>
-    <div class="card"><b>dsh-agent-lines</b><p>Long-lived roles, durable messages, restart survival, role handoff; best for long projects.</p></div>
-    <div class="card"><b>Together</b><p>Lines own people, Agent Teams owns tasks, files own memory. The user only sends work to the manager.</p></div>
+    <div class="card"><b>Way 1: lines only</b><p>You just want roles that remember the background and messages that never get lost. Enough, and simplest.</p></div>
+    <div class="card"><b>Way 2: lines + official team</b><p>You also want a role to fire up a few helpers for a big batch. Faster on big work, no waste on small work.</p></div>
+    <div class="card"><b>How to choose?</b><p>Install lines first; later, when you hit "write three chapters / review five proposals at once", add the official team. Usage stays the same.</p></div>
   </div>
-  <p class="note" style="margin-top:14px">Official Agent Teams is experimental; this is a community plugin, not an official DeepSeek product.</p>
+</section>
+
+<section id="only-line">
+  <h2>Way 1: lines only — one person running a long-lived team</h2>
+  <p class="note">No parallelism, no task board: just "someone remembers the context" and "tasks never disappear". This layer is enough.</p>
+  <div class="cards">
+    <div class="card"><b>Explain the background once</b><p>Each role keeps its own long-term memory; new tasks do not need the story retold.</p></div>
+    <div class="card"><b>Tasks never get lost</b><p>Messages are stored locally and survive restarts; you can query, acknowledge, and trace where work stalled.</p></div>
+    <div class="card"><b>The person can change, the role cannot</b><p>When a session fills up, write a handoff note and swap in a fresh session; work continues, memory is kept.</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">Best for: serialized novels, video series, long development/research/operations projects.</p>
+  <p class="note">Value in one line: from "explain everything again in a new chat" to "a team that remembers".</p>
+</section>
+
+<section id="fusion">
+  <h2>Way 2: lines + official Agent Teams — big work in parallel, small work untouched</h2>
+  <p class="note">When a role has a big batch (write 3 chapters, compare 5 proposals), it can spin up a few helpers inside its own session, work in parallel, and release them.</p>
+  <pre>manager (you only state the goal)
+ └─ role lines: writer / proofreader / ops… (long-lived, remembers)
+      └─ temporary team: only when parallel work pays off, released after</pre>
+  <div class="cards">
+    <div class="card"><b>You don't choose who does the work</b><p>The role does it itself by default (cheaper); it opens a temporary team only for ≥3 independent chunks, competing proposals, or an independent review.</p></div>
+    <div class="card"><b>No second task board to maintain</b><p>The official task board is synced read-only; you never re-enter tasks twice.</p></div>
+    <div class="card"><b>Members and messages still never get lost</b><p>The team is temporary; roles and history stay. Swapping a person or restarting changes nothing.</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">Best for: writing several chapters, reviewing several proposals, comparing options, tight deadlines.</p>
+  <p class="note">Value in one line: big work in parallel saves time; small work stays simple and cheap.</p>
+  <p class="note" style="margin-top:10px">Boundary: Agent Teams is experimental; tasks are <b>read-only synced</b>, never written back, and the official plugin's capability limits are unchanged. This is a community plugin, not an official DeepSeek product.</p>
 </section>
 
 <section id="install">
@@ -156,7 +183,7 @@ Do not start yet; wait for my first requirement.</pre>
     <p><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a> · <a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a> · <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PHILOSOPHY.en.md">Philosophy</a> · <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/DELEGATION-POLICY.en.md">Delegation policy</a> · <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PROTOCOL.en.md">Protocol</a> · <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/KNOWN_ISSUES.en.md">Known issues</a></p>
     <p class="note">Community plugin, not an official DeepSeek product.</p>
   </details>
-  <p style="margin-top:18px">dsh-agent-lines 0.7.0 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</p>
+  <p style="margin-top:18px">dsh-agent-lines 0.8.0 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</p>
 </footer>
 </main>
 </div>

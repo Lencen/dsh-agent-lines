@@ -46,7 +46,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
 <div class="wrap">
 <header>
   <a class="brand" href="./"><span class="mark"></span>dsh-agent-lines</a>
-  <nav><a href="en/index.html">English</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PHILOSOPHY.md">设计思想</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a></nav>
+  <nav><a href="#two-ways">两种用法</a><a href="en/index.html">English</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PHILOSOPHY.md">设计思想</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a></nav>
 </header>
 <main>
 <section class="hero" style="border:0;padding-bottom:20px">
@@ -85,15 +85,42 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
   <p class="note" style="margin-top:14px">第一次不需要自己想清楚角色。你只说“帮我建个小说创作团队，按小说创作的流程建立工作流程与机制”，负责人会先给团队结构和流程建议。</p>
 </section>
 
-<section>
-  <h2>和DSH 官方“智能体团队插件”（实验性） 的区别</h2>
-  <p class="note">不是替代关系，是互补关系：DSH 官方“智能体团队插件”（实验性） 管“事”，dsh-agent-lines 管“人”和“消息”。</p>
+<section id="two-ways">
+  <h2>两种用法：只装线，或者线和官方团队一起用</h2>
+  <p class="note">一句话记住：<b>线 = 长期员工</b>（记得住事、能换人）；<b>官方智能体团队 = 临时帮手</b>（干完就散）。先用哪个都行，下面分开说。</p>
   <div class="cards">
-    <div class="card"><b>DSH 官方“智能体团队插件”（实验性）</b><p>强项是任务板、任务依赖、具名 teammate 和 Web 面板；适合短周期、多 agent 的任务编排。</p></div>
-    <div class="card"><b>dsh-agent-lines</b><p>强项是长期角色、持久消息、跨重启、上下文满了换人；适合长期项目。</p></div>
-    <div class="card"><b>一起用</b><p>角色线管人，共享任务板管事，文件管记忆。用户只给负责人发任务，不需要导出或配置。</p></div>
+    <div class="card"><b>用法一：只装线</b><p>只想要“有人长期记得住背景、任务不丢”——够用，最省事。</p></div>
+    <div class="card"><b>用法二：线 + 官方团队</b><p>还想让角色偶尔“开几个帮手并行干活”——大活更快，小活不浪费。</p></div>
+    <div class="card"><b>怎么选？</b><p>先装线；以后遇到“一次要写好几章/审好几份方案”，再把官方团队装上，用法不变。</p></div>
   </div>
-  <p class="note" style="margin-top:14px">DSH 官方“智能体团队插件”（实验性） 目前是 experimental；本插件是社区插件，不是 DeepSeek 官方产品。</p>
+</section>
+
+<section id="only-line">
+  <h2>用法一：只装线 —— 一个人带一支长期团队</h2>
+  <p class="note">不考虑并行、也不想要任务板，只想要“有人记得住事、任务不丢”，装这一层就够了。</p>
+  <div class="cards">
+    <div class="card"><b>背景只讲一次</b><p>每个角色有自己的长期记忆；新任务不用再从头解释前情。</p></div>
+    <div class="card"><b>任务不会掉</b><p>消息存在本地，重启后还在；发出去能查、能确认、能追到“卡在哪”。</p></div>
+    <div class="card"><b>人满了能换，角色不换</b><p>一个会话快满了，写一张交接单换个新会话，活接着干，记忆不丢。</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">适合：小说连载、短视频系列、长期开发/研究/运营项目。</p>
+  <p class="note">一句话价值：把“每次新开对话都重讲一遍”，变成“带一支记得住事的团队”。</p>
+</section>
+
+<section id="fusion">
+  <h2>用法二：线 + 官方智能体团队 —— 大活并行，小活不折腾</h2>
+  <p class="note">角色偶尔要“一次做很多块”（比如一次写 3 章、一次对比 5 个方案）时，可以让角色在自己会话里临时叫几个帮手并行做，做完就散。</p>
+  <pre>负责人（你只跟他说目标）
+ └─ 角色线：写手 / 校对 / 运营…（长期，记得住事）
+      └─ 临时小队：需要并行时才开，做完就散</pre>
+  <div class="cards">
+    <div class="card"><b>谁干活不用你操心</b><p>默认角色自己做（省钱）；遇到“能拆成 3 块以上 / 要多方案对比 / 要独立审读”，才开临时小队。</p></div>
+    <div class="card"><b>任务板不用维护两套</b><p>官方任务板只读同步过来，不会让你重复录一遍。</p></div>
+    <div class="card"><b>成员和消息还是不漏</b><p>小队是临时的，角色和历史一直在；换人、重启都不影响。</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">适合：一次写多章、一次审多份方案、多方案对比、赶时间并行。</p>
+  <p class="note">一句话价值：大活并行省时间，小活不折腾不浪费钱。</p>
+  <p class="note" style="margin-top:10px">边界：官方智能体团队目前是实验性；任务是<b>只读同步</b>，不回写官方任务板，也不改变官方插件的能力边界。本插件是社区插件，不是 DeepSeek 官方产品。</p>
 </section>
 
 <section id="install">
@@ -155,7 +182,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
     <p><a href="https://github.com/Lencen/dsh-agent-lines">GitHub 仓库</a> · <a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a> · <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PHILOSOPHY.md">设计思想</a> · <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/DELEGATION-POLICY.md">委派策略</a> · <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PROTOCOL.md">协议</a> · <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/KNOWN_ISSUES.md">已知问题</a></p>
     <p class="note">社区插件，不是 DeepSeek 官方产品。技术细节以 README / 协议为准。</p>
   </details>
-  <p style="margin-top:18px">dsh-agent-lines 0.7.0 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</p>
+  <p style="margin-top:18px">dsh-agent-lines 0.8.0 · Apache-2.0 · Community plugin for DeepSeek Harness. Not an official DeepSeek product.</p>
 </footer>
 </main>
 </div>
