@@ -36,6 +36,7 @@ English | [中文](KNOWN_ISSUES.md)
 | G11 | No stable status API | External consumers can only read `team-board.json` snapshots, with no schema promise | 0.9.0 versions the snapshot schema with the protocol work; 0.10.0 evaluates a read-only status endpoint |
 | G12 | No message priority (jump the queue) | The queue is time-ordered; P0 instructions cannot jump ahead | **Not planned**: conflicts with at-least-once + ack ordering semantics until designed |
 | G13 | No line grouping / subteam labels | The department view expresses hierarchy, not cross-cutting groups like "production/QA" | 0.10.0 evaluation |
+| G14 | ✅ Closed in **0.8.1**: the published package did not ship its own verification gates | 0.8.0's `files` omitted `scripts/`, so business-smoke and the two gates were not inside the package | 0.8.1 adds `scripts` to `files` |
 
 ## 3. Known traps (usage and operations)
 

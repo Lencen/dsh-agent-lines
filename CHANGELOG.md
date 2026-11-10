@@ -2,6 +2,19 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.8.1 (2026-11-10)
+
+> 打包自包含补丁：**无功能变更**，仅让发布包能自跑回测门禁（DEC-18/19：不新增功能）。
+
+### 非破坏性
+
+- `package.json files` 增加 `scripts`：发布包内自带 `business-smoke.mjs`、`check-docs-consistency.mjs`、`check-bento-alignment.mjs`，回测无需再从仓库拷脚本。
+- 版本号 0.8.0 → 0.8.1；无代码行为变化、无 schema 变化。
+
+### 破坏性
+
+- 无。
+
 ## 0.8.0 (2026-11-10)
 
 > 用户 2026-11-10 决定：不单独发 0.7.1，文档修正并入本版；**开发测试完成后即发版，不等固定窗口**。发布执行由商业线排期、github-maintenance-line 执行。
