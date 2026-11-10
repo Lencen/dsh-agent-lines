@@ -12,15 +12,28 @@ A drop-in super-agent alternative for DSH.
 
 Stop reopening sessions and copying context by hand. Give one lead agent a long-lived team: each member has a name and a role, messages survive restarts, and the lead collects and reports the results.
 
-## When to use it
+## Quick Context (for AI assistants)
 
-Use it when:
+> Structured context for AI: paste this repo into an AI assistant and let it read this first; it reduces guessing and hallucination. Humans can skip it.
 
-- You have a long-running project and do not want to re-explain the background every time.
-- You want several agents to keep stable roles: research, architecture, UI/UX, development, testing, release, and operations.
-- You need a fixed name for each role, so you can assign work directly.
-- Work must survive closing a window or restarting DSH: messages and context should still be there.
-- You want one lead agent to decompose work, create the team, track progress, collect results, and report back.
+- **Runtime**: a DeepSeek Harness (DSH) community plugin, running inside the DSH Host process — not a standalone app, not an official product. DSH `>=0.2.1-rc.5 <0.3.0`; Node `^22.19.0 || >=24.0.0`.
+- **Storage**: local SQLite (default `DSH_HOME/agent-lines/lines.db`; override with config `dbPath` or env `DSH_AGENT_LINES_DB`); network filesystems are refused.
+- **Core entities**: **Manager Line** (the line named by `createFrom`) / **Worker Line**; a line = `label` (stable name) + `sessionId` (replaceable Session) + lease.
+- **Hard constraints**: only the `createFrom` line (with `allowCreate: true`) may call `line_create`; **do not enable `allowCreate` on worker profiles**; one writer per Session; never open a line's Session in another DSH process (`session/writer-held`).
+- **Zero-config**: an unbound root Session can bind itself with `line_claim_manager({ confirm: "bind-manager" })` (needs `allowClaim`; on by default in zero-config).
+- **Delivery semantics**: at-least-once; idempotency authority is DSH's `requestId`; failed states are queryable and recoverable (`line_messages` / `line_trace` / `line_redeliver`); **ack timeout is reported, never auto-retried**.
+- **AI operation contract**: [AGENTS.md](AGENTS.md) (config keys, 22 tools, `line_status` fields, hard rules). Design: [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) | [web](https://lencen.github.io/dsh-agent-lines/en/philosophy.html).
+
+## When to use it / when not to
+
+| Scenario | Choose dsh-agent-lines | Don't (better fit) |
+|---|---|---|
+| Long-running project, no desire to re-explain context | ✅ each role keeps long-term memory | ❌ one-off small task: a normal Session is faster |
+| Several agents with stable roles (research/dev/test/release) | ✅ assign by name | ❌ only need a one-shot burst inside one Session: official Agent Teams is lighter |
+| Work must survive closing the window / restarting DSH | ✅ messages and state are durable | ❌ no restart survival needed |
+| Context fills up; the role must change but the role must not | ✅ `line_handoff` / `line_rebind` | ❌ only one-off multi-agent collaboration |
+| Need task dependency control, quality gates, a task board | ⚠️ read-only fusion with the official board; no own DAG | ✅ use the official DSH Agent Teams plugin (task DAG + panel) |
+| Need cross-machine / active-active / strong isolation | ❌ unsupported (local SQLite + local lease) | ✅ choose a distributed solution |
 
 
 ## How the two team shapes look
@@ -410,6 +423,20 @@ flowchart LR
   P -->|prompt requestId| W2[Worker line Session B]
   W1 -->|line_inbox / line_ack| P
   W2 -->|line_inbox / line_ack| P
+~~~
+
+~~~text
+dsh-agent-lines/
+├── Manager Line            # manager (createFrom): decompose, dispatch, collect
+│   ├── line_create         # create worker lines (manager only)
+│   ├── line_send           # assign work / reply
+│   ├── line_inbox          # receive worker reports
+│   └── line_messages / line_trace / line_redeliver / line_purge   # visibility (0.8.0+)
+├── Worker Line             # worker: executes the actual work
+│   ├── (durable memory)    # context survives restarts
+│   └── line_inbox / line_ack
+├── Official Agent Teams    # official plugin: task board / deps / panel (read-only fusion)
+└── lines.db                # local state: lines, roles, messages, events, leases
 ~~~
 
 The DSH adapter owns line identity and delivery into a Session; the transport owns durable messages and cross-process storage. The default transport is local SQLite. Public architecture: [English](docs/ARCHITECTURE.en.md) | [中文](docs/ARCHITECTURE.md).

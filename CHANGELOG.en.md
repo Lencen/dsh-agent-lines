@@ -2,6 +2,13 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.9.0 (unreleased)
+
+> Next train (protocol hardening) plus the **documentation optimization** folded into it: readable for humans, precise for AI (no behavior change). Docs-only changes are not released on their own (same rule that cancelled 0.7.1).
+
+- README (both languages): add a **Quick Context** block for AI assistants (runtime/storage/entities/hard constraints/zero-config/delivery semantics/entry points); turn "when to use it" into a **decision table** (choose lines / don't, pointing to the official Agent Teams plugin); add an **ASCII directory tree** to the architecture section (parseable by AI, not only Mermaid/screenshots).
+- Add root `AGENTS.md`: the machine-facing operation contract (config semantics and defaults, 22 tool contracts and permissions, `line_status` field table, MUST/MUST NOT, hallucination checklist); linked from both READMEs.
+
 ## 0.8.1 (2026-11-10)
 
 > Packaging self-containment patch: **no behavior change**; it only lets the published package run its own verification gates (DEC-18/19: no new features).

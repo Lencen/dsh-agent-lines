@@ -12,15 +12,28 @@ DSH 的 super agent 平替插件。
 
 你不用每次新开会话、手动把背景复制给几个 agent。让一个负责人 agent 带一支长期协作的团队：每个成员有名字、各负责一块，任务和消息不会丢，结果由负责人汇总给你。
 
-## 什么时候用
+## Quick Context（给 AI 助手）
 
-如果你遇到这些情况，再考虑安装：
+> 这一段是给 AI 读的结构化上下文：把本插件粘给 AI 让它安排团队时，先让它读这里，能少猜、少幻觉。人类读者可跳过。
 
-- 你有一个长期项目，不想每次都从头解释背景；
-- 你希望几个 agent 长期分工，比如调研、架构、开发、测试、发布、运维；
-- 你需要给每个角色一个固定名字，能直接点名派任务；
-- 任务做到一半关掉窗口、重启 DSH，消息和上下文还要在；
-- 你希望一个负责人 agent 自己拆任务、建团队、追进度、收结果，最后向你汇报。
+- **运行环境**：DeepSeek Harness (DSH) 社区插件，运行在 DSH Host 进程内，不是独立应用、不是官方产品。DSH `>=0.2.1-rc.5 <0.3.0`；Node `^22.19.0 || >=24.0.0`。
+- **数据存储**：本地 SQLite（默认 `DSH_HOME/agent-lines/lines.db`，可用配置 `dbPath` 或环境变量 `DSH_AGENT_LINES_DB` 覆盖）；网络文件系统会被拒绝。
+- **核心实体**：**Manager Line**（`createFrom` 指定的负责人线）/ **Worker Line**（成员线）；每条线 = `label`（稳定名字） + `sessionId`（可替换会话） + 租约。
+- **关键约束**：只有 `createFrom` 线（且 `allowCreate: true`）能调用 `line_create`；**worker profile 不要开 `allowCreate`**；一个 Session 同时只有一个 writer；不要在另一个 DSH 进程打开线 Session（会 `session/writer-held`）。
+- **零配置行为**：未绑定根会话可调用 `line_claim_manager({ confirm: "bind-manager" })` 自行绑定（需 `allowClaim: true`，零配置下默认开启）。
+- **投递语义**：至少一次；幂等权威是 DSH 的 `requestId`；失败态可查可救（`line_messages` / `line_trace` / `line_redeliver`），**ack 超时只报数不自动重投**。
+- **AI 操作契约**：[AGENTS.md](AGENTS.md)（配置字段、22 个工具、`line_status` 字段、硬性约束）；设计思想：[docs/PHILOSOPHY.md](docs/PHILOSOPHY.md)｜[网页版](https://lencen.github.io/dsh-agent-lines/philosophy.html)。
+
+## 什么时候用 / 什么时候不用
+
+| 场景 | 选 dsh-agent-lines | 不选（更适合别的方案） |
+|---|---|---|
+| 长期项目，不想每次重讲背景 | ✅ 每个角色有长期记忆 | ❌ 一次性小任务，用普通会话更快 |
+| 多个 agent 长期固定分工（调研/开发/测试/发布） | ✅ 直接点名派任务 | ❌ 只需要一个会话里临时并发，用 DSH 官方“智能体团队”插件即可 |
+| 任务做到一半要关窗口、重启还要接着做 | ✅ 消息与状态落盘 | ❌ 不需要跨重启，官方插件更轻 |
+| 会话满了要换人但角色不能换 | ✅ `line_handoff` / `line_rebind` | ❌ 只要一次性的多 agent 协作 |
+| 需要任务依赖管控、质量门控、任务看板 | ⚠️ 只读融合官方任务板，不自己做 DAG | ✅ 用 DSH 官方“智能体团队”插件（任务 DAG + 面板） |
+| 需要跨机/多活/强隔离 | ❌ 不支持（本地 SQLite + 本地租约） | ✅ 另选分布式方案 |
 
 
 ## 两种团队长什么样
@@ -427,6 +440,20 @@ flowchart LR
   P -->|prompt requestId| W2[后端线 Session]
   W1 -->|line_inbox / line_ack| P
   W2 -->|line_inbox / line_ack| P
+~~~
+
+~~~text
+dsh-agent-lines/
+├── Manager Line            # 负责人线（createFrom）：拆解、调度、汇总
+│   ├── line_create         # 创建成员线（仅 manager 可调用）
+│   ├── line_send           # 向成员派活 / 回消息
+│   ├── line_inbox          # 接收成员回报
+│   └── line_messages / line_trace / line_redeliver / line_purge   # 可观测与处置（0.8.0+）
+├── Worker Line             # 成员线：执行具体任务
+│   ├── (持久化记忆)         # 会话重启后上下文保留
+│   └── line_inbox / line_ack
+├── Official Agent Teams    # 官方插件：任务板 / 依赖 / 面板（只读融合）
+└── lines.db                # 本地状态：线、角色、消息、事件、租约
 ~~~
 
 DSH 适配层负责线身份和“把消息送进 Session”；transport 负责持久消息和跨进程存储。默认是本地 SQLite。公开架构说明：[English](docs/ARCHITECTURE.en.md) | [中文](docs/ARCHITECTURE.md)。
