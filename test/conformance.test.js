@@ -247,6 +247,7 @@ test('conformance: schema 文件自约束（0.4 约定）', () => {
     assert.ok(envelope.required.includes(key), 'envelope.required 缺少 ' + key)
   }
   assert.ok(!envelope.required.includes('protocolVersion'), 'protocolVersion 不能进 required（旧信封兼容）')
+  assert.ok(!envelope.required.includes('kind'), 'kind 必须可选（PROTOCOL 信封不要求）')
   assert.equal(envelope.properties.protocolVersion.pattern, '^\\d{1,3}\\.\\d{1,3}$')
   assert.equal(envelope.properties.protocolVersion.default, '0.3')
 

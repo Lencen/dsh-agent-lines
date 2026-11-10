@@ -14,10 +14,12 @@ English | [中文](CHANGELOG.md)
 
 ### JSON Schema and conformance (S2b)
 
-- `schema/envelope.v0_4.json` / `schema/message.v0_4.json`: JSON Schema for the envelope and stored message (`additionalProperties: true`; legacy envelopes without a version field are accepted).
-- `conformance/`: language-agnostic conformance cases (6 groups / 22 cases: valid, missing fields, invalid address, major mismatch, newer minor with unknown fields, legacy without version) plus README (how to run from any language).
-- `test/conformance.test.js`: a minimal in-repo validator running the 22 cases (25 assertions).
-- The published package `files` now includes `schema/` and `conformance/` so external implementations can self-test.
+- `schema/envelope.v0_4.json`: wire envelope JSON Schema (`additionalProperties: true`; `kind`/`ccManager` optional; legacy envelopes without a version field accepted).
+- `schema/message.v0_4.json`: **messages table row model** (snake_case, required matches real columns); row ↔ envelope mapping via `lib/protocol.js` `toEnvelope(row)`.
+- `conformance/`: language-agnostic cases (**7 groups / 25 cases**: valid, missing fields, invalid address, major mismatch, newer minor with unknown fields, legacy without version, invalid types) plus README.
+- `test/conformance.test.js`: in-repo validator running 25 cases; `test/schema-live.test.js`: **real DB rows and toEnvelope output** validated against the schemas (F3 implementation path); `test/snapshot-version.test.js`: team-board / team-board.<line> / team-metrics snapshots carry `protocolVersion`.
+- The published package `files` includes `schema/` and `conformance/` so external implementations can self-test.
+- Verification-driven fixes: `ccParent`→`ccManager`; malformed `protocol_version` no longer stalls a claim batch; real v13→v14 migration test; conformance gains `g-invalid-types`.
 
 ### Capabilities and transport (S2c)
 

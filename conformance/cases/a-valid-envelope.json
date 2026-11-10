@@ -38,7 +38,7 @@
     },
     {
       "name": "a/valid-minimal-envelope",
-      "note": "只带必填字段的最小信封（expiresAt/replyTo/rootMessageId 缺省）",
+      "note": "只带必填字段的最小信封（expiresAt/replyTo/rootMessageId/kind 缺省）",
       "check": "schema",
       "schema": "envelope.v0_4",
       "input": {
@@ -59,8 +59,7 @@
         },
         "createdAt": 1793757000000,
         "hop": 0,
-        "noReply": false,
-        "kind": "info"
+        "noReply": false
       },
       "expect": {
         "ok": true
@@ -68,7 +67,7 @@
     },
     {
       "name": "a/valid-stored-message",
-      "note": "存储侧消息：信封字段 + state/attempts 等列，且带未知列 claimed_by",
+      "note": "合法存储行（messages 表行模型，含全部真实列）",
       "check": "schema",
       "schema": "message.v0_4",
       "input": {

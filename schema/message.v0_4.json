@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Lencen/dsh-agent-lines/schema/message.v0_4.json",
   "title": "dsh-agent-lines stored message row (messages table, snake_case)",
-  "description": "存储侧 messages 表行的 schema。additionalProperties: true（0.9.x 新增列如 claimed_by/approved_by 等仍合法）。protocol_version 列 NOT NULL DEFAULT '0.3'，旧行迁移时填充。wire 信封见 envelope.v0_4.json；DB 行到信封的转换见 lib/protocol.js 的 toEnvelope(row)。",
+  "description": "存储侧 messages 表行的 schema。additionalProperties: true（实现新增列不会破坏校验；注意 claimed_by/approved_by 自首版建表即存在，不是 0.9.x 新增）。protocol_version 列 NOT NULL DEFAULT '0.3'，旧行迁移时填充。wire 信封见 envelope.v0_4.json；DB 行到信封的转换见 lib/protocol.js 的 toEnvelope(row)。",
   "type": "object",
   "additionalProperties": true,
   "required": [

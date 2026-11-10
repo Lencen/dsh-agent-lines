@@ -28,6 +28,10 @@
       "ccManager": false
     }
 
+## 行 ↔ 信封映射
+
+存储侧 `messages` 表行到 wire 信封的规范映射是实现的一部分：`lib/protocol.js` 的 `toEnvelope(row)`（第二实现可据此对齐；字段语义见 `schema/message.v0_4.json`）。
+
 ## 版本协商
 
 - 信封携带 `protocolVersion`（`major.minor`）；0.9.0 起为 `0.4`。

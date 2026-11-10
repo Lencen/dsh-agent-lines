@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { validateSchema } from '../lib/schema-lint.js'
+import { validateSchema } from './helpers/schema-lint.js'
 import { LineStore } from '../lib/store.js'
 import { PROTOCOL_VERSION, toEnvelope } from '../lib/protocol.js'
 
@@ -50,15 +50,15 @@ test('toEnvelope(row) validates against schema/envelope.v0_4.json', () => {
   } finally { store.close() }
 })
 
-test('legacy row without protocol_version converts to 0.3 envelope', () => {
-  const store = new LineStore(':memory:')
-  try {
-    acquire(store, 'frontend', 'i-a')
-    acquire(store, 'backend', 'i-b')
-    const sent = store.send({ agentId: 'agent-demo', fromLine: 'frontend', to: 'backend', text: 'old' })
-    store.db.prepare("UPDATE messages SET protocol_version = '0.100' WHERE id = ?").run(sent.id)
-    const envelope = toEnvelope(store.messageById(sent.id))
-    assert.equal(envelope.protocolVersion, '0.100')
-    assert.deepEqual(validateSchema(envelopeSchema, envelope), [])
-  } finally { store.close() }
+test('toEnvelope falls back to 0.3 when the row has no protocol_version', () => {
+  const row = {
+    id: 'msg_' + 'a'.repeat(32), idempotency_key: 'caller:legacy',
+    from_agent: 'agent-demo', from_line: 'frontend', from_session: 'session-frontend',
+    to_agent: 'agent-demo', to_line: 'backend', body: 'legacy', created_at: 1,
+    expires_at: null, reply_to: null, root_message_id: null, hop: 0, no_reply: 0,
+    kind: 'info', cc_manager: 0,
+  }
+  const envelope = toEnvelope(row)
+  assert.equal(envelope.protocolVersion, '0.3')
+  assert.deepEqual(validateSchema(envelopeSchema, envelope), [], 'legacy envelope must satisfy schema')
 })

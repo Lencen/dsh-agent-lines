@@ -30,6 +30,10 @@ English | [中文](PROTOCOL.md)
 }
 ```
 
+## Row ↔ envelope mapping
+
+The canonical mapping from a stored `messages` row to the wire envelope is part of the implementation: `toEnvelope(row)` in `lib/protocol.js` (second implementations can align on it; field semantics in `schema/message.v0_4.json`).
+
 ## Version negotiation
 
 - Every envelope carries `protocolVersion` (`major.minor`); `0.4` since 0.9.0.

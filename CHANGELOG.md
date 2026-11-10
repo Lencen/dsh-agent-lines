@@ -14,10 +14,12 @@
 
 ### JSON Schema 与 conformance（S2b）
 
-- `schema/envelope.v0_4.json` / `schema/message.v0_4.json`：信封与存储消息的 JSON Schema（`additionalProperties: true`，旧信封无版本字段兼容）。
-- `conformance/`：语言无关的 conformance 用例集（6 组 22 条：合法/缺字段/非法地址/major 不兼容/minor 新字段/旧消息无版本）+ README（任意语言跑法）。
-- `test/conformance.test.js`：自写最小校验器跑 22 条用例（25 断言）。
+- `schema/envelope.v0_4.json`：wire 信封 JSON Schema（`additionalProperties: true`；`kind`/`ccManager` 可选；旧信封无版本字段兼容）。
+- `schema/message.v0_4.json`：**messages 表行模型**（snake_case，required 按真实列）；行 ↔ 信封由 `lib/protocol.js` 的 `toEnvelope(row)` 映射。
+- `conformance/`：语言无关用例集（**7 组 25 条**：合法/缺字段/非法地址/major 不兼容/minor 新字段/旧消息无版本/非法类型）+ README（任意语言跑法）。
+- `test/conformance.test.js`：自写校验器跑 25 条用例；`test/schema-live.test.js`：**真实 DB 行与 toEnvelope 输出**用 schema 校验（F3 实现路径）；`test/snapshot-version.test.js`：team-board / team-board.<line> / team-metrics 快照带 `protocolVersion`。
 - 发布包 `files` 纳入 `schema/` 与 `conformance/`，外部实现可自测。
+- 独立验证回填修复：`ccParent`→`ccManager`；畸形 `protocol_version` 不再拖垮整批 claim；补 v13→v14 真迁移测试；conformance 增 `g-invalid-types`。
 
 ### 能力探测与传输（S2c）
 

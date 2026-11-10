@@ -69,3 +69,14 @@ test('per-line team-board snapshot carries protocolVersion', async () => {
     assert.equal(snap.protocolVersion, PROTOCOL_VERSION)
   } finally { h.cleanup() }
 })
+
+test('team-metrics snapshot carries protocolVersion', async () => {
+  const h = harness()
+  try {
+    const payload = await h.registered.get('line_metrics').execute({ days: 7 }, { agent: h.agent })
+    assert.equal(payload.protocolVersion, PROTOCOL_VERSION)
+    const file = readFileSync(join(dirname(h.dbPath), 'team-metrics.json'), 'utf8')
+    const snap = JSON.parse(file)
+    assert.equal(snap.protocolVersion, PROTOCOL_VERSION)
+  } finally { h.cleanup() }
+})

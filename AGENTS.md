@@ -103,7 +103,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 ## 6. Versioning and gates (before any release)
 
 ```bash
-npm test   # unit 97 + docs consistency 13 + bento 9 + business smoke 9
+npm test   # unit 107 + docs consistency 13 + bento 9 + business smoke 9
 ```
 
 - Breaking = envelope fields, state-machine semantics, error-code meaning, invariants → CHANGELOG "breaking" section + minor bump.
