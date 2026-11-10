@@ -156,7 +156,7 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
-### 0.10.0：成本趋势与休眠（未发布，开发中）
+### 0.10.0：成本趋势与休眠
 
 场景：团队长期挂着，想知道每天花了多少 token、空闲线怎么停。
 用法：line_metrics 看 tokens.today/perDay[]、byLine[].ratePerMinute（估算口径，非账单级）；tokenSampleMs / tokenRetentionDays 控制采样与保留；line_hibernate / line_wake 让空闲线休眠/唤醒（停投递、**该线出站发送也拒绝**、释放 lease、保留 Session/历史；默认不自动唤醒）。

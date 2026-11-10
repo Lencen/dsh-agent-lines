@@ -155,7 +155,7 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.10.0: cost trend and hibernation (unreleased, in progress)
+### 0.10.0: cost trend and hibernation
 
 Scenario: a long-running team; you want to know daily token spend and how to park idle lines.
 Use: line_metrics exposes tokens.today/perDay[] and byLine[].ratePerMinute (estimated, not billing); tokenSampleMs / tokenRetentionDays control sampling and retention; line_hibernate / line_wake park and wake idle lines (stop delivery, **reject outbound sends from that line too**, release the lease, keep Session/history; no auto-wake).
