@@ -77,7 +77,7 @@ function tasks(){
   const rows=S.line===(S.board?.manager?.line||'manager')?(S.board?.tasks||[]):(S.dept?.tasks||[])
   if(!rows.length){$('mainBody').innerHTML=empty('暂无任务','该层没有返回任务；deleted 不返回。');return}
   let h='<table><thead><tr><th>任务</th><th>状态</th><th>负责人</th><th>parent</th></tr></thead><tbody>'
-  rows.forEach(t=>h+='<tr><td>'+esc(t.subject||t.id)+'</td><td>'+pill(t.status)+'</td><td>'+esc(val(t.ownerName||t.ownerLine))+'</td><td>'+esc(val(t.parentTaskId))+'</td></tr>')
+  rows.forEach(t=>h+='<tr><td>'+esc(t.subject||t.id)+'</td><td>'+pill(t.status)+(t.staleOwner?pill('stale','bad'):'')+'</td><td>'+esc(val(t.ownerName||t.ownerLine))+'</td><td>'+esc(val(t.parentTaskId))+'</td></tr>')
   $('mainBody').innerHTML=h+'</tbody></table>'
 }
 function dept(){

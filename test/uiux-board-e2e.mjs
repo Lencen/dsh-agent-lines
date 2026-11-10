@@ -25,7 +25,7 @@ const board = {
   manager: { line: 'manager', sessionId: 's-manager', role: 'lead' },
   tasks: [
     { id: 'task-1', subject: '总任务', status: 'in_progress', ownerName: 'writer', ownerLine: 'writer', parentTaskId: null, blockedBy: [] },
-    { id: 'task-2', subject: '阻塞任务', status: 'pending', ownerName: null, parentTaskId: 'task-1', blockedBy: ['task-1'] },
+    { id: 'task-2', subject: '阻塞任务', status: 'pending', ownerName: 'writer', parentTaskId: 'task-1', blockedBy: ['task-1'], staleOwner: true },
   ],
   lines: [
     { label: 'manager', status: 'online', lifecycle: 'active', generation: 1, officialTeamAvailable: true, officialTeamLead: true, deptSummary: { total: 2, done: 0, inProgress: 1, blocked: 1, stale: 0 }, subteamPolicy: null, maxMembers: null },
@@ -74,7 +74,7 @@ try {
   check(await page.locator('.slot-actions').count() === 4, '4 action slots')
   check(await page.locator('[data-level]').count() >= 4, 'data-level')
   await assertText(page, '#mainBody', '各线摘要')
-  await page.click('[data-view="tasks"]'); await assertText(page, '#mainTitle', '任务')
+  await page.click('[data-view="tasks"]'); await assertText(page, '#mainTitle', '任务'); await assertText(page, '#mainBody', 'stale')
   await page.click('[data-view="dept"]'); await assertText(page, '#mainBody', '该线未接官方团队')
   await page.click('#tree .node[data-id="writer"]'); await page.waitForTimeout(300)
   await assertText(page, '#sideBody', 'writer')
