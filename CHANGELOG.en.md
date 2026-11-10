@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.10.0 (unreleased)
+
+### Daily token trend (S3a)
+
+- Token sampling: every `tokenSampleMs` (default 60s) each line's cumulative `decodeTokens` is written to `line_events` (action=`token_sample`, detail=JSON); **no DB migration** (reuses the existing table/index).
+- `line_metrics.tokens` gains `total` / `today` / `window` / `perDay[]` / `ratePerMinute` / `perMessage` / `samples` / `sampleIntervalMs` (estimate, not billing; session-counter resets count as 0).
+- Docs: AGENTS config/tool tables note `tokenSampleMs` and the token trend fields; basis documented as "session-level sampling, estimated".
+
 ## 0.9.0 (2026-11-10)
 
 ### Protocol (S2a)
