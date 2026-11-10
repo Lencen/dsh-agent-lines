@@ -166,6 +166,7 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
 | `SESSION_NOT_LIVE` / `NOT_ROOT` | Claim target is not a live root Session |
 | `LINE_INVALID_ARGUMENT` | Invalid tool argument, e.g. limit |
 | `LINE_PROTOCOL_MISMATCH` | Envelope `protocolVersion` major differs from this implementation; the message is not delivered and is marked failed |
+| `LINE_HIBERNATING` | The target line is hibernating (0.10.0+); call `line_wake` before sending |
 | `LINE_CAPABILITY_MISSING` | The running profile lacks a required DSH capability (see line_status.capabilities) |
 | `LINE_CLAIM_DISABLED` | allowClaim is false |
 | `LINE_CLAIM_CONFIRM_REQUIRED` | confirm is not "bind-manager" |

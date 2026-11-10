@@ -158,6 +158,7 @@ line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作
 | SESSION_NOT_LIVE / NOT_ROOT | claim 目标不是 live 根 Session |
 | LINE_INVALID_ARGUMENT | 工具参数非法，例如 limit |
 | LINE_PROTOCOL_MISMATCH | 信封 `protocolVersion` major 与本实现不同；消息不投递，落 failed |
+| LINE_HIBERNATING | 目标线处于休眠（0.10.0+）；先 `line_wake` 再发送 |
 | LINE_CAPABILITY_MISSING | 运行 profile 缺少所需的 DSH 能力（见 line_status.capabilities） |
 | LINE_CLAIM_DISABLED | allowClaim 为 false |
 | LINE_CLAIM_CONFIRM_REQUIRED | confirm 不是 "bind-manager" |

@@ -48,7 +48,7 @@
 | `childPreset` | string | `standard` | DSH agent preset for created lines |
 | `transport` | string | `sqlite` | `sqlite` or `memory` (in-memory SQLite; proves the transport seam and keeps tests instant) |
 
-## 3. Tool contracts (22 tools)
+## 3. Tool contracts (24 tools)
 
 Manager-only unless noted. "Delivered" = peer messages addressed to the calling line.
 
@@ -65,7 +65,9 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 | `line_redeliver` | manager | `messageId`, `to?`, `resetAttempts?` | Only `failed`/`expired`; requeue + audit event |
 | `line_purge` | manager | `before` (required), `states?`, `dryRun?` (default true) | Delete terminal messages; writes `purged` events |
 | `line_handoff` | manager | `line`, `format?(md|json)`, `limit?` | Structured handoff snapshot (no model call) |
-| `line_retire` | manager | `line`, `reason?` | Soft retire; keeps Session/history |
+| `line_retire` | manager | `line`, `reason?` | Soft retire; keeps Session/history (terminal) |
+| `line_hibernate` | manager | `line`, `reason?` | Park an idle line: stop delivery, release the lease, keep Session/history; sends return `LINE_HIBERNATING` |
+| `line_wake` | manager | `line`, `reason?` | Wake a hibernating line: re-acquire the lease, resume delivery, same Session; retired lines cannot be woken |
 | `line_rebind` | manager | `line`, `sessionId`, `migrate?`, `force?` | Point label at another Session |
 | `line_rename` | manager | `line`, `title?` | Sidebar title |
 | `line_move_workspace` | manager | `line`, `workspace` | Attach only when Session cwd == workspace path |
@@ -92,11 +94,13 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 |---|---|
 | `current` | `{sessionId, bound, line, role, title, lifecycle}` for the calling Session |
 | `manager` | `{label, sessionId, live, persisted, lease}`; `live` = Session materialized in this process, `persisted` = Session file exists on disk |
-| `lines[]` | `label, role, title, lifecycle(active|retired), generation, oldSessionId, pending, lastActivityAt, sessionId, createdBy, lease, live, materialized, activity` |
+| `lines[]` | `label, role, title, lifecycle(active|hibernating|retired), generation, oldSessionId, pending, lastActivityAt, sessionId, createdBy, lease, live, materialized, activity` |
 | `allowClaim` / `bootstrapOnCreate` | effective config |
 | `repair` | human-readable next step (e.g. bind the manager, or recreate a missing Session) |
 
 `materialized` = the Session object exists in this process; `live` = it is currently running. `inactive` is **not** offline.
+
+Lifecycle three states (0.10.0+): `active` (delivering), `hibernating` (parked: no delivery, lease released, Session/history kept, explicit `line_wake` required), `retired` (terminal soft delete; cannot be woken). `inactive` is an activity flag, not a lifecycle.
 
 ## 5b. Capabilities and degradation
 
