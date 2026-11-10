@@ -21,6 +21,7 @@ function read(p) { return readFileSync(resolve(ROOT, p), 'utf8') }
 
 // ---------- 文件清单 ----------
 const PAIRS = [
+  ['docs/TEAM-WORKSPACE.md', 'docs/TEAM-WORKSPACE.en.md'],
   ['README.md', 'README.en.md'],
   ['CHANGELOG.md', 'CHANGELOG.en.md'],
   ['docs/PHILOSOPHY.md', 'docs/PHILOSOPHY.en.md'],
