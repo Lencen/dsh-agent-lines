@@ -2,6 +2,16 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.1 (2026-11-10)
+
+### Documentation completion (same functional code as 0.11.0)
+
+- Adds README reading order and "what it is not" (DAG/workflow engine, chat-bot roster, IM; organizational base vs business intelligence).
+- Site adds "why it is not an ordinary multi-agent plugin", reading order and the 0.11.1 version; philosophy adds the boundary note and T6/T7; KNOWN_ISSUES/DEPLOY/AGENTS synced.
+- No code, protocol or DB change (schema v14 / protocolVersion 0.4 unchanged).
+- Note: 0.11.0 was released from the initial candidate before docs were completed; npm is immutable, so 0.11.1 completes the docs.
+
+**0.11.1 is authoritative; 0.11.0 is the fallback.**
 ## 0.11.0 (2026-11-10)
 
 ### Team workspace, real-data board, and "visible on creation"

@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current version: v0.11.0 (2026-11-10) — team workspace with a real-data board, members visible right after creation, team dirs follow the current workspace.
+> Current version: v0.11.1 (2026-11-10) — team workspace with a real-data board, members visible right after creation, team dirs follow the current workspace.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -185,6 +185,10 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.1: documentation completion (current release)
+
+- 0.11.1 has the same functional code as 0.11.0 and only completes docs/site: README reading order and "what it is not", the official site section "why it is not an ordinary multi-agent plugin", philosophy T6/T7 and the boundary note, KNOWN_ISSUES/DEPLOY/AGENTS sync.
+- 0.11.0 was released from the 22:43 initial candidate (docs not yet completed); npm 0.11.0 is immutable, so 0.11.1 completes the docs.
 ### 0.11.0: team workspace + visible on creation + real-data board (current release)
 
 - **Team workspace**: `line_init_team` creates TEAM.md / charters / decisions / registry; the board has five views (overview/org/tasks/data/cost) from real data, and the org view renders the goal and optional `## 协作流程` from TEAM.md.
