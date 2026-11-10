@@ -8,6 +8,7 @@ import { dirname } from 'node:path'
 import { LineStore, defaultDbPath } from '../lib/store.js'
 import { LineError, PROTOCOL_VERSION, lineId } from '../lib/protocol.js'
 import { loadTeamWorkspace } from '../lib/team-workspace.js'
+import { readTeamGoal, readDecisions } from '../lib/team-init.js'
 import { startBoardServer } from '../lib/board-server.js'
 
 function usage() {
@@ -105,6 +106,8 @@ async function main() {
       const tokenTrend = store.tokenTrend({ agentId: agent, lines: lines.map(line => line.label), days: 7 })
       const teamRoot = opts['team-root'] !== undefined ? String(opts['team-root']) : process.env.DSH_AGENT_LINES_TEAM_ROOT
       const workspace = teamRoot === undefined || String(teamRoot).trim() === '' ? { enabled: false } : loadTeamWorkspace({ teamRoot, lines })
+      const teamGoal = teamRoot === undefined || String(teamRoot).trim() === '' ? { available: false } : readTeamGoal({ teamRoot })
+      const decisions = teamRoot === undefined || String(teamRoot).trim() === '' ? [] : readDecisions({ teamRoot })
       const payload = {
         schemaVersion: 1,
         protocolVersion: PROTOCOL_VERSION,
@@ -119,6 +122,8 @@ async function main() {
         messages: { total: stats.total, byKind: stats.byKind, byState: stats.byState, trend },
         tokens: { total: tokenTrend.lines.reduce((sum, item) => sum + (item.latest ?? 0), 0), today: tokenTrend.today, perDay: tokenTrend.perDay, byLine: tokenTrend.lines, basis: tokenTrend.basis },
         teamWorkspace: { enabled: workspace.enabled, root: workspace.root ?? null, error: workspace.error ?? null, registryError: workspace.registryError ?? null, lines: workspace.lines ?? [] },
+        teamGoal,
+        decisions: decisions.map(item => ({ id: item.id, title: item.title, source: item.source, suggestion: item.suggestion })),
       }
       print(payload, opts.json)
       return 0

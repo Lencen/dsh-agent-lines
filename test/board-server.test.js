@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { startBoardServer } from '../lib/board-server.js'
@@ -69,6 +69,30 @@ test('board server /api/live reports unavailable without a db', async () => {
     const live = await fetch(new URL('/api/live', url))
     assert.equal(live.status, 503)
     assert.equal((await live.json()).available, false)
+  } finally {
+    await new Promise(resolve => server.close(resolve))
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+test('board server /api/live exposes teamGoal and decisions from teamRoot', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-goal-'))
+  const dbPath = join(dir, 'lines.db')
+  const store = new LineStore(dbPath)
+  store.acquire({ agentId: 'agent-demo', line: 'manager', sessionId: 's-m', instanceId: 'i-m', ttlMs: 60000 })
+  store.close()
+  const teamRoot = join(dir, 'team')
+  mkdirSync(join(teamRoot, 'decisions'), { recursive: true })
+  writeFileSync(join(teamRoot, 'TEAM.md'), ['# 团队目标','','## 团队目标','完成小说','## 简介','小说团','## 规划','本月完本','## 计划节奏','日更2章'].join(String.fromCharCode(10)))
+  writeFileSync(join(teamRoot, 'decisions/d1.md'), ['# 发布许可','','## 来源类型','任务','## 背景','终审完成','## 决策建议','同意发布'].join(String.fromCharCode(10)))
+  const { server, url } = await startBoardServer({ dir, dbPath, teamRoot, host: '127.0.0.1', port: 0 })
+  try {
+    const live = await fetch(new URL('/api/live', url))
+    assert.equal(live.status, 200)
+    const payload = await live.json()
+    assert.equal(payload.teamGoal.objective, '完成小说')
+    assert.equal(payload.decisions.length, 1)
+    assert.equal(payload.decisions[0].id, 'd1')
+    assert.equal(payload.decisions[0].suggestion, '同意发布')
   } finally {
     await new Promise(resolve => server.close(resolve))
     rmSync(dir, { recursive: true, force: true })
