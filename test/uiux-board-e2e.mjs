@@ -87,7 +87,7 @@ try {
   await page.fill('#token', 'e2e'); await page.fill('#msgid', pending2.id); await page.click('#reject'); await page.waitForTimeout(800); await assertText(page, '#toast', 'OK')
   await page.fill('#token', 'e2e'); await page.fill('#to', 'writer'); await page.click('#handoff'); await page.waitForTimeout(800); await assertText(page, '#toast', 'OK')
   await page.click('#tree .node[data-id="reviewer"]'); await page.click('[data-view="dept"]'); await page.waitForTimeout(300); await assertText(page, '#mainBody', '该线未接官方团队')
-  await page.route('**/api/team-board', route => route.fulfill({ status: 500, body: 'boom' })); await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(800); await assertText(page, '#mainBody', '读取失败'); await page.unroute('**/api/team-board')
+  await page.route('**/api/team-board', route => route.fulfill({ status: 500, body: 'boom' })); await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(800); await assertText(page, '#mainBody', '读取失败'); await page.unroute('**/api/team-board'); await page.route('**/api/team-metrics', route => route.fulfill({ status: 404, body: 'none' })); await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(800); await page.click('[data-view="metrics"]'); await page.waitForTimeout(300); await assertText(page, '#mainBody', '暂无数据快照'); await page.unroute('**/api/team-metrics')
   check(errors.length === 0, 'page errors: '+errors.join('; '))
   await page.setViewportSize({ width: 768, height: 900 })
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 2), 'mobile no horizontal overflow')
