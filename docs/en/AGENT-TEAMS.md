@@ -45,7 +45,7 @@ The manager creates the Agent Teams task, creates/reuses line roles, calls ctx.a
 
 ## Board data
 
-- tasks: id, subject, status, ownerName, ownerLine, blockedBy, staleOwner;
+- tasks: id, subject, status, ownerName, ownerLine, blockedBy, staleOwner, **parentTaskId** (projected by the lines layer from `parentTaskRef`; the official board does not provide it);
 - lines: label, role, session, online, unread, activity;
 - inbox: pending_approval, blocked, stale_owner, line_offline, unavailable.
 

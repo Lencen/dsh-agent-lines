@@ -54,7 +54,7 @@ manager 自动：
 
 ## 看板内容
 
-- tasks：id、subject、status、ownerName、ownerLine、blockedBy、staleOwner；
+- tasks：id、subject、status、ownerName、ownerLine、blockedBy、staleOwner、**parentTaskId**（由 lines 层按 `parentTaskRef` 投影，官方任务板不提供）；
 - lines：label、role、session、在线、未读、activity；
 - inbox：pending_approval、blocked、stale_owner、line_offline、unavailable。
 
