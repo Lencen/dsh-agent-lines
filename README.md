@@ -158,7 +158,7 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
-### 0.11.0-10：团队工作区与看板（未发布）
+### 0.11.0-11：团队工作区与看板（未发布）
 
 - teamRoot 只读读取：registry.json、charters、TEAM.md（目标/简介/规划/节奏）、decisions；缺失显示暂无/不可得。
 - 新工具 line_init_team（manager-only，工具 25→26）：幂等初始化 TEAM.md / manager 与线的章程 / decisions README / registry。
