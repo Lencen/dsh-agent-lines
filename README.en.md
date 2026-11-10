@@ -100,6 +100,22 @@ Not a replacement: they complement each other. One line: **Agent Teams owns the 
 
 Official Agent Teams is experimental; dsh-agent-lines is a community plugin, not an official DeepSeek product.
 
+## What it is not (common multi-agent alternatives)
+
+Be clear about the boundaries before choosing:
+
+- **Not a DAG / workflow engine**: the plugin ships no task dependencies, state machine, or automatic acceptance/rework. The manager orchestrates flow through goals, TEAM.md `## 协作流程` and role prompts; when a subtask needs hard control, a role line uses the official DSH Agent Teams as a temporary L3 squad via `subteamPolicy` (lines records, displays and audits; it does not hard-block).
+- **Not a chat-bot roster**: the first-class citizen is a long-lived role line (stable `label`, replaceable Session) with a mailbox, lease, handoff and wake-up, not a persona-only bot.
+- **Not an IM / chat app**: messages are work traces (`kind` / `state` / `replyTo` / ack) with delivery, acknowledgement and audit semantics, not social chat.
+- **Organizational infrastructure is decoupled from business intelligence**: the plugin owns roles, messages, persistence and the read-only board; how to split work, accept it and route the flow belongs to the manager model and role prompts.
+- **The board only shows real data**: no invented progress; missing data renders as "not collected / unavailable".
+
+Three collaboration styles on one base (mixable):
+
+1. **Fixed SOP**: write the order and gates into TEAM.md `## 协作流程` and role prompts; the plugin only delivers and records;
+2. **Manager-driven (default)**: the manager decomposes, dispatches, reworks and summarizes in conversation;
+3. **Local hard control**: role lines spawn official L3 squads via `subteamPolicy` for parallel work or independent acceptance, released when the task ends.
+
 ## Agent Teams integration (read-only; 0.5.1+, department view since 0.6.0)
 
 The user only sends a task to the manager. The manager automatically reads official Agent Teams tasks/members, maps teammate names to lines; no user export, no mapping config, no plugin buttons.

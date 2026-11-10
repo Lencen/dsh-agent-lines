@@ -12,6 +12,8 @@ English | [中文](PHILOSOPHY.md) | [Plain-language version (web)](philosophy-pl
 
 **One line**: a DSH session is a person, subagents are temporary helpers, tasks are work, files are memory, the manager orchestrates, quality belongs to roles, and the user only states goals.
 
+**Boundary**: the plugin provides organizational infrastructure only (roles / messages / persistence / read-only board); how to decompose, accept and route work is business intelligence, owned by the manager model and role prompts. This is the fundamental difference from DAG workflow engines and chat-bot rosters.
+
 **The pivot (The One Decision)**:
 
     line = label (stable identity) + sessionId (replaceable carrier)
