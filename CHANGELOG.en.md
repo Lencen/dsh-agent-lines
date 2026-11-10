@@ -2,7 +2,7 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.11.0-7 (unreleased)
+## 0.11.0-8 (unreleased)
 
 ### Team workspace and board (S5)
 
