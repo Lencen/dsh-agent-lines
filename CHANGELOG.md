@@ -2,6 +2,15 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.0-28 (未发布)
+
+### 建线默认立即可见（bootstrap:false 失效）（S5l）
+
+- 用户反馈：`bootstrap:false` 建出的线在 DSH Web 侧栏看不到，体验不可接受；**可见性优先于 token**。
+- 现行为：`line_create` 始终发送 onboarding（除非部署级配置 `bootstrapOnCreate:false`），并**等待新会话 `blank=false`** 后再返回（结果含 `visibleInSidebar`、`bootstrapForced`）；批量结果同样带这些字段。
+- 逐次 `bootstrap:false` 保留参数但被忽略（兼容旧调用）；文档改为"不要靠隐藏线省 token"。
+- 无 DB 迁移、无协议变化。
+
 ## 0.11.0-27 (未发布)
 
 ### 看板「协作流程」改为数据驱动（S5k）

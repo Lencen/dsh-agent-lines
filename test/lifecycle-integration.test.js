@@ -315,3 +315,20 @@ test('line_create batch replace output is lossless JSON', async () => {
     walk(out, 'root')
   } finally { h.cleanup() }
 })
+
+test('line_create always bootstraps visible lines; per-call bootstrap:false is ignored', async () => {
+  const h = harness()
+  try {
+    h.config.bootstrapOnCreate = true
+    await apply(h.ctx, h.config)
+    const out = await h.tools.get('line_create').execute({ label: 'vis1', role: '可见线', bootstrap: false }, exec(h.manager))
+    assert.equal(out.bootstrapForced, true)
+    assert.equal(out.bootstrapQueued, true)
+    assert.equal(out.visibleInSidebar, false) // harness has no sessionListMetadata projection
+    const check = new LineStore(h.config.dbPath)
+    try {
+      const queued = check.messageCounts({ agentId: 'agent-demo', line: 'vis1' })
+      assert.equal(queued.queued + queued.claimed >= 1, true)
+    } finally { check.close() }
+  } finally { h.cleanup() }
+})

@@ -12,7 +12,7 @@
 
 1. 确认绑定：`line_status`（未绑定则 `line_claim_manager`）。
 2. 配置 `teamRoot`（工作区父目录，绝对路径；配置见 [DEPLOY.md](DEPLOY.md)）。
-3. 建线：`line_create({label, role})`，一条线一个 label（如 dev/test/uiux/release）；多条线用批量式 `line_create({lines:[{label,role},…], bootstrap:false})` 一次调用完成（0.11.0-24 起），返回 `{created,skipped,failed,counts}`。
+3. 建线：`line_create({label, role})`，一条线一个 label（如 dev/test/uiux/release）；多条线用批量式 `line_create({lines:[{label,role},…]})` 一次调用完成（0.11.0-24 起），返回 `{created,skipped,failed,counts}`。建线后插件会发 onboarding 并等待会话可见（`visibleInSidebar:true`），团队立刻出现在 DSH 侧栏。
 4. 初始化团队工作区（**只调一次**）：
    `line_init_team({ teamName: "<团队名>" })`
    - 在 `<teamRoot>/<团队名>/` 生成 `TEAM.md`、`charters/*.md`、`decisions/README.md`、`registry.json`；
@@ -25,14 +25,14 @@
    - `charters/<label>.md` 四节：定位 / 职责 / 标准产出 / 边界（缺节看板显示「未采集」或「缺小节」）；
    - `line_send({to, text, kind:"task", taskRef:"<任务名>"})`；跟踪用 `line_team_board` / `line_department_board`。
 
-## 1b. 低 token 建团队（实测）
+## 1b. 建团队可见性与 token（0.11.0-28+）
 
-- **建线时传 `bootstrap:false`**（或配置 `bootstrapOnCreate:false`）：默认会给每条新线发 onboarding 并**唤醒该线 agent 跑一个回合**；实测 8 条线约多花 6.5 万 tokens。关掉后新线保持安静，等第一条任务再唤醒。
-- 建团队全程**只调一次** `line_status`；不要在建团队阶段调 `line_metrics` / `line_team_board` / `line_messages`（输出大、不参与建团队）。
-- 机械建团队可用低 reasoning / 便宜模型（配置层 `agent-default-model`），完成后再切回；
-- 批量建线：`line_create({lines:[…]})` 一次调用替代 N 次单建，少 N-1 个模型步（每步都要重发上下文，是总 token 的大头）；
-- **token 口径（0.11.0-25+）**：`line_metrics` 同时给 `decodeTokens/outputTokens`（仅生成）与 **`totalTokens`（未缓存输入 + 输出 + 缓存读写）**，看板成本默认按 `totalTokens` 统计；DSH 会话统计就是 totalTokens 口径。老的 0.11.0-24 只报 output，实测总 token 可达它的 30–80 倍（5.9M vs 71k），别拿 output 当总成本。
-- 顺序建议：先 `line_create`（`bootstrap:false`）→ `line_init_team` → 写 TEAM.md/charters → 只给要开工的线下第一条任务（唤醒本身就是 token 开销）。
+- **新线必须能在 DSH Web 侧栏看到**：插件默认发 onboarding 并唤醒该线跑首轮，`line_create` 会等到会话 `blank=false` 后再返回（结果含 `visibleInSidebar`）。
+- **逐次传 `bootstrap:false` 已被忽略**；只有部署级配置 `bootstrapOnCreate:false` 才会让新线保持 blank（侧栏不可见，仅用于明确不要可见的部署）。
+- 可见性优先于 token：每条线首轮会多花一些 token，这是换"建完立刻可见"的代价。**不要再靠隐藏线省 token**。
+- 要省 token 请用：批量建线 `line_create({lines:[…]})`、建团队只调一次 `line_status`、阶段内不调 `line_metrics`/`line_team_board`、不读源码、机械流程用低 reasoning/便宜模型。
+- **token 口径（0.11.0-25+）**：`line_metrics` 同时给 `decodeTokens/outputTokens`（仅生成）与 **`totalTokens`（未缓存输入 + 输出 + 缓存读写）**，看板成本默认按 `totalTokens` 统计；DSH 会话统计就是 totalTokens 口径。
+- 顺序建议：`line_create`（批量）→ `line_init_team` → 写 TEAM.md/charters → 按需给线发任务。
 
 ## 2. 看板（只读，主要给用户看）
 

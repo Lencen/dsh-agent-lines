@@ -29,7 +29,7 @@
 | `lines[]` | array | zero-config single `manager` | `{label, sessionId}`; labels unique, sessionIds unique |
 | `allowCreate` | boolean | `true` only in zero-config, else `false` | Enables `line_create` for the manager |
 | `allowClaim` | boolean | `true` only in zero-config, else `false` | Enables `line_claim_manager` |
-| `bootstrapOnCreate` | boolean | `true` | Queue an onboarding message so a new Session is non-blank |
+| `bootstrapOnCreate` | boolean | `true` | Queue an onboarding message so a new Session is non-blank and visible in the DSH sidebar; `false` is a deployment-level opt-out (lines stay blank/hidden). Per-call `bootstrap:false` is ignored since 0.11.0-28 |
 | `allowSelfSend` | boolean | `false` | Allow sending to your own line |
 | `ackTimeoutMs` | int ms | `600000` (min 60000) | **Report-only**: flags overdue `delivered`, never auto-retries |
 | `tokenSampleMs` | int ms | `60000` (min 5000) | Samples cumulative session `decodeTokens` into the events table (line_events, action token_sample); unchanged values are skipped; token trend is an estimate, not billing (0.10.0+) |
@@ -55,7 +55,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 
 | Tool | Caller | Key parameters | Effect |
 |---|---|---|---|
-| `line_create` | manager | `label` or `lines[]` (`{label,role?,title?}` batch), `replace?`, `force?`, `migrate?(queued|none)`, `bootstrap?`, `agentPreset?`, `workspace?`, `cwd?` | Creates a new Session and registers the line; reusing a label returns `created:false`; batch form returns `{created,skipped,failed,counts}` |
+| `line_create` | manager | `label` or `lines[]` (`{label,role?,title?}` batch), `replace?`, `force?`, `migrate?(queued|none)`, `bootstrap?`, `agentPreset?`, `workspace?`, `cwd?` | Creates a new Session and registers the line; onboarding is always queued unless config `bootstrapOnCreate:false`; result carries `visibleInSidebar` (waits for `blank=false`); reusing a label returns `created:false`; batch form returns `{created,skipped,failed,counts}` |
 | `line_send` | anyone | `to`, `text`, `kind?(info|request|task|alert)`, `replyTo?`, `noReply?`, `taskRef?`, `parentTaskRef?`, `subteamPolicy?(auto|ask|never)`, `maxMembers?` | Durable enqueue; `task` from non-manager needs manager approval |
 | `line_inbox` | anyone | `limit?`, `includeAcked?` | Read **delivered** messages, does not mark read |
 | `line_ack` | anyone | `messageId` | Marks delivered → acked |

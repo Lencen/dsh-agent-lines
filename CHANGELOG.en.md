@@ -2,6 +2,15 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-28 (unreleased)
+
+### New lines are visible immediately (bootstrap:false no longer hides them) (S5l)
+
+- User feedback: lines created with `bootstrap:false` were missing from the DSH sidebar; **visibility beats token cost**.
+- New behavior: `line_create` always queues onboarding (unless deployment config `bootstrapOnCreate:false`) and **waits until the new Session flips `blank=false`** before returning (result carries `visibleInSidebar` / `bootstrapForced`); batch results carry them too.
+- Per-call `bootstrap:false` is accepted for compatibility but ignored; docs now say do not hide lines to save tokens.
+- No DB migration, no protocol change.
+
 ## 0.11.0-27 (unreleased)
 
 ### Board collaboration-flow card is data-driven (S5k)

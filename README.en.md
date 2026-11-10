@@ -157,6 +157,11 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-28: new lines are visible immediately (unreleased)
+
+- line_create always bootstraps and waits until blank=false (visibleInSidebar); per-call bootstrap:false ignored.
+- Visibility beats token; docs updated.
+
 ### 0.11.0-27: board collaboration flow is data-driven (unreleased)
 
 - Org view reads optional `TEAM.md` `## 协作流程`; no more fixed dev flow; missing shows "not collected".
