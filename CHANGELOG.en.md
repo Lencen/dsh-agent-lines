@@ -2,6 +2,19 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-14 (unreleased)
+
+### Board real-data fix (S5c)
+
+- Fixed the inline adapter syntax error in `web/board.html` (`mapLive` brace mismatch) that prevented the data mapping from running and left prototype demo content on the page.
+- Removed all prototype demo data (`DATA.missions`, etc.); the five views are now pure data-driven from `/api/live` + `/api/team-board` + `/api/team-metrics`; missing data renders as unavailable / not collected.
+- Line detail reads real `charters/<label>.md` sections (positioning/responsibilities/outputs/quality/boundaries/collaboration/dispatch) and header fields; no demo-charter fallback.
+- Tasks view shows the official task projection (shows "no tasks" when empty); no prototype tasks.
+- Data/cost views consume `team-metrics.json` task/message/token estimate trends (session-level estimate, not billing).
+- New gate `scripts/check-board-scripts.mjs` (inline script syntax + demo-data residue + write-API check) wired into `npm test`.
+- `/api/health` now exposes `version`; the board version badge is no longer hardcoded; `/api/live` teamWorkspace line entries add `header`/`missingSections` (additive).
+- No DB migration (schema v14), no protocol change (0.4), read-only.
+
 ## 0.11.0-13 (unreleased)
 
 ### Team workspace and board (S5)

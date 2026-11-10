@@ -157,6 +157,12 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-14: board real-data fix (unreleased)
+
+Scenario: after 0.11.0-13, a hard refresh still showed prototype demo content (team goal / focus / org detail / tasks).
+Fix: repaired the inline adapter syntax error in `web/board.html`; removed all demo data; five views are pure data-driven (`/api/live` + `/api/team-board` + `/api/team-metrics`); line detail reads real charter sections; tasks view shows the official task projection; added the `check-board-scripts` gate.
+Effect: no prototype residue; missing data renders as "no data / unavailable / not collected" instead of fabricated values.
+
 ### 0.11.0-13: team workspace and board (unreleased)
 
 - Read-only teamRoot: registry.json, charters, TEAM.md (goal/summary/plan/cadence), decisions; missing shows unavailable.

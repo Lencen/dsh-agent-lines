@@ -2,6 +2,19 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.0-14 (未发布)
+
+### 看板真实数据修复（S5c）
+
+- 修复 `web/board.html` 内联适配脚本语法错误（`mapLive` 括号错）：该错误导致整段数据映射不执行，页面残留原型演示内容。
+- 移除页面全部原型演示数据（`DATA.missions` 等），五视图改为纯数据驱动：团队目标/今日焦点/KPI/待决策/最近交接/任务/数据/消耗全部来自 `/api/live` + `/api/team-board` + `/api/team-metrics`；无数据时显示「暂无 / 不可得 / 未采集」。
+- 组织详情读取真实 `charters/<label>.md` 的 sections（定位/职责/标准产出/质量要求/边界/协作/调度）与头部字段，不再回退示例章程。
+- 任务视图展示官方任务投影（当前无任务则显示「暂无任务」），不再渲染原型任务。
+- 数据/消耗视图接入 `team-metrics.json` 的任务/消息/token 估算趋势（session 级估算，非账单）。
+- 新增门禁 `scripts/check-board-scripts.mjs`（内联脚本语法 + 演示数据残留 + 写接口检查），接入 `npm test`。
+- `/api/health` 新增 `version` 字段，看板版本徽标不再硬编码；`/api/live` 的 teamWorkspace 线条目新增 `header`/`missingSections`（additive）。
+- 无 DB 迁移（schema v14）、无协议变化（0.4）、全部只读。
+
 ## 0.11.0-13 (未发布)
 
 ### 团队工作区与看板（S5）

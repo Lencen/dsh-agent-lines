@@ -112,7 +112,7 @@ Lifecycle three states (0.10.0+): `active` (delivering), `hibernating` (parked: 
 ## 6. Versioning and gates (before any release)
 
 ```bash
-npm test   # unit tests + docs consistency 15 + bento 9 + business smoke 9
+npm test   # unit tests + docs consistency 15 + bento 9 + business smoke 9 + board smoke 8 + board scripts 5
 ```
 
 - Breaking = envelope fields, state-machine semantics, error-code meaning, invariants → CHANGELOG "breaking" section + minor bump.
