@@ -41,7 +41,7 @@ Not a replacement: they complement each other. One line: **Agent Teams owns the 
 
 Official Agent Teams is experimental; dsh-agent-lines is a community plugin, not an official DeepSeek product.
 
-## Agent Teams read-only integration (0.6.0)
+## Agent Teams integration (read-only; 0.5.1+, department view since 0.6.0)
 
 The user only sends a task to the manager. The manager automatically reads official Agent Teams tasks/members, maps teammate names to lines; no user export, no mapping config, no plugin buttons.
 
@@ -49,7 +49,34 @@ Precondition: the manager line must also be the Agent Teams Lead/member; otherwi
 
 Read-only: no task writes, no lines.db writes, no manager turn; L2 is not approved.
 
-See [docs/en/AGENT-TEAMS.md](docs/en/AGENT-TEAMS.md).
+### The three levels after integration
+
+~~~~text
+L1 manager session (the user only states goals)
+  └─ L2 role session (long-lived role, durable memory, line capabilities)
+       └─ L3 official Agent Teams team inside that role session (teammates, task-scoped, parallel, released after use)
+~~~~
+
+- **L1 owns lines**: create lines, dispatch, approve policy (`subteamPolicy`), accept results.
+- **L2 owns the work**: decompose, decide "do it myself or open an internal team", produce and self-check, report back to L1.
+- **L3 owns parallelism**: only the carved-out subtasks, cross-verification, one-off quality points; **never a long-lived role**.
+- Memory and delivery evidence live in **files**; the official task board owner can only be a teammate (L1/L2 cannot own tasks).
+
+### Who does the work: the role line, or its internal team?
+
+**Default: L2 does it itself.** Open L3 only when at least one holds and no prohibition applies:
+
+- ≥2 independent proposals or review angles (parallel verification);
+- ≥3 independent output units that can be produced in parallel;
+- an independent quality point after production (review/proofread/fact-check);
+- a long critical path where parallelism clearly shortens the window.
+
+**Always L2**: needs long-lived role memory; tasks write the same files; smaller than one turn; requires final acceptance to the user; requires a cross-session handoff.
+
+Full policy (seven dimensions, A/B rules, `subteamPolicy` semantics, standard delegation steps, update loop and review metrics): [docs/DELEGATION-POLICY.en.md](docs/DELEGATION-POLICY.en.md).
+Read-only fusion fields and boards: [docs/en/AGENT-TEAMS.md](docs/en/AGENT-TEAMS.md).
+
+> Boundary: the plugin **does not auto-detect tasks, auto-dispatch, or hard-block team building** — the L2 agent decides by the policy above; the plugin records, displays and audits. A hard gate needs the official per-line cap or a pre-spawn interception API.
 
 ## Any team type, not just development
 

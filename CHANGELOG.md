@@ -14,6 +14,8 @@
 
 - 新增 `docs/PHILOSOPHY.md` / `docs/PHILOSOPHY.en.md`：设计思想、支点（label + sessionId）、不变量 I1–I7、五条取舍、Non-goals、演进规则、术语表。
 - 新增 `docs/KNOWN_ISSUES.md` / `.en`：设计边界（B1–B8）、已知缺口（G1–G9，带计划版本）、已知坑（K1–K8）、报告问题所需信息。
+- 新增 `docs/DELEGATION-POLICY.md` / `.en`：**二级线自己做还是开线内团队**的委派策略 v1（7 维判定、A/B 规则、`subteamPolicy` 三档语义、标准动作、持续更新机制）。
+- README/AGENT-TEAMS（中/英）补"融合后的三级组织"与"谁干活"说明。
 - README（中/英）新增「设计思想」摘要节；文档站导航与页脚加入口。
 - CHANGELOG 起分「破坏性 / 非破坏性」两栏。
 

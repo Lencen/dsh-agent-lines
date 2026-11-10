@@ -142,6 +142,8 @@ I6 is the repository's **only known self-violation**, and the highest-priority g
 
 ## 10. How this relates to the other documents
 
+> After the fusion, "who does the work" (the role line vs its internal team) is decided by [DELEGATION-POLICY](DELEGATION-POLICY.en.md); the plugin records, displays and audits only (I5).
+
 | Document | Answers |
 |---|---|
 | [README](../README.en.md) | what it is, how to install, what each version adds |
@@ -150,7 +152,8 @@ I6 is the repository's **only known self-violation**, and the highest-priority g
 | [PROTOCOL](PROTOCOL.en.md) | envelope, state machine, error codes, leases, idempotency keys |
 | [SECURITY](SECURITY.en.md) | trust model, data at rest, network, peer content, DoD |
 | [DEPLOY](DEPLOY.en.md) | deployment and operations |
-| [AGENT-TEAMS](AGENT-TEAMS.md) | read-only fusion with the official agent-teams plugin |
+| [AGENT-TEAMS](AGENT-TEAMS.md) | read-only fusion with the official agent-teams plugin (three levels, fields, boards) |
+| [DELEGATION-POLICY](DELEGATION-POLICY.en.md) | should the role line do it or open an internal team (7 dimensions, A/B rules, `subteamPolicy` semantics, update loop) |
 
 ---
 

@@ -14,6 +14,8 @@ This release is a **design-constitution release**: no behavior change.
 
 - Add `docs/PHILOSOPHY.md` / `docs/PHILOSOPHY.en.md`: design philosophy, the pivot (label + sessionId), invariants I1–I7, five tradeoffs, non-goals, evolution rules, glossary.
 - Add `docs/KNOWN_ISSUES.md` / `.en`: design boundaries (B1–B8), known gaps (G1–G9, with target versions), known traps (K1–K8), and what to include in a report.
+- Add `docs/DELEGATION-POLICY.md` / `.en`: delegation policy v1 for **should the role line do it or open an internal team** (7 dimensions, A/B rules, `subteamPolicy` semantics, standard steps, update loop).
+- README/AGENT-TEAMS (both languages) explain the three levels after integration and "who does the work".
 - README (both languages) gains a "Design philosophy" section; the docs site nav and footer link to it.
 - CHANGELOG now separates breaking and non-breaking changes.
 
