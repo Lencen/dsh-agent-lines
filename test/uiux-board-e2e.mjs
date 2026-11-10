@@ -18,6 +18,7 @@ store.acquire({ agentId: 'agent-lines', line: 'manager', sessionId: 's-manager',
 store.acquire({ agentId: 'agent-lines', line: 'writer', sessionId: 's-writer', instanceId: 'i', ttlMs: 60000 })
 store.send({ agentId: 'agent-lines', fromLine: 'manager', to: 'writer', text: '写第一章', kind: 'task', taskRef: 'task-1', taskScope: 'writer', subteamPolicy: 'ask', maxMembers: 2 })
 const pending = store.send({ agentId: 'agent-lines', fromLine: 'writer', to: 'manager', text: '请审批', kind: 'task', requireApproval: true })
+const pending2 = store.send({ agentId: 'agent-lines', fromLine: 'writer', to: 'manager', text: '请拒绝', kind: 'task', requireApproval: true })
 
 const board = {
   schemaVersion: 1, available: true, generatedAt: now,
@@ -32,7 +33,7 @@ const board = {
     { label: 'reviewer', status: 'offline', lifecycle: 'active', generation: 1, officialTeamAvailable: false, officialTeamLead: false, deptSummary: null, subteamPolicy: null, maxMembers: null },
   ],
   messages: [{ id: 'msg-1', from: 'manager', to: 'writer', kind: 'task', state: 'acked', taskRef: 'task-1', at: now, summary: '写第一章' }],
-  inbox: [{ id: pending.id, type: 'pending_approval', summary: '请审批' }],
+  inbox: [{ id: pending.id, type: 'pending_approval', summary: '请审批' }, { id: pending2.id, type: 'pending_approval', summary: '请拒绝' }],
   quality: [], deliveries: [],
 }
 const dept = {
@@ -80,9 +81,13 @@ try {
   await page.click('[data-view="dept"]'); await assertText(page, '#mainBody', 'writer-sub')
   await page.click('[data-view="comm"]'); await assertText(page, '#mainBody', '完成')
   await page.click('[data-view="metrics"]'); await assertText(page, '#mainBody', '300')
-  await page.fill('#token', 'e2e'); await page.fill('#to', 'writer'); await page.fill('#text', 'E2E 消息'); await page.click('#send')
-  await page.waitForTimeout(1800); await assertText(page, '#toast', 'OK')
-  await page.click('#approve'); await page.waitForTimeout(300)
+  await page.fill('#token', 'bad'); await page.fill('#to', 'writer'); await page.fill('#text', 'bad'); await page.click('#send'); await page.waitForTimeout(400); await assertText(page, '#toast', '失败')
+  await page.fill('#token', 'e2e'); await page.fill('#to', 'writer'); await page.fill('#text', 'E2E 消息'); await page.click('#send'); await page.waitForTimeout(800); await assertText(page, '#toast', 'OK')
+  await page.fill('#token', 'e2e'); await page.fill('#msgid', pending.id); await page.click('#approve'); await page.waitForTimeout(800); await assertText(page, '#toast', 'OK')
+  await page.fill('#token', 'e2e'); await page.fill('#msgid', pending2.id); await page.click('#reject'); await page.waitForTimeout(800); await assertText(page, '#toast', 'OK')
+  await page.fill('#token', 'e2e'); await page.fill('#to', 'writer'); await page.click('#handoff'); await page.waitForTimeout(800); await assertText(page, '#toast', 'OK')
+  await page.click('#tree .node[data-id="reviewer"]'); await page.click('[data-view="dept"]'); await page.waitForTimeout(300); await assertText(page, '#mainBody', '该线未接官方团队')
+  await page.route('**/api/team-board', route => route.fulfill({ status: 500, body: 'boom' })); await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(800); await assertText(page, '#mainBody', '读取失败'); await page.unroute('**/api/team-board')
   check(errors.length === 0, 'page errors: '+errors.join('; '))
   await page.setViewportSize({ width: 768, height: 900 })
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 2), 'mobile no horizontal overflow')
