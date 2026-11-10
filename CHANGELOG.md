@@ -12,6 +12,13 @@
 - `claim()` 对 `major` 不兼容的消息不投递：落 `failed` + `last_error=LINE_PROTOCOL_MISMATCH` 并写事件（可查、可 redeliver/purge）。
 - 工具输出补 `protocolVersion`（`line_send` / `line_inbox` / `line_messages`）。
 
+### 能力探测与传输（S2c）
+
+- `lib/capabilities.js`：`probeCapabilities(ctx)` 三态能力表（true/false/null）+ `requireCapability`（缺 `session.create` -> `LINE_CAPABILITY_MISSING`，带 hint）。
+- `line_status` 返回 `capabilities`；缺 workspace registry 时 `line_create` 降级到 cwd 并返回 `workspaceFallback: registry-unavailable`（不整体失败）。
+- 新增 `memory` transport（内存 SQLite）：证明 transport seam 可换、测试秒级起停（不假装第二种引擎）。
+- 快照（team-board/team-metrics）增加 `protocolVersion`，消费方忽略未知字段（F7）。
+
 > 下一车（协议与加固）+ 本车内并入的**文档优化**：让人看得懂、让 AI 读得准（无代码行为变更）。纯文档不单独发版（沿用"0.7.1 取消并入下一车"的口径）。
 
 - README（中/英）：新增「Quick Context（给 AI 助手）」结构化上下文块（运行环境/存储/核心实体/硬约束/零配置/投递语义/入口）；「什么时候用」改为**决策表**（选 lines / 不选 并指向官方 Agent Teams）；架构段补 **ASCII 目录树**（AI 可解析，替代仅靠 Mermaid/截图）。

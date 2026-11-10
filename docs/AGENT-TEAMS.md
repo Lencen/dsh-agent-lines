@@ -54,6 +54,8 @@ manager 自动：
 
 ## 看板内容
 
+快照文件（`team-board.json` / `team-metrics.json`）带 `schemaVersion` 与 `protocolVersion`；消费方**忽略未知字段**，新字段只增不改（0.9.0 S2 / F7）。
+
 - tasks：id、subject、status、ownerName、ownerLine、blockedBy、staleOwner、**parentTaskId**（由 lines 层按 `parentTaskRef` 投影，官方任务板不提供）；
 - lines：label、role、session、在线、未读、activity；
 - inbox：pending_approval、blocked、stale_owner、line_offline、unavailable。

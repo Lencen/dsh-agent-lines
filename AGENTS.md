@@ -44,7 +44,7 @@
 | `maxReplyDepth` | int | `8` | `replyTo` chain limit (`LINE_REPLY_DEPTH_EXCEEDED`) |
 | `maxLines` | int | `16` | Deployment-level cap, **not** per-line/per-task |
 | `childPreset` | string | `standard` | DSH agent preset for created lines |
-| `transport` | string | `sqlite` | SPI exists; only `sqlite` is implemented today |
+| `transport` | string | `sqlite` | `sqlite` or `memory` (in-memory SQLite; proves the transport seam and keeps tests instant) |
 
 ## 3. Tool contracts (22 tools)
 
@@ -96,10 +96,14 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 
 `materialized` = the Session object exists in this process; `live` = it is currently running. `inactive` is **not** offline.
 
+## 5b. Capabilities and degradation
+
+`line_status.capabilities` reports what the running DSH profile exposes: `session.create`, `session.prompt`, `session.rename`, `session.isLive`, `session.persistence`, `workspace.resolveByPath`, `workspace.attach`. `true` = observed, `false` = unavailable, `null` = indirect/unknown. Missing `session.create` -> `LINE_CAPABILITY_MISSING` (clear error, not a crash); missing workspace registry -> `line_create` falls back to cwd and returns `workspaceFallback: 'registry-unavailable'`.
+
 ## 6. Versioning and gates (before any release)
 
 ```bash
-npm test   # unit 58 + docs consistency 12 + bento 9 + business smoke 9
+npm test   # unit 72 + docs consistency 13 + bento 9 + business smoke 9
 ```
 
 - Breaking = envelope fields, state-machine semantics, error-code meaning, invariants → CHANGELOG "breaking" section + minor bump.

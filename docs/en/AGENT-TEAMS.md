@@ -49,6 +49,8 @@ When the manager calls the board, the plugin writes DSH_HOME/agent-lines/team-bo
 
 ## Board data
 
+Snapshot files (`team-board.json` / `team-metrics.json`) carry `schemaVersion` and `protocolVersion`; consumers **ignore unknown fields**, new fields are additive only (0.9.0 S2 / F7).
+
 - tasks: id, subject, status, ownerName, ownerLine, blockedBy, staleOwner, **parentTaskId** (projected by the lines layer from `parentTaskRef`; the official board does not provide it);
 - lines: label, role, session, online, unread, activity;
 - inbox: pending_approval, blocked, stale_owner, line_offline, unavailable.

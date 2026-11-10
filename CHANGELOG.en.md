@@ -12,6 +12,13 @@ English | [中文](CHANGELOG.md)
 - `claim()` does not deliver major-incompatible messages: marks them `failed` with `last_error=LINE_PROTOCOL_MISMATCH` plus an event (queryable, redeliver/purge available).
 - Tool outputs expose `protocolVersion` (`line_send` / `line_inbox` / `line_messages`).
 
+### Capabilities and transport (S2c)
+
+- `lib/capabilities.js`: `probeCapabilities(ctx)` three-state table (true/false/null) plus `requireCapability` (missing `session.create` -> `LINE_CAPABILITY_MISSING` with a hint).
+- `line_status` returns `capabilities`; without a workspace registry, `line_create` falls back to cwd and returns `workspaceFallback: registry-unavailable` instead of failing wholesale.
+- New `memory` transport (in-memory SQLite): proves the transport seam is swappable and makes tests instant (no pretend second engine).
+- Snapshots (team-board/team-metrics) carry `protocolVersion`; consumers ignore unknown fields (F7).
+
 > Next train (protocol hardening) plus the **documentation optimization** folded into it: readable for humans, precise for AI (no behavior change). Docs-only changes are not released on their own (same rule that cancelled 0.7.1).
 
 - README (both languages): add a **Quick Context** block for AI assistants (runtime/storage/entities/hard constraints/zero-config/delivery semantics/entry points); turn "when to use it" into a **decision table** (choose lines / don't, pointing to the official Agent Teams plugin); add an **ASCII directory tree** to the architecture section (parseable by AI, not only Mermaid/screenshots).
