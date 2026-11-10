@@ -92,11 +92,26 @@ async function main() {
       return 0
     }
     if (command === 'doctor') {
+      const agent = String(opts.agent ?? 'agent-deepseek')
+      const counts = store.counts()
+      const lines = store.listLines()
+      const ackTimeoutMs = Number(opts['ack-timeout'] ?? 600000)
+      const failed = Number(counts.failed ?? 0)
+      const expired = Number(counts.expired ?? 0)
+      let stale = 0
+      for (const line of lines) stale += store.ackOverdue({ agentId: agent, line: line.label, timeoutMs: ackTimeoutMs }).length
+      const hints = []
+      if (failed > 0) hints.push('failed=' + failed + ': in the manager session run line_messages({states:["failed"]}), then line_redeliver({messageId}) to retry or line_purge({before,...}) to clean')
+      if (expired > 0) hints.push('expired=' + expired + ': in the manager session run line_messages({states:["expired"]}); redeliver if still wanted, otherwise line_purge({before,...})')
+      if (stale > 0) hints.push('ackOverdue=' + stale + ' (delivered older than ' + ackTimeoutMs + 'ms): check the target Session; line_ack when handled, or line_redeliver if a deliberate repeat is intended (never auto-retried)')
+      if (failed === 0 && expired === 0 && stale === 0) hints.push('no failed/expired/ack-overdue messages')
       print({
         db: store.dbPath,
         exists: existsSync(store.dbPath),
-        counts: store.counts(),
-        lines: store.listLines(),
+        counts,
+        health: { failed, expired, ackOverdue: stale, ackTimeoutMs },
+        hints,
+        lines,
       }, opts.json)
       return 0
     }

@@ -42,9 +42,10 @@
     "dsh": ">=0.2.1-rc.5 <0.3.0"
   },
   "scripts": {
-    "test": "node --test test/*.test.js && node scripts/check-docs-consistency.mjs",
+    "test": "node --test test/*.test.js && node scripts/check-docs-consistency.mjs && node scripts/check-bento-alignment.mjs",
     "test:unit": "node --test test/*.test.js",
-    "check:docs": "node scripts/check-docs-consistency.mjs"
+    "check:docs": "node scripts/check-docs-consistency.mjs",
+    "check:bento": "node scripts/check-bento-alignment.mjs"
   },
   "keywords": [
     "dsh-plugin",

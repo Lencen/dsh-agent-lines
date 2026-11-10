@@ -327,6 +327,17 @@ This is a prompt-driven team pattern, not a built-in org chart: the lead model d
 line_status / line_list return activity: turns/steps/decodeTokens/level/lastActivityAt.
 level is an activity proxy (low/medium/high), not a context-usage percentage; DSH does not expose the context window today.
 
+## Message visibility and remediation (0.8.0+)
+
+Failed states are no longer a black hole: four tools plus one CLI command.
+
+- `line_messages({ line?, states?, since?, limit? })`: query by state (including `failed`/`expired`), returns `counts.byState`; the manager may query any line, other lines only their own.
+- `line_trace({ messageId })`: full lifecycle timeline of one message (state, time, attempt, actor, error) from `message_events`.
+- `line_redeliver({ messageId, to?, resetAttempts? })`: manager only; works on `failed`/`expired` only, may retarget another line of the same agent, keeps hop and writes an audit event.
+- `line_purge({ before, states?, dryRun? })`: manager only; `before` required, `dryRun` defaults to true, only terminal states by default, writes a `purged` audit event before deleting.
+- `ackTimeoutMs` (default 600000): messages sitting in `delivered` longer than that are **flagged and counted** (`line_metrics.messages.ackOverdue`), **never auto-redelivered** (that would break I2).
+- CLI: `dsh-agent-lines --json doctor` reports `health { failed, expired, ackOverdue }` plus next-step hints; `tail --line` shows every state.
+
 ## Use
 
 A manager can be driven entirely by conversation:

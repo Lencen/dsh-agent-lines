@@ -13,12 +13,17 @@
 - PHILOSOPHY（中/英）术语表：补 L1/L2/L3 与管理线/角色线/官方团队（部门/部门团队）的对应关系。
 - README（中/英）：Bento 规范措辞改为"UIUX 线的 Bento 规范（DESIGN-SPEC §11）"。
 
-### 可见性与处置（S1，开发中）
+### 可见性与处置（S1）
 
-- `line_messages`（按状态查，含 failed/expired）、`line_trace` + `message_events`（消息级事件流）、`line_redeliver`、`line_purge`（before 必填、dryRun 默认 true）。
-- `ackTimeout` 只标记 + 报数，不自动重投（守 I2）。
-- `doctor` 输出 failed/expired/stale 三类计数；插件包内 bento 门禁脚本并接入 `npm test`。
-- 崩溃注入测试矩阵（kill -9 ×100 收敛）。
+- `message_events`（append-only 消息级事件流）+ schema **v13**（additive，旧库自动建表）。
+- `line_messages({ line?, states?, since?, limit? })`：按状态查（含 `failed`/`expired`）+ `counts.byState`；管理线可查任意线。
+- `line_trace({ messageId })`：完整生命周期时间线（状态/时间/attempt/actor/错误）。
+- `line_redeliver({ messageId, to?, resetAttempts? })`：管理线专用，仅 `failed`/`expired`，可改投同 agent 其它线，写审计事件。
+- `line_purge({ before, states?, dryRun? })`：管理线专用，`before` 必填、`dryRun` 默认 true、默认只清终态，删前写 `purged` 事件。
+- `ackTimeoutMs`（默认 600000）：`delivered` 超时只标记 + 报数（`line_metrics.messages.ackOverdue`），**不自动重投**（守 I2）。
+- CLI `doctor`：输出 `health { failed, expired, ackOverdue }` + 下一步命令提示；`tail --line` 看全状态。
+- 新增插件包内门禁：`scripts/check-bento-alignment.mjs`（9 项）、`scripts/check-docs-consistency.mjs`（11 项），均接入 `npm test`。
+- 崩溃注入测试 `test/crash-injection.test.js`：kill -9 ×100 后收敛，0 条不可解释消息。
 - 详见 `dsh-agent-lines-internal/DESIGN-0.8.0-S1-2026-11-10.md` 与 `TRAIN-0.8.0-2026-11-10.md`。
 
 ## 0.7.0 (2026-11-10)

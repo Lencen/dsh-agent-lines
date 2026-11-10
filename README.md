@@ -344,6 +344,17 @@ line_create({ label: "ops", role: "运维" })
 line_status / line_list 返回 activity：turns/steps/decodeTokens/level/lastActivityAt。
 level 是活跃度代理（low/medium/high），不是上下文使用率百分比；DSH 当前不暴露上下文窗口。
 
+## 消息可观测与处置（0.8.0 起）
+
+失败态不再是黑洞，四个工具 + 一个 CLI：
+
+- `line_messages({ line?, states?, since?, limit? })`：按状态查消息（含 `failed`/`expired`），返回 `counts.byState`；管理线可查任意线，其它线只能查自己。
+- `line_trace({ messageId })`：单条消息的完整生命周期（每次状态变化的时间、attempt、actor、错误），来自 `message_events`。
+- `line_redeliver({ messageId, to?, resetAttempts? })`：管理线专用；只对 `failed`/`expired` 生效，可改投同 agent 的其它线，保留 hop、写审计事件。
+- `line_purge({ before, states?, dryRun? })`：管理线专用；`before` 必填、`dryRun` 默认 true、默认只清 `failed`/`expired`/`acked`，删除前写 `purged` 审计事件。
+- `ackTimeoutMs`（默认 600000）：`delivered` 超过该时长只**标记 + 报数**（`line_metrics.messages.ackOverdue`），**绝不自动重投**（否则会破坏 I2）。
+- CLI：`dsh-agent-lines --json doctor` 输出 `health { failed, expired, ackOverdue }` 并给出下一步命令；`tail --line` 看全状态。
+
 ## 使用
 
 管理线可以完全由对话驱动：

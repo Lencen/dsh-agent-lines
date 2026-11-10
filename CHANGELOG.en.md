@@ -13,12 +13,17 @@ English | [中文](CHANGELOG.md)
 - PHILOSOPHY (both languages) glossary: map L1/L2/L3 to manager line / role line / official team (department / department team).
 - README (both languages): "UIUX 0.6 bento rules" → "the UIUX line's Bento spec (DESIGN-SPEC §11)".
 
-### Visibility and remediation (S1, in progress)
+### Visibility and remediation (S1)
 
-- `line_messages` (query by state, including failed/expired), `line_trace` + `message_events` (message-level event stream), `line_redeliver`, `line_purge` (required `before`, `dryRun` default true).
-- `ackTimeout`: flag and count only, never auto-redeliver (preserves I2).
-- `doctor` reports failed/expired/stale counts; an in-package bento gate wired into `npm test`.
-- Crash-injection test matrix (kill -9 ×100 converges).
+- `message_events` (append-only message-level event stream) + schema **v13** (additive; older DBs get the table automatically).
+- `line_messages({ line?, states?, since?, limit? })`: query by state (including `failed`/`expired`) with `counts.byState`; the manager may query any line.
+- `line_trace({ messageId })`: full lifecycle timeline (state/time/attempt/actor/error).
+- `line_redeliver({ messageId, to?, resetAttempts? })`: manager only, `failed`/`expired` only, may retarget another line of the same agent, writes an audit event.
+- `line_purge({ before, states?, dryRun? })`: manager only, `before` required, `dryRun` defaults to true, terminal states only, writes a `purged` event before deleting.
+- `ackTimeoutMs` (default 600000): overdue `delivered` messages are flagged and counted (`line_metrics.messages.ackOverdue`), **never auto-redelivered** (preserves I2).
+- CLI `doctor`: reports `health { failed, expired, ackOverdue }` plus next-step hints; `tail --line` shows every state.
+- New in-package gates: `scripts/check-bento-alignment.mjs` (9 checks) and `scripts/check-docs-consistency.mjs` (11 checks), both wired into `npm test`.
+- Crash-injection test `test/crash-injection.test.js`: kill -9 ×100 converges with zero unexplained messages.
 - Details: `dsh-agent-lines-internal/DESIGN-0.8.0-S1-2026-11-10.md` and `TRAIN-0.8.0-2026-11-10.md`.
 
 ## 0.7.0 (2026-11-10)
