@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-lines",
-  "version": "0.11.0",
+  "version": "0.11.0-x",
   "description": "DSH Agent 的持久、可寻址消息线（社区插件）。",
   "type": "module",
   "license": "Apache-2.0",
@@ -33,7 +33,9 @@
     "CODE_OF_CONDUCT.en.md",
     "docs",
     "examples",
-    "web"
+    "web",
+    "AGENTS.md",
+    "docs/AI-USAGE.md"
   ],
   "dsh": {
     "bundle": {

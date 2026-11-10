@@ -82,7 +82,7 @@ const PAIRS = [
 
 // ---------- C4 CHANGELOG 中英版本序列一致 ----------
 {
-  const versions = (p) => [...read(p).matchAll(/^## (\d+\.\d+\.\d+)/gm)].map(m => m[1])
+  const versions = (p) => [...read(p).matchAll(/^## (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/gm)].map(m => m[1])
   const vz = versions('CHANGELOG.md')
   const ve = versions('CHANGELOG.en.md')
   if (vz.length === 0) fail('C4 changelog versions', 'CHANGELOG.md has no version headings')
@@ -93,7 +93,7 @@ const PAIRS = [
 // ---------- C5 package.json 版本 vs CHANGELOG 首条 ----------
 {
   const pkg = JSON.parse(read('package.json'))
-  const first = (read('CHANGELOG.md').match(/^## (\d+\.\d+\.\d+)([^\n]*)/m) || [])
+  const first = (read('CHANGELOG.md').match(/^## (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)([^\n]*)/m) || [])
   const head = read('CHANGELOG.md').split('\n').find(l => /^## \d+\.\d+\.\d+/.test(l)) || ''
   const unreleased = /未发布|unreleased/i.test(head)
   if (first[1] === undefined) fail('C5 package vs changelog', 'no changelog version heading')
@@ -103,10 +103,10 @@ const PAIRS = [
 
 // ---------- C6 README 版本小节是 CHANGELOG 版本集合的子集，且中英一致 ----------
 {
-  const sectionVersions = (p) => [...read(p).matchAll(/^### (\d+\.\d+\.\d+)/gm)].map(m => m[1])
+  const sectionVersions = (p) => [...read(p).matchAll(/^### (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/gm)].map(m => m[1])
   const rz = sectionVersions('README.md')
   const re = sectionVersions('README.en.md')
-  const ch = [...read('CHANGELOG.md').matchAll(/^## (\d+\.\d+\.\d+)/gm)].map(m => m[1])
+  const ch = [...read('CHANGELOG.md').matchAll(/^## (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/gm)].map(m => m[1])
   const notInChangelog = rz.filter(v => !ch.includes(v))
   if (rz.join(',') !== re.join(',')) fail('C6 readme version sections', 'zh=' + rz.join(',') + ' en=' + re.join(','))
   else if (notInChangelog.length) fail('C6 readme version sections', 'not in CHANGELOG: ' + notInChangelog.join(','))
@@ -116,8 +116,8 @@ const PAIRS = [
 // ---------- C6b README 覆盖最近发布版本（防版本小节过期） ----------
 {
   const pkgVersion = JSON.parse(read('package.json')).version
-  const sections = [...read('README.md').matchAll(/^### (\d+\.\d+\.\d+)/gm)].map(m => m[1])
-  const changelogVersions = [...read('CHANGELOG.md').matchAll(/^## (\d+\.\d+\.\d+)/gm)].map(m => m[1])
+  const sections = [...read('README.md').matchAll(/^### (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/gm)].map(m => m[1])
+  const changelogVersions = [...read('CHANGELOG.md').matchAll(/^## (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/gm)].map(m => m[1])
   const required = [...new Set([pkgVersion, ...changelogVersions.filter(v => v !== pkgVersion).slice(0, 3)])]
   const missing = required.filter(v => !sections.includes(v))
   if (missing.length) fail('C6b readme covers recent versions', 'missing: ' + missing.join(','))
@@ -197,7 +197,7 @@ const PAIRS = [
     }
     if (!/dsh-agent-lines\s+\d+\.\d+\.\d+/.test(html)) bad.push(p + ' missing version marker')
     else {
-      const v = (html.match(/dsh-agent-lines\s+(\d+\.\d+\.\d+)/) || [])[1]
+      const v = (html.match(/dsh-agent-lines\s+(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/) || [])[1]
       if (v !== pkg.version) bad.push(p + ' version ' + v + ' != package.json ' + pkg.version)
     }
     if (!/PHILOSOPHY\.md|PHILOSOPHY\.en\.md/.test(html)) bad.push(p + ' does not link the markdown source of truth')

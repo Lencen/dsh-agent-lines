@@ -22,7 +22,7 @@ function usage() {
   dsh-agent-lines [--db <path>] [--json] claim --line <line> --session <sessionId> [--agent <id>]
   dsh-agent-lines [--db <path>] [--json] doctor
   dsh-agent-lines [--db <path>] [--json] tail --line <line> [--agent <id>]
-  dsh-agent-lines board [--dir <snapshotDir>] [--host 127.0.0.1] [--port 4090]
+  dsh-agent-lines board [--db <path>] [--dir <snapshotDir>] [--team-root <dir>] [--host 127.0.0.1] [--port 4090]
 
 Environment: DSH_AGENT_LINES_DB overrides the default DB path.
 `)
