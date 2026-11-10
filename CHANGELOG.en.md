@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-19 (unreleased)
+
+### Board static slots and asset fix (S5d-2)
+
+- Fixed the missing static data slots in 0.11.0-18: brand/plugin-version badge, overview goal card, KPI numbers, org plan/cadence, data time, cost KPIs, footer version now bind to real data.
+- Fixed the ECharts asset path: the prototype referenced `echarts.min.js` but the board server only serves `/vendor/echarts.min.js`, so data/cost charts were blank; now uses `/vendor/echarts.min.js`.
+- High-fidelity layout/components/interactions unchanged; no DB migration, no protocol change, read-only.
+
 ## 0.11.0-18 (unreleased)
 
 ### Restore high-fidelity UIUX + real-data adapter (S5d)

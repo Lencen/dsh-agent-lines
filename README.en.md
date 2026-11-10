@@ -157,6 +157,11 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-19: board static slots and asset fix (unreleased)
+
+- All static data slots (topbar/overview/org/data/cost/footer) now bind to real data; fixed the ECharts asset path (/vendor/echarts.min.js) so data/cost charts render.
+- High-fidelity layout unchanged.
+
 ### 0.11.0-18: restore high-fidelity UIUX + real-data adapter (unreleased)
 
 - Board restored to the approved high-fidelity prototype (layout/components/interactions/themes unchanged); only the data layer was rebuilt with real team goal/org/tasks/data/cost/charters.
