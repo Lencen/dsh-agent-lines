@@ -172,6 +172,36 @@ const PAIRS = [
   else fail('C11 wording & site links', bad.join('; '))
 }
 
+// ---------- C12 设计思想网页版（中/英）与 md/版本一致 ----------
+{
+  const pkg = JSON.parse(read('package.json'))
+  const pages = ['docs/philosophy.html', 'docs/en/philosophy.html']
+  const bad = []
+  for (const p of pages) {
+    if (!existsSync(resolve(ROOT, p))) { bad.push(p + ' missing'); continue }
+    const html = read(p)
+    for (const inv of ['I1', 'I2', 'I3', 'I4', 'I5', 'I6', 'I7']) {
+      if (!html.includes(inv)) bad.push(p + ' missing invariant ' + inv)
+    }
+    if (!/dsh-agent-lines\s+\d+\.\d+\.\d+/.test(html)) bad.push(p + ' missing version marker')
+    else {
+      const v = (html.match(/dsh-agent-lines\s+(\d+\.\d+\.\d+)/) || [])[1]
+      if (v !== pkg.version) bad.push(p + ' version ' + v + ' != package.json ' + pkg.version)
+    }
+    if (!/PHILOSOPHY\.md|PHILOSOPHY\.en\.md/.test(html)) bad.push(p + ' does not link the markdown source of truth')
+    // 相对链接存在性
+    for (const m of html.matchAll(/href="([^"]+)"/g)) {
+      const href = m[1]
+      if (/^(https?:|mailto:|#)/.test(href)) continue
+      const target = href.split('#')[0]
+      if (target === '' || target === './') continue
+      if (!existsSync(resolve(ROOT, dirname(p), target))) bad.push(p + ' broken link ' + href)
+    }
+  }
+  if (bad.length === 0) ok('C12 philosophy web pages (zh/en, invariants, version, links)')
+  else fail('C12 philosophy web pages', bad.join('; '))
+}
+
 // ---------- 输出 ----------
 const json = process.argv.includes('--json')
 if (json) {
