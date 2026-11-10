@@ -6,7 +6,7 @@ English | [中文](CHANGELOG.md)
 
 ### Idle hibernation: hibernate / line_wake (S3b)
 
-- New lifecycle value `hibernating` (distinct from `retire`): stops the delivery loop, releases the lease, keeps Session/history; sends return `LINE_HIBERNATING` (no queuing, no auto-wake).
+- New lifecycle value `hibernating` (distinct from `retire`): stops the delivery loop, releases the lease, keeps Session/history; **both inbound delivery and outbound sends return `LINE_HIBERNATING`** (no queuing, no auto-wake).
 - New manager-only tools `line_hibernate` / `line_wake`; `line_wake` re-acquires the lease and resumes delivery on the same Session.
 - `retired` lines cannot be woken; `rebind`/`replace` require a wake first.
 - Rollback to 0.9.0: hibernating lines are treated as non-active (loop skipped); a human must set lifecycle back to `active` (runbook noted).

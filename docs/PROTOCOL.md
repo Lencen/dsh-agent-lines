@@ -107,18 +107,21 @@ line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作
 ## 线生命周期（0.3.6）
 
     line_retire({ line, reason? })
+    line_hibernate({ line, reason? })
+    line_wake({ line, reason? })
     line_rebind({ line, sessionId, migrate?: "queued" | "none", reason? })
     line_create({ label, replace: true, force?, migrate?, title?, reason? })
     line_observe({ line?, since?, limit? })
     line_handoff({ line, format?: "md" | "json", limit?: number })
     line_rename({ line, title })
 
-- retired：line_send 返回 LINE_RETIRED；Session 和消息历史保留。
+- retired：line_send 返回 LINE_RETIRED；Session 和消息历史保留；不可唤醒。
+- hibernating（0.10.0+）：入站投递与出站发送均返回 LINE_HIBERNATING；lease 释放；Session 与历史保留；仅 manager 可 `line_wake` 恢复（retired 不可唤醒）。
 - rebind：原子切换 lines.session_id，generation+1；旧 Session 不删除。
 - migrate=queued：queued/claimed 迁移到新 Session；delivered/acked 不重投。
 - migrate=none：backlog 非空时返回 LINE_BACKLOG_NOT_EMPTY。
 - replace：同 label 创建新 Session 并 rebind；active 线需 force + reason。
-- line_events 记录 title/retire/rebind 审计；title 持久化，重启保留。
+- line_events 记录 title/retire/rebind/hibernate/wake 审计；title 持久化，重启保留。
 - line_observe 仅管理线、只读跨线 feed；不注入 prompt、不改消息状态。
 
 ## 回声与回复深度
@@ -159,6 +162,8 @@ line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作
 | LINE_INVALID_ARGUMENT | 工具参数非法，例如 limit |
 | LINE_PROTOCOL_MISMATCH | 信封 `protocolVersion` major 与本实现不同；消息不投递，落 failed |
 | LINE_HIBERNATING | 目标线处于休眠（0.10.0+）；先 `line_wake` 再发送 |
+| LINE_MANAGER_HIBERNATE_UNSUPPORTED | manager 线不可休眠 |
+| LINE_INVALID_LIFECYCLE | 非法 lifecycle 值（只允许 active/hibernating/retired/rebinding） |
 | LINE_CAPABILITY_MISSING | 运行 profile 缺少所需的 DSH 能力（见 line_status.capabilities） |
 | LINE_CLAIM_DISABLED | allowClaim 为 false |
 | LINE_CLAIM_CONFIRM_REQUIRED | confirm 不是 "bind-manager" |

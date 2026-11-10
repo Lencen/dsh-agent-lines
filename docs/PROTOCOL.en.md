@@ -115,18 +115,21 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
 ## Line lifecycle (0.3.6)
 
     line_retire({ line, reason? })
+    line_hibernate({ line, reason? })
+    line_wake({ line, reason? })
     line_rebind({ line, sessionId, migrate?: "queued" | "none", reason? })
     line_create({ label, replace: true, force?, migrate?, title?, reason? })
     line_observe({ line?, since?, limit? })
     line_handoff({ line, format?: "md" | "json", limit?: number })
     line_rename({ line, title })
 
-- retired: line_send returns LINE_RETIRED; the Session and history are kept.
+- retired: line_send returns LINE_RETIRED; the Session and history are kept; it cannot be woken.
+- hibernating (0.10.0+): inbound delivery and outbound sends return LINE_HIBERNATING; the lease is released; the Session and history are kept; only a manager can `line_wake` it (retired lines cannot be woken).
 - rebind: atomically switches lines.session_id and increments generation; the old Session is never deleted.
 - migrate=queued: queued/claimed messages move to the new Session; delivered/acked are never re-delivered.
 - migrate=none: returns LINE_BACKLOG_NOT_EMPTY if the backlog is non-empty.
 - replace: creates a fresh Session for the same label and rebinds; an active line requires force + reason.
-- line_events records title/retire/rebind audit; titles survive restarts.
+- line_events records title/retire/rebind/hibernate/wake audit; titles survive restarts.
 - line_observe is a manager-only read-only cross-line feed; it does not inject prompts or change state.
 
 ## Echo and reply depth
@@ -167,6 +170,8 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
 | `LINE_INVALID_ARGUMENT` | Invalid tool argument, e.g. limit |
 | `LINE_PROTOCOL_MISMATCH` | Envelope `protocolVersion` major differs from this implementation; the message is not delivered and is marked failed |
 | `LINE_HIBERNATING` | The target line is hibernating (0.10.0+); call `line_wake` before sending |
+| `LINE_MANAGER_HIBERNATE_UNSUPPORTED` | The manager line cannot be hibernated |
+| `LINE_INVALID_LIFECYCLE` | Invalid lifecycle value (only active/hibernating/retired/rebinding) |
 | `LINE_CAPABILITY_MISSING` | The running profile lacks a required DSH capability (see line_status.capabilities) |
 | `LINE_CLAIM_DISABLED` | allowClaim is false |
 | `LINE_CLAIM_CONFIRM_REQUIRED` | confirm is not "bind-manager" |

@@ -130,3 +130,19 @@ test('line_status exposes the hibernating lifecycle', async () => {
     assert.equal(worker.lifecycle, 'hibernating')
   } finally { h.cleanup() }
 })
+
+test('a hibernating line cannot send outbound either', () => {
+  const { store, cleanup } = tempStore()
+  try {
+    store.acquire({ agentId: 'agent-demo', line: 'frontend', sessionId: 's-f', instanceId: 'i-a', ttlMs: 60000 })
+    store.acquire({ agentId: 'agent-demo', line: 'backend', sessionId: 's-b', instanceId: 'i-b', ttlMs: 60000 })
+    store.setLifecycle({ agentId: 'agent-demo', line: 'frontend', lifecycle: 'hibernating' })
+    assert.throws(() => store.send({ agentId: 'agent-demo', fromLine: 'frontend', to: 'backend', text: 'hi' }), (error) => {
+      assert.ok(error instanceof LineError)
+      assert.equal(error.code, 'LINE_HIBERNATING')
+      return true
+    })
+    const counts = store.messageCounts({ agentId: 'agent-demo', line: 'backend' })
+    assert.equal(counts.queued, 0, 'outbound from a hibernating line must not queue')
+  } finally { cleanup() }
+})

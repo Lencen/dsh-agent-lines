@@ -6,7 +6,7 @@
 
 ### 空闲休眠 hibernate / line_wake（S3b）
 
-- 生命周期新增 `hibernating`（与 `retire` 区分）：停投递循环、释放 lease、保留 Session/历史；向休眠线发送返回 `LINE_HIBERNATING`（不排队、不自动唤醒）。
+- 生命周期新增 `hibernating`（与 `retire` 区分）：停投递循环、释放 lease、保留 Session/历史；**入站投递与出站发送都返回 `LINE_HIBERNATING`**（不排队、不自动唤醒）。
 - 新工具 `line_hibernate` / `line_wake`（manager-only）；`line_wake` 重新 acquire lease 并恢复投递（同一 Session）。
 - `retired` 线不可唤醒；`rebind`/`replace` 要求先唤醒（避免改一个睡着线的身份）。
 - 回滚 0.9.0：休眠线被视为非 active（启动跳过循环），需人工把 lifecycle 改回 `active`（runbook 已备案）。
