@@ -100,3 +100,25 @@ test('board server /api/live exposes teamGoal and decisions from teamRoot', asyn
   }
 })
 
+
+test('board server resolves a parent teamRoot to the newest child team', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-parent-'))
+  const parent = join(dir, 'teams')
+  mkdirSync(join(parent, 'alpha'), { recursive: true })
+  writeFileSync(join(parent, 'alpha', 'TEAM.md'), ['# 团队目标','','## 团队目标','写小说','## 简介','小说团','## 规划','分卷','## 计划节奏','日更','## 协作流程','设定 → 大纲 → 初稿'].join(String.fromCharCode(10)))
+  writeFileSync(join(parent, 'alpha', 'registry.json'), JSON.stringify({ version: 1, lines: [] }))
+  const dbPath = join(dir, 'lines.db')
+  const store = new LineStore(dbPath)
+  store.acquire({ agentId: 'agent-demo', line: 'manager', sessionId: 's-m', instanceId: 'i-m', ttlMs: 60000 })
+  store.close()
+  const { server, url } = await startBoardServer({ dir, dbPath, teamRoot: parent, host: '127.0.0.1', port: 0 })
+  try {
+    const live = await (await fetch(new URL('/api/live', url))).json()
+    assert.equal(live.teamName, 'alpha')
+    assert.equal(live.teamGoal.objective, '写小说')
+    assert.equal(live.teamGoal.workflow, '设定 → 大纲 → 初稿')
+  } finally {
+    await new Promise(resolve => server.close(resolve))
+    rmSync(dir, { recursive: true, force: true })
+  }
+})

@@ -42,6 +42,7 @@ dsh-agent-lines board --db <lines.db> --dir <快照目录> --team-root <teamRoot
 ```
 
 - 五个视图：总览 / 组织（线框、树视图、搜索、历史线）/ 任务 / 数据（ECharts）/ 消耗；右侧停靠详情，支持深浅色与窄屏。
+- `--team-root` 可以给**团队目录**，也可以给**父目录**（0.11.0-29+）：父目录下没有 TEAM.md/registry.json 时，看板自动取最新创建的子团队；每个团队的工作目标/协作流程各自读自己的 TEAM.md，不会串。
 - **顶栏与页脚显示插件版本**（来自 `/api/health.version`）；升级后硬刷新（Ctrl+F5）应与安装包版本一致。
 - 数据来源：`lines.db`（线/消息）、官方任务与成员投影（只读）、teamRoot（TEAM.md/charters/decisions）、`team-metrics.json`（token 估算，非账单）。
 - 缺失一律显示「暂无 / 不可得 / 未采集」，**不编造**；任务视图为空 = 官方任务投影为空，不是故障。

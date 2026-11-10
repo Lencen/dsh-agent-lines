@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-29 (unreleased)
+
+### Board --team-root accepts a parent dir and follows the newest team (S5m)
+
+- If `--team-root` points to a parent without TEAM.md/registry.json, the board resolves to the newest child team (mtime); refresh after creating a team, no restart/param change.
+- Team goal/collaboration flow still come from that team's own TEAM.md (`## 协作流程`); teams never share a flow.
+- No DB migration, no protocol change, read-only.
+
 ## 0.11.0-28 (unreleased)
 
 ### New lines are visible immediately (bootstrap:false no longer hides them) (S5l)

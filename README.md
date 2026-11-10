@@ -158,6 +158,10 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
+### 0.11.0-29：看板父目录自动跟随团队（未发布）
+
+- --team-root 给父目录时自动取最新子团队；各团队目标/协作流程各读自己 TEAM.md。
+
 ### 0.11.0-28：建线默认立即可见（未发布）
 
 - line_create 始终 onboarding 并等待 blank=false 后返回（visibleInSidebar）；逐次 bootstrap:false 被忽略。

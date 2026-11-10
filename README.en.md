@@ -157,6 +157,10 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-29: board follows newest team under a parent teamRoot (unreleased)
+
+- Parent `--team-root` resolves to the newest child team; each team reads its own TEAM.md goal/flow.
+
 ### 0.11.0-28: new lines are visible immediately (unreleased)
 
 - line_create always bootstraps and waits until blank=false (visibleInSidebar); per-call bootstrap:false ignored.
