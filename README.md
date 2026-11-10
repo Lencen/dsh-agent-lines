@@ -96,13 +96,32 @@ DSH 官方“智能体团队”插件目前是实验性的；dsh-agent-lines 是
 
 第一次不需要自己想清楚角色：直接对负责人说“帮我建个小说创作团队，按小说创作的流程建立工作流程与机制”，它会先给团队结构和流程建议，你确认或补充即可。
 
+## 设计思想（为什么这样设计）
+
+一句话：**DSH 会话是人，子 agent 是临时帮手，任务是事，文件是记忆，负责人做编排，质量归角色，用户只说目标。**
+
+支点只有一个：`line = label（稳定身份） + sessionId（可替换载体）`。因为 DSH 里唯一承载跨轮记忆的是 Session，所以长期角色必须落在 Session 上；又因为 Session 会满、会换，所以身份不能绑在 Session 上——`line_retire` / `line_rebind` / `line_handoff` 都是这一条推出来的。
+
+四条硬约定（破坏任意一条即为 bug）：
+
+- 一条线同一时刻最多一个 live owner（本地租约，不是分布式锁）；
+- 同一 msgId 在目标 Session 日志中最多生效一次（幂等权威是 DSH，不是 SQLite 队列）；
+- label 恒定、Session 可换：换人不换角色，retired 不删历史；
+- 对端消息永远是 peer content，永不升格为用户指令。
+
+**明确不做**：exactly-once、跨机多活、进程隔离与插件内策略沙箱、静态加密与发送方签名、官方任务板双向写回、内置组织模板与固定质量门禁、完整 IM。
+
+完整版（不变量 I1–I7、五条取舍的代价、Non-goals、演进规则、术语表）：[docs/PHILOSOPHY.md](docs/PHILOSOPHY.md) ｜ [English](docs/PHILOSOPHY.en.md)。
+已知会坏的地方与待修缺口：[docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md)。
+
 ## 版本能力与业务场景
 
-### 0.7.0：只读 UIUX 看板
+### 0.7.0：设计宪法与文档版（无代码行为变更）
 
-**Breaking**：看板只读，移除操作与消息能力。
-用法：dsh-agent-lines board --port 4090。
-效果：组织树/总览/任务/部门/数据；固定四槽/bento；无 send/approve/reject/handoff。
+场景：想知道"为什么这样设计、什么不能碰、哪些永远不会做"，或者要给外部实现对齐。
+用法：读 [docs/PHILOSOPHY.md](docs/PHILOSOPHY.md) 与 [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md)；CHANGELOG 起分「破坏性 / 非破坏性」两栏。
+效果：不变量 I1–I7、五条取舍、Non-goals 成文；已知边界与待修缺口分级列出；**插件行为不变**。
+说明：看板只读裁剪**实际已在 0.6.6 发布**，0.7.0 不再重复声明 breaking。
 
 ### 0.6.6：Web 看板 UIUX 验收版
 
@@ -436,20 +455,20 @@ claim 不会对每个新会话自动执行：需要用户明确要求，或运�
 - `delivered`：目标 DSH Session 已接受 prompt。
 - `acked`：agent 显式调用 `line_ack`。
 - **至少一次**；靠 DSH 的 `requestId` 幂等让重试在 Session 日志里“有效一次”。不是分布式 exactly-once。
-- 接收方离线时消息留在队列；0.3 不自动拉起进程。
+- 接收方离线时消息留在队列；插件不会自动拉起进程。
 - **一个 Session 只能有一个 writer。** 不要在另一个 DSH 进程（例如主 Web UI）里打开某条线的 Session；否则会 `session/writer-held`。关掉另一个视图，或给线独立 Session。
 
 ## 安全
 
 - 插件在 DSH Host 进程内运行，拥有主机权限；只安装可信包。
-- 0.3 默认本地 SQLite，不开网络监听。
+- 默认本地 SQLite，不开网络监听。
 - 只有 `createFrom` 管理线能建线；`maxLines` 限制增长。
 - 对端消息在 prompt 里明确标为 peer content，不是用户指令。
 - 详见 [docs/SECURITY.md](docs/SECURITY.md)。
 
 ## 限制
 
-- 不做交接；不能把 Session 迁移到不同目录。
+- 不能把 Session 迁移到不同目录（`line_move_workspace` 只在 Session cwd 与 workspace path 完全一致时可挂载）；换人用 `line_handoff` / `line_rebind` / `line_create({ replace: true })`。
 - 多线是同进程多 Session，不是进程隔离。
 - 一个插件实例只支持一个 manager/团队；同一个 DSH 进程里同时跑开发、小说等多个团队不支持；独立 profile/DB 只是临时 workaround，不是产品模型。
 - 没有 `line_delete`；建线会产生持久行，测试也会留下真实记录。
@@ -458,7 +477,7 @@ claim 不会对每个新会话自动执行：需要用户明确要求，或运�
 
 ## 状态
 
-实验性 `0.3.x`。DSH 处于 developer preview，API 可能变化；请同时锁定 DSH 与插件版本。
+实验性 `0.7.x`。DSH 处于 developer preview，API 可能变化；请同时锁定 DSH 与插件版本。
 
 ## 致谢
 

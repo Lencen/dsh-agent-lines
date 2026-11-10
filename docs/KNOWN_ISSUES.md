@@ -1,0 +1,67 @@
+# 已知问题与边界
+
+[English](KNOWN_ISSUES.en.md) | 中文
+
+> 本文写"**已知会坏的地方**"和"**已知没做的东西**"。
+> 写出来不是示弱：让使用者能预判、让 issue 能引用、让升级前能评估。
+> 设计理由见 [PHILOSOPHY](PHILOSOPHY.md)，运维细节见 [DEPLOY](DEPLOY.md)。
+
+## 一、设计边界（不是 bug，不会修）
+
+| # | 边界 | 说明 |
+|---|---|---|
+| B1 | 一个插件实例只支持一个 manager/团队 | 同一 DSH 进程内同时跑多个团队不支持；独立 profile/DB 只是临时 workaround |
+| B2 | 一个 DSH Session 同时只有一个 writer | 从另一个 DSH 进程（如主 Web UI）打开线 Session 会 `session/writer-held`，重试预算耗尽后消息 `failed` |
+| B3 | 不跨机、不双活 | 本地 SQLite + 本地租约（见 PHILOSOPHY T3） |
+| B4 | 不做进程隔离、不做插件内策略沙箱 | 权限属于 DSH 本体（`agentPreset` / 工具白名单） |
+| B5 | 不做静态加密、不做发送方签名 | 静态数据靠全盘加密；对端消息是提示词层面的缓解，不是硬边界（[SECURITY](SECURITY.md)） |
+| B6 | 不支持网络文件系统 | NFS/CIFS/SMB/FUSE 上的 DB 直接拒绝（`LINE_NETWORK_FILESYSTEM`） |
+| B7 | `maxLines`（默认 16）是部署级上限 | 不是按线/按任务的硬限制；官方暂无 per-line 上限或 spawn 前拦截 API（见内部 0.6.6-CONDITION） |
+| B8 | 官方任务板只读融合，不双向写回 | 见 PHILOSOPHY T5 |
+
+## 二、已知缺口（待修，带计划版本）
+
+| # | 缺口 | 现象 / 影响 | 计划 |
+|---|---|---|---|
+| G1 | `failed` / `expired` 在 agent 工具面不可见 | 只有 CLI `tail --line` 能看到；模型侧只能靠"我没收到"发现，违反不变量 I6 | 0.8.0（`line_messages` 按状态查） |
+| G2 | 没有 `line_redeliver` / `line_purge` | 失败消息只能手工改 SQLite 才能重投或清理 | 0.8.0 |
+| G3 | `delivered` 没有 ack 超时 | 消息可以永久停在 `delivered`（agent 崩了/忘了 ack） | 0.8.0：只**标记 + 报数**，不自动重投（自动重投会破坏 I2） |
+| G4 | 没有消息级事件流 | 只有线级 `line_events`；回答不了"claim 过几次、卡在哪一步、排队还是处理慢" | 0.8.0（`message_events` + `line_trace`） |
+| G5 | 信封没有 `protocolVersion` | 不同版本实现之间无法协商/拒绝/降级 | 0.9.0 |
+| G6 | 协议文档不可校验 | 没有 JSON Schema，没有 conformance 用例 | 0.9.0 |
+| G7 | 没有 DSH 能力探测 | 靠版本区间 `>=0.2.1-rc.5 <0.3.0` 硬约束，新 rc 可能整体不可用而非降级 | 0.9.0（能力探测 + 优雅降级） |
+| G8 | 没有成本控制 | `line_metrics` 有每线 `decodeTokens`，但没有按日增量/速率/上限/空闲休眠 | 0.10.0 |
+| G9 | 团队结构不是文件产物 | 团队靠对话现场生成，不可复现、不可 review、不可迁移 | 0.10.0 评估（`team.yaml`，须守 I5：只校验不拦截） |
+
+## 三、已知坑（使用与运维）
+
+| # | 坑 | 处置 |
+|---|---|---|
+| K1 | 没有 `line_delete` | 建线产生持久行，测试也会留真实记录；测试请用独立 `--db` 路径 |
+| K2 | 空白线 Session 可能要等第一条任务才落盘 | 默认会排一条 onboarding 消息（可用 `bootstrap:false` 关掉，但侧边栏可能不显示该线） |
+| K3 | `line_create` 建好 Session 但 `attachSession` 失败会留孤儿 Session | 错误里带 `detail.sessionId`，不自动删除；按需手动清理 |
+| K4 | 同名 label 不能重建 | `line_create` 返回 `created:false`；换人用 `line_create({ replace: true })` / `line_rebind` |
+| K5 | `inactive` 不是下线 | 只是当前没有 turn 在跑；消息一到会唤醒 |
+| K6 | 删 Session = 杀线 | 消息会永久投递失败（`session/not-found`） |
+| K7 | 在别的 DSH 进程打开线 Session | 会 `session/writer-held`；关掉那个视图，或给线独立 Session |
+| K8 | 旧版本打过本地补丁的用户 | 0.3.5 时代有用户改 `lib/index.js`/`lib/tools.js` 加标题改名；0.6.x 已内置 `line_rename`，补丁可回退 |
+
+## 四、如何报告问题
+
+请带上四项，缺一项很难定位：
+
+1. 版本：插件版本 + DSH 版本 + Node 版本；
+2. 现场：`dsh-agent-lines --json doctor` 与 `dsh-agent-lines --json list` 输出；
+3. 消息：涉及的消息 id（`msg_...`）与它当前的 state；
+4. 期望与实际：一句话说明"应该发生什么 / 实际发生了什么"。
+
+失败态的消息（G1 修好之前）：`dsh-agent-lines --json tail --line <line>` 可列出该线全部状态的消息。
+
+## 五、与其它文档
+
+| 文档 | 内容 |
+|---|---|
+| [PHILOSOPHY](PHILOSOPHY.md) | 为什么这样设计、不变量、Non-goals |
+| [DEPLOY](DEPLOY.md) | 部署、writer 冲突、运维 |
+| [PROTOCOL](PROTOCOL.md) | 消息状态机与错误码 |
+| [SECURITY](SECURITY.md) | 信任模型与"没做什么" |

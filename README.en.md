@@ -63,7 +63,38 @@ The examples below use a development team; novel, video, research, or operations
 
 You do not need to know the roles up front. Tell the manager "build a novel team and set up its workflow and mechanisms"; it proposes the team shape first.
 
+## Design philosophy (why it is built this way)
+
+One line: **a DSH session is a person, subagents are temporary helpers, tasks are work, files are memory, the manager orchestrates, quality belongs to roles, and the user only states goals.**
+
+There is exactly one pivot: `line = label (stable identity) + sessionId (replaceable carrier)`. In DSH the only thing carrying memory across turns is a Session, so a long-lived role must live in a Session; and because Sessions fill up and get replaced, identity cannot be bound to a Session — `line_retire` / `line_rebind` / `line_handoff` are all projections of that one decision.
+
+Four hard rules (breaking any one of them is a bug):
+
+- at most one live owner process per line (local lease, not distributed locking);
+- a given msgId takes effect at most once in the target Session log (the idempotency authority is DSH, not the SQLite queue);
+- label is constant, sessionId is replaceable: change the person, never the role; retiring keeps history;
+- peer messages are always peer content, never promoted to user instructions.
+
+**Explicit non-goals**: exactly-once, cross-machine active-active, process isolation or an in-plugin policy sandbox, static encryption or sender signatures, bidirectional write-back to the official board, built-in org templates or fixed quality gates, full IM.
+
+Full text (invariants I1–I7, the five tradeoffs and what they cost, non-goals, evolution rules, glossary): [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) | [中文](docs/PHILOSOPHY.md).
+Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md).
+
 ## What each version adds (business scenarios)
+
+### 0.7.0: design constitution and docs (no behavior change)
+
+Scenario: you want to know why the plugin is built this way, what must not be touched, and what it will never do — or you need to align a second implementation.
+Use: read [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) and [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md); the CHANGELOG now separates breaking and non-breaking changes.
+Effect: invariants I1–I7, five tradeoffs and non-goals are written down; known boundaries and open gaps are listed by severity; **plugin behavior is unchanged**.
+Note: the read-only board cut shipped in **0.6.6**; 0.7.0 does not declare it again.
+
+### 0.6.6: Web board UIUX acceptance
+
+Scenario: review the org/tasks/department/communications/metrics board against the UIUX 0.6 bento rules.
+Use: dsh-agent-lines board --port 4090 --db $DSH_HOME/agent-lines/lines.db.
+Effect: read-only; fixed slots, equal-height rows, inner scrolling, data-level, breadcrumbs; no board-side actions or messages.
 
 ### 0.6.1: internal team policy and audit
 
@@ -366,7 +397,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Limitations
 
-- No handover; no move of a Session between different directories.
+- A Session cannot be moved to a different directory (`line_move_workspace` only attaches when the Session cwd equals the workspace path exactly); change who serves a role with `line_handoff` / `line_rebind` / `line_create({ replace: true })`.
 - Same-process multi-line, not process isolation.
 - One manager/team per plugin instance. Simultaneous teams (for example development and novel) in one DSH process are not supported; separate profile/DB is only a workaround, not the product model.
 - No `line_delete`; a created line is durable, so testing creates real rows.
@@ -375,7 +406,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Experimental `0.3.x`. DSH is in developer preview and its APIs can change. Pin both the DSH version and this plugin's version.
+Experimental `0.7.x`. DSH is in developer preview and its APIs can change. Pin both the DSH version and this plugin's version.
 
 ## Credits
 
