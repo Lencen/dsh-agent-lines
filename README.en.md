@@ -157,7 +157,7 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.11.0-8: team workspace and board (unreleased)
+### 0.11.0-9: team workspace and board (unreleased)
 
 - Read-only teamRoot: registry.json, charters, TEAM.md (goal/summary/plan/cadence), decisions; missing shows unavailable.
 - New manager-only line_init_team (tools 25->26): idempotent init of TEAM.md, manager/line charters, decisions README, registry.

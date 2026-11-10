@@ -416,8 +416,8 @@ renderOrgChart();renderRetired();renderTasks(false);
 (function(){
  function mapLive(l,board,metrics){
   if(!l)return;
-  var lines=(l.lines||[]).filter(function(x){return x.label!=='manager'}).map(function(x){
-   return {id:x.label,name:x.title||x.label,status:x.status==='online'?'active':(x.status||'active'),tasks:0,generation:x.generation||1,roleText:x.role||'',
+  var lines=(l.lines||[]).map(function(x){
+   return {id:x.label,name:x.name||x.title||x.label,status:x.status==='online'?'active':(x.status||'active'),tasks:0,generation:x.generation||1,roleText:x.role||'',
     members:[],rebinds:[],
     charter:{source:'charters/'+x.label+'.md',updated:'',sections:(x.sections||{})}}};
   });
