@@ -357,6 +357,10 @@ line_create({ label: "ops", role: "运维" })
 line_status / line_list 返回 activity：turns/steps/decodeTokens/level/lastActivityAt。
 level 是活跃度代理（low/medium/high），不是上下文使用率百分比；DSH 当前不暴露上下文窗口。
 
+## 团队成本趋势（0.10.0 起）
+
+`line_metrics` 按日展示 token 增量与速率（估算口径，非账单级）：`tokenSampleMs` 控制采样频率，`tokenRetentionDays`（默认 30 天）控制样本保留；值未变化时不重复采样。
+
 ## 消息可观测与处置（0.8.0 起）
 
 失败态不再是黑洞，四个工具 + 一个 CLI：

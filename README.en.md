@@ -340,6 +340,10 @@ This is a prompt-driven team pattern, not a built-in org chart: the lead model d
 line_status / line_list return activity: turns/steps/decodeTokens/level/lastActivityAt.
 level is an activity proxy (low/medium/high), not a context-usage percentage; DSH does not expose the context window today.
 
+## Team cost trend (0.10.0+)
+
+`line_metrics` shows daily token deltas and rates (estimated, not billing): `tokenSampleMs` controls the sampling interval and `tokenRetentionDays` (default 30 days) controls retention; unchanged values are not sampled again.
+
 ## Message visibility and remediation (0.8.0+)
 
 Failed states are no longer a black hole: four tools plus one CLI command.

@@ -33,7 +33,7 @@
 | `allowSelfSend` | boolean | `false` | Allow sending to your own line |
 | `ackTimeoutMs` | int ms | `600000` (min 60000) | **Report-only**: flags overdue `delivered`, never auto-retries |
 | `tokenSampleMs` | int ms | `60000` (min 5000) | Samples cumulative session `decodeTokens` into the events table (line_events, action token_sample); unchanged values are skipped; token trend is an estimate, not billing (0.10.0+) |
-| `tokenRetentionDays` | int | `30` | Token samples older than this are pruned hourly (keeps line_events bounded) |
+| `tokenRetentionDays` | int | `30` (min 1, max 365) | Token samples older than this are pruned hourly (keeps line_events bounded) |
 | `dbPath` | path | see §1 | Must be a local filesystem |
 | `pollMs` | int ms | `500` | Delivery loop tick |
 | `leaseTtlMs` | int ms | `30000` | Owner lease heartbeat |
@@ -73,7 +73,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 | `line_manager_ack` | manager | `messageId`, `decision?(approve|reject)` | Approve/reject pending `task` messages |
 | `line_observe` | manager | `line?`, `since?`, `limit?` | Read-only cross-line feed |
 | `line_communications` | manager | filters | Read-only communication board |
-| `line_metrics` | manager | `days?` | Read-only data board: messages (+ `messages.ackOverdue`) and token trend — top-level `tokens.total/today/window/perDay[]/perMessage/samples/sampleIntervalMs/basis`, per line `tokens.byLine[].decodeTokens/today/window/ratePerMinute/samples` |
+| `line_metrics` | manager | `days?` | Read-only data board: messages (+ `messages.ackOverdue`) and token trend — top-level `tokens.total/today/window/perDay[]/perMessage/samples/sampleIntervalMs/windowDays/timezoneOffsetMinutes/basis`, per line `tokens.byLine[].decodeTokens/today/window/ratePerMinute/samples` |
 | `line_team_board` | manager | — | Read-only official Agent Teams board + host snapshot |
 | `line_department_board` | manager | `line` | Lazily read one line's official team/tasks |
 

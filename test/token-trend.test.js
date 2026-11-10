@@ -155,3 +155,43 @@ test('pruneTokenSamples removes only old token samples', () => {
     assert.equal(JSON.parse(left[0].detail).decodeTokens, 20)
   } finally { cleanup() }
 })
+
+test('recordTokenSampleIfChanged skips unchanged values', () => {
+  const { store, cleanup } = tempStore()
+  try {
+    store.acquire({ agentId: 'agent-demo', line: 'frontend', sessionId: 's-f', instanceId: 'i-a', ttlMs: 60000 })
+    assert.notEqual(store.recordTokenSampleIfChanged({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 100, now: 1000 }), null)
+    assert.equal(store.recordTokenSampleIfChanged({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 100, now: 2000 }), null)
+    assert.notEqual(store.recordTokenSampleIfChanged({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 150, now: 3000 }), null)
+    const rows = store.tokenSamples({ agentId: 'agent-demo', line: 'frontend', since: 0, until: 9999 })
+    assert.equal(rows.length, 2)
+  } finally { cleanup() }
+})
+
+test('pruneTokenSamples does not cross agents whose ids differ by LIKE wildcards', () => {
+  const { store, cleanup } = tempStore()
+  try {
+    store.acquire({ agentId: 'agent_demo', line: 'frontend', sessionId: 's-f', instanceId: 'i-a', ttlMs: 60000 })
+    store.acquire({ agentId: 'agentxdemo', line: 'frontend', sessionId: 's-x', instanceId: 'i-b', ttlMs: 60000 })
+    store.recordTokenSample({ agentId: 'agent_demo', line: 'frontend', decodeTokens: 10, now: 1000 })
+    store.recordTokenSample({ agentId: 'agentxdemo', line: 'frontend', decodeTokens: 20, now: 1000 })
+    const removed = store.pruneTokenSamples({ agentId: 'agent_demo', before: 2000 })
+    assert.equal(removed, 1, 'only agent_demo samples are pruned')
+    const other = store.tokenSamples({ agentId: 'agentxdemo', line: 'frontend', since: 0, until: 9999 })
+    assert.equal(other.length, 1)
+  } finally { cleanup() }
+})
+
+test('pruneTokenSamples keeps lifecycle events and token samples of other lines', () => {
+  const { store, cleanup } = tempStore()
+  try {
+    store.acquire({ agentId: 'agent-demo', line: 'frontend', sessionId: 's-f', instanceId: 'i-a', ttlMs: 60000 })
+    store.setTitle({ agentId: 'agent-demo', line: 'frontend', title: 'Frontend Role' })
+    store.recordTokenSample({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 10, now: 1000 })
+    store.recordTokenSample({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 20, now: 5000 })
+    assert.equal(store.pruneTokenSamples({ agentId: 'agent-demo', before: 3000 }), 1)
+    const events = store.lineEvents({ agentId: 'agent-demo', line: 'frontend', limit: 10 })
+    assert.ok(events.some(event => event.action === 'title'), 'lifecycle events must survive prune')
+    assert.equal(store.tokenSamples({ agentId: 'agent-demo', line: 'frontend', since: 0, until: 9999 }).length, 1)
+  } finally { cleanup() }
+})
