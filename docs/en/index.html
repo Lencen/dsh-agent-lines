@@ -29,6 +29,7 @@ h1 span{color:var(--cyan)}
 .caption{font-size:12px;color:var(--muted);padding:10px 14px;border-top:1px solid #1f2937}
 section{padding:34px 0;border-top:1px solid #161d27}
 h2{font-size:23px;margin:0 0 16px}
+h3{font-size:17px;margin:22px 0 10px;color:#cfd8e3}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .card{background:rgba(13,17,23,.82);border:1px solid var(--line);border-radius:12px;padding:18px}
 .card b{display:block;margin-bottom:6px}
@@ -58,6 +59,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
       <a class="btn primary" href="#start">How to start</a>
       <a class="btn" href="#install">Install</a>
     </div>
+    <p class="note" style="margin-top:10px">Latest version: <b>v0.8.0</b> (npm latest / GitHub Release); this page is written for that version.</p>
   </div>
   <div class="shot">
     <img src="../assets/first-use.gif" alt="A lead creates member lines and gets acknowledgements">
@@ -86,18 +88,23 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
 </section>
 
 <section id="two-ways">
-  <h2>Two ways to use it: lines only, or lines plus the official team</h2>
-  <p class="note">One sentence: <b>a line is a long-term employee</b> (remembers the work, replaceable); <b>official Agent Teams are temporary helpers</b> (released when done). Start with either; both are explained below.</p>
+  <h2>Two ways: use the lines plugin only, or also add the dsh official Agent Teams</h2>
+  <p class="note">One sentence: <b>the lines plugin = long-term employees</b> (they remember, they are replaceable); <b>dsh official Agent Teams = temporary helpers</b> (released when done). Start with either; both are explained below.</p>
   <div class="cards">
-    <div class="card"><b>Way 1: lines only</b><p>You just want roles that remember the background and messages that never get lost. Enough, and simplest.</p></div>
-    <div class="card"><b>Way 2: lines + official team</b><p>You also want a role to fire up a few helpers for a big batch. Faster on big work, no waste on small work.</p></div>
-    <div class="card"><b>How to choose?</b><p>Install lines first; later, when you hit "write three chapters / review five proposals at once", add the official team. Usage stays the same.</p></div>
+    <div class="card"><b>Way 1: lines plugin only</b><p>You just want roles that remember the background and messages that never get lost. Enough, and simplest.</p></div>
+    <div class="card"><b>Way 2: lines plugin + dsh official Agent Teams</b><p>You also want a role to fire up a few helpers for a big batch. Faster on big work, no waste on small work.</p></div>
+    <div class="card"><b>How to choose?</b><p>Install the lines plugin first; later, when you hit "write three chapters / review five proposals at once", add the dsh official Agent Teams. Usage stays the same.</p></div>
   </div>
 </section>
 
 <section id="only-line">
-  <h2>Way 1: lines only — one person running a long-lived team</h2>
+  <h2>Way 1: lines plugin only — one person running a long-lived team</h2>
   <p class="note">No parallelism, no task board: just "someone remembers the context" and "tasks never disappear". This layer is enough.</p>
+  <pre>Org shape (lines plugin only)
+
+manager (you only state the goal)
+ └─ role lines: editor-in-chief / writer / proofreader / ops… (long-lived, remembers, replaceable)
+      └─ no temporary team: the role line finishes the work itself</pre>
   <div class="cards">
     <div class="card"><b>Explain the background once</b><p>Each role keeps its own long-term memory; new tasks do not need the story retold.</p></div>
     <div class="card"><b>Tasks never get lost</b><p>Messages are stored locally and survive restarts; you can query, acknowledge, and trace where work stalled.</p></div>
@@ -108,7 +115,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
 </section>
 
 <section id="fusion">
-  <h2>Way 2: lines + official Agent Teams — big work in parallel, small work untouched</h2>
+  <h2>Way 2: lines plugin + dsh official Agent Teams — big work in parallel, small work untouched</h2>
   <p class="note">When a role has a big batch (write 3 chapters, compare 5 proposals), it can spin up a few helpers inside its own session, work in parallel, and release them.</p>
   <pre>manager (you only state the goal)
  └─ role lines: writer / proofreader / ops… (long-lived, remembers)
@@ -117,6 +124,12 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
     <div class="card"><b>You don't choose who does the work</b><p>The role does it itself by default (cheaper); it opens a temporary team only for ≥3 independent chunks, competing proposals, or an independent review.</p></div>
     <div class="card"><b>No second task board to maintain</b><p>The official task board is synced read-only; you never re-enter tasks twice.</p></div>
     <div class="card"><b>Members and messages still never get lost</b><p>The team is temporary; roles and history stay. Swapping a person or restarting changes nothing.</p></div>
+  </div>
+  <h3>Which work stays on the role line (level 2), and which is split to a temporary team (level 3)?</h3>
+  <div class="cards">
+    <div class="card"><b>The role line does it (level 2)</b><p>Work that needs long-term memory (continue the same book, keep the facts straight); a small task that fits one turn; work that writes the same files; the final acceptance you care about.</p></div>
+    <div class="card"><b>Split to a temporary team (level 3)</b><p>Work that splits into ≥3 independent chunks (write 3 chapters, build 5 modules); competing proposals or cross-review; an independent review/proofread; a tight deadline where parallel work clearly wins.</p></div>
+    <div class="card"><b>Rule of thumb</b><p>Do it yourself by default; open a team only when it splits cleanly and parallelism really saves time. The team is released afterwards; the role stays.</p></div>
   </div>
   <p class="note" style="margin-top:14px">Best for: writing several chapters, reviewing several proposals, comparing options, tight deadlines.</p>
   <p class="note">Value in one line: big work in parallel saves time; small work stays simple and cheap.</p>

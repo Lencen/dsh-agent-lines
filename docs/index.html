@@ -29,6 +29,7 @@ h1 span{color:var(--cyan)}
 .caption{font-size:12px;color:var(--muted);padding:10px 14px;border-top:1px solid #1f2937}
 section{padding:34px 0;border-top:1px solid #161d27}
 h2{font-size:23px;margin:0 0 16px}
+h3{font-size:17px;margin:22px 0 10px;color:#cfd8e3}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .card{background:rgba(13,17,23,.82);border:1px solid var(--line);border-radius:12px;padding:18px}
 .card b{display:block;margin-bottom:6px}
@@ -58,6 +59,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
       <a class="btn primary" href="#start">怎么开始</a>
       <a class="btn" href="#install">安装插件</a>
     </div>
+    <p class="note" style="margin-top:10px">最新版本：<b>v0.8.0</b>（npm latest / GitHub Release），下方介绍按此版本写。</p>
   </div>
   <div class="shot">
     <img src="assets/first-use.gif" alt="负责人创建成员线并收到确认">
@@ -86,18 +88,23 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
 </section>
 
 <section id="two-ways">
-  <h2>两种用法：只装线，或者线和官方团队一起用</h2>
-  <p class="note">一句话记住：<b>线 = 长期员工</b>（记得住事、能换人）；<b>官方智能体团队 = 临时帮手</b>（干完就散）。先用哪个都行，下面分开说。</p>
+  <h2>两种用法：只使用 lines 插件，或者再配合 dsh 官方智能体团队</h2>
+  <p class="note">一句话记住：<b>lines 插件 = 长期员工</b>（记得住事、能换人）；<b>dsh 官方智能体团队 = 临时帮手</b>（干完就散）。先用哪个都行，下面分开说。</p>
   <div class="cards">
-    <div class="card"><b>用法一：只装线</b><p>只想要“有人长期记得住背景、任务不丢”——够用，最省事。</p></div>
-    <div class="card"><b>用法二：线 + 官方团队</b><p>还想让角色偶尔“开几个帮手并行干活”——大活更快，小活不浪费。</p></div>
-    <div class="card"><b>怎么选？</b><p>先装线；以后遇到“一次要写好几章/审好几份方案”，再把官方团队装上，用法不变。</p></div>
+    <div class="card"><b>用法一：只使用 lines 插件</b><p>只想要“有人长期记得住背景、任务不丢”——够用，最省事。</p></div>
+    <div class="card"><b>用法二：lines 插件 + dsh 官方智能体团队</b><p>还想让角色偶尔“开几个帮手并行干活”——大活更快，小活不浪费。</p></div>
+    <div class="card"><b>怎么选？</b><p>先装 lines 插件；以后遇到“一次要写好几章/审好几份方案”，再把 dsh 官方智能体团队装上，用法不变。</p></div>
   </div>
 </section>
 
 <section id="only-line">
-  <h2>用法一：只装线 —— 一个人带一支长期团队</h2>
+  <h2>用法一：只使用 lines 插件 —— 一个人带一支长期团队</h2>
   <p class="note">不考虑并行、也不想要任务板，只想要“有人记得住事、任务不丢”，装这一层就够了。</p>
+  <pre>组织效果（只使用 lines 插件）
+
+负责人（你只跟他说目标）
+ └─ 角色线：总编 / 写手 / 校对 / 运营…（长期，记得住事、能换人）
+      └─ 不额外开临时小队：活由角色线自己做完</pre>
   <div class="cards">
     <div class="card"><b>背景只讲一次</b><p>每个角色有自己的长期记忆；新任务不用再从头解释前情。</p></div>
     <div class="card"><b>任务不会掉</b><p>消息存在本地，重启后还在；发出去能查、能确认、能追到“卡在哪”。</p></div>
@@ -108,7 +115,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
 </section>
 
 <section id="fusion">
-  <h2>用法二：线 + 官方智能体团队 —— 大活并行，小活不折腾</h2>
+  <h2>用法二：lines 插件 + dsh 官方智能体团队 —— 大活并行，小活不折腾</h2>
   <p class="note">角色偶尔要“一次做很多块”（比如一次写 3 章、一次对比 5 个方案）时，可以让角色在自己会话里临时叫几个帮手并行做，做完就散。</p>
   <pre>负责人（你只跟他说目标）
  └─ 角色线：写手 / 校对 / 运营…（长期，记得住事）
@@ -117,6 +124,12 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
     <div class="card"><b>谁干活不用你操心</b><p>默认角色自己做（省钱）；遇到“能拆成 3 块以上 / 要多方案对比 / 要独立审读”，才开临时小队。</p></div>
     <div class="card"><b>任务板不用维护两套</b><p>官方任务板只读同步过来，不会让你重复录一遍。</p></div>
     <div class="card"><b>成员和消息还是不漏</b><p>小队是临时的，角色和历史一直在；换人、重启都不影响。</p></div>
+  </div>
+  <h3>什么活由角色线（二级）自己做，什么活拆给临时小队（三级）？</h3>
+  <div class="cards">
+    <div class="card"><b>角色线自己做（二级）</b><p>需要长期记忆的事（接着上次写、口径不能错）；一件小事一个回合能做完；要写同一批文件；要对你做最终验收。</p></div>
+    <div class="card"><b>拆给临时小队（三级）</b><p>能拆成 3 块以上互不依赖的活（一次写 3 章、一次做 5 个模块）；要多方案对比 / 交叉审查；需要独立的审读或校对；赶时间且并行能明显提前。</p></div>
+    <div class="card"><b>一句话原则</b><p>默认自己做；只有“拆得开 + 并行真能省时间”才开小队。小队干完就散，角色一直在。</p></div>
   </div>
   <p class="note" style="margin-top:14px">适合：一次写多章、一次审多份方案、多方案对比、赶时间并行。</p>
   <p class="note">一句话价值：大活并行省时间，小活不折腾不浪费钱。</p>
