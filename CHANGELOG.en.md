@@ -4,6 +4,10 @@ English | [中文](CHANGELOG.md)
 
 ## 0.10.0 (unreleased)
 
+### Evaluation (S3c, report only)
+
+- `team.yaml` (G9), line grouping (G13), read-only status API (G11): **not implemented in 0.10.0**; rationale and triggers live in the internal evaluation (EVALUATION-0.10.0-S3c). 0.10.0 is scoped to S3a + S3b.
+
 ### Idle hibernation: hibernate / line_wake (S3b)
 
 - New lifecycle value `hibernating` (distinct from `retire`): stops the delivery loop, releases the lease, keeps Session/history; **both inbound delivery and outbound sends return `LINE_HIBERNATING`** (no queuing, no auto-wake).

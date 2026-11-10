@@ -4,6 +4,10 @@
 
 ## 0.10.0 (未发布)
 
+### 评估（S3c，仅报告）
+
+- `team.yaml`（G9）、线分组（G13）、只读状态接口（G11）：**0.10.0 均不实现**，理由与触发条件见内部评估报告（EVALUATION-0.10.0-S3c）；0.10.0 收敛为 S3a + S3b。
+
 ### 空闲休眠 hibernate / line_wake（S3b）
 
 - 生命周期新增 `hibernating`（与 `retire` 区分）：停投递循环、释放 lease、保留 Session/历史；**入站投递与出站发送都返回 `LINE_HIBERNATING`**（不排队、不自动唤醒）。
