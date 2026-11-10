@@ -30,7 +30,7 @@
 | G5 | ✅ 已在 **0.9.0** 关闭：信封没有 `protocolVersion` | 信封携带 `protocolVersion`（0.4）；major/minor 协商规则见 PROTOCOL「版本协商」 | 0.9.0 |
 | G6 | ✅ 已在 **0.9.0** 关闭：协议文档不可校验 | `schema/envelope.v0_4.json` + `schema/message.v0_4.json` + `conformance/`（7 组 25 条，任意语言可跑） | 0.9.0 |
 | G7 | ✅ 已在 **0.9.0** 关闭：没有 DSH 能力探测 | `line_status.capabilities`（三态）+ `LINE_CAPABILITY_MISSING` + workspace 降级；版本区间不放松 | 0.9.0 |
-| G8 | 没有成本控制 | `line_metrics` 有每线 `decodeTokens`，但没有按日增量/速率/上限/空闲休眠 | 0.10.0 |
+| G8 | 部分关闭（0.10.0 S3a）：没有成本控制 | 按日增量/速率已交付（`line_metrics.tokens`，估算口径、采样去重、30 天保留）；**预算上限/空闲休眠仍未交付**（休眠见 S3b） | 0.10.0（S3a 已交付增量/速率；S3b 交付休眠） |
 | G9 | 团队结构不是文件产物 | 团队靠对话现场生成，不可复现、不可 review、不可迁移 | 0.10.0 评估（`team.yaml`，须守 I5：只校验不拦截） |
 | G10 | 真实上下文使用率不可得 | 只有活跃度代理（turns/steps/lastActivityAt），DSH 未暴露每 Session 的窗口占用；不伪造百分比 | **阻塞**：等 DSH 上游；0.9.0 能力探测命中即显示 |
 | G11 | 部分关闭：快照已带 `schemaVersion` + `protocolVersion` 且字段只增不改（0.9.0 F7）；**只读状态 API 仍未提供** | 外部仍需读快照文件 | 0.10.0 评估只读状态接口 |

@@ -7,8 +7,10 @@
 ### token 按日趋势（S3a）
 
 - 新增 token 采样：每 `tokenSampleMs`（默认 60s）把各线的累计 `decodeTokens` 写入 `line_events`（action=`token_sample`，detail=JSON）；**无 DB 迁移**（复用既有表/索引）。
-- `line_metrics.tokens` 扩展：`total` / `today` / `window` / `perDay[]` / `ratePerMinute` / `perMessage` / `samples` / `sampleIntervalMs`（估算口径，非账单级；跨会话计数重置按 0 处理）。
-- 文档：AGENTS 配置表与工具表补 `tokenSampleMs`/token 趋势字段；口径写明「session 级采样、估算」。
+- `line_metrics.tokens` 扩展：顶层 `total` / `today` / `window` / `perDay[]` / `perMessage` / `samples` / `sampleIntervalMs` / `windowDays` / `timezoneOffsetMinutes` / `basis`；每线 `byLine[].decodeTokens` / `today` / `window` / `ratePerMinute` / `samples`（估算口径，非账单级；跨会话计数重置按 0 处理）。
+- 采样优化：值未变化的线不写新样本；`tokenRetentionDays`（默认 30）每小时清理过期 `token_sample` 事件。
+- 修复：`line_handoff` 不再被 `token_sample` 事件挤出（events 过滤采样；`oldSessionId` 改用最近一次 rebind）。
+- 文档：AGENTS 配置/工具表补 `tokenSampleMs`/`tokenRetentionDays` 与 token 趋势字段；口径写明「session 级采样、估算」。
 
 ## 0.9.0 (2026-11-10)
 

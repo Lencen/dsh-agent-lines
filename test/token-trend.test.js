@@ -110,3 +110,48 @@ test('line_metrics reports token trend fields from samples', async () => {
     assert.equal(manager.window >= 500, true)
   } finally { h.cleanup() }
 })
+
+test('token samples do not pollute message_events or line_handoff', () => {
+  const { store, cleanup } = tempStore()
+  try {
+    store.acquire({ agentId: 'agent-demo', line: 'frontend', sessionId: 's-f', instanceId: 'i-a', ttlMs: 60000 })
+    store.setTitle({ agentId: 'agent-demo', line: 'frontend', title: 'Frontend Role' })
+    const messageEventsBefore = store.db.prepare('SELECT COUNT(*) AS n FROM message_events').get().n
+    for (let i = 1; i <= 12; i += 1) {
+      store.recordTokenSample({ agentId: 'agent-demo', line: 'frontend', decodeTokens: i * 100, now: 1000 + i })
+    }
+    const messageEventsAfter = store.db.prepare('SELECT COUNT(*) AS n FROM message_events').get().n
+    assert.equal(messageEventsAfter, messageEventsBefore, 'token sampling must not write message_events')
+    const handoff = store.handoff({ agentId: 'agent-demo', line: 'frontend' })
+    assert.equal(handoff.events.some(event => event.action === 'token_sample'), false, 'handoff events must exclude token_sample')
+    assert.equal(handoff.lastEvent.action, 'title')
+  } finally { cleanup() }
+})
+
+test('tokenTrend uses the process local timezone by default', () => {
+  const { store, cleanup } = tempStore()
+  try {
+    store.acquire({ agentId: 'agent-demo', line: 'frontend', sessionId: 's-f', instanceId: 'i-a', ttlMs: 60000 })
+    const base = Date.UTC(2026, 0, 2, 12, 0)
+    store.recordTokenSample({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 0, now: base })
+    store.recordTokenSample({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 100, now: base + 60000 })
+    const trend = store.tokenTrend({ agentId: 'agent-demo', lines: ['frontend'], days: 7, now: base + 120000 })
+    const localDay = new Date(base + 60000 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)
+    assert.equal(trend.tzOffsetMinutes, -new Date().getTimezoneOffset())
+    assert.deepEqual(trend.perDay, [{ date: localDay, tokens: 100 }])
+  } finally { cleanup() }
+})
+
+test('pruneTokenSamples removes only old token samples', () => {
+  const { store, cleanup } = tempStore()
+  try {
+    store.acquire({ agentId: 'agent-demo', line: 'frontend', sessionId: 's-f', instanceId: 'i-a', ttlMs: 60000 })
+    store.recordTokenSample({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 10, now: 1000 })
+    store.recordTokenSample({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 20, now: 5000 })
+    const removed = store.pruneTokenSamples({ agentId: 'agent-demo', before: 3000 })
+    assert.equal(removed, 1)
+    const left = store.tokenSamples({ agentId: 'agent-demo', line: 'frontend', since: 0, until: 9999 })
+    assert.equal(left.length, 1)
+    assert.equal(JSON.parse(left[0].detail).decodeTokens, 20)
+  } finally { cleanup() }
+})

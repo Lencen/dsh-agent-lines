@@ -7,8 +7,10 @@ English | [中文](CHANGELOG.md)
 ### Daily token trend (S3a)
 
 - Token sampling: every `tokenSampleMs` (default 60s) each line's cumulative `decodeTokens` is written to `line_events` (action=`token_sample`, detail=JSON); **no DB migration** (reuses the existing table/index).
-- `line_metrics.tokens` gains `total` / `today` / `window` / `perDay[]` / `ratePerMinute` / `perMessage` / `samples` / `sampleIntervalMs` (estimate, not billing; session-counter resets count as 0).
-- Docs: AGENTS config/tool tables note `tokenSampleMs` and the token trend fields; basis documented as "session-level sampling, estimated".
+- `line_metrics.tokens` gains top-level `total` / `today` / `window` / `perDay[]` / `perMessage` / `samples` / `sampleIntervalMs` / `windowDays` / `timezoneOffsetMinutes` / `basis`, and per line `byLine[].decodeTokens` / `today` / `window` / `ratePerMinute` / `samples` (estimate, not billing; session-counter resets count as 0).
+- Sampling optimizations: unchanged values write no new sample; `tokenRetentionDays` (default 30) prunes old `token_sample` events hourly.
+- Fix: `line_handoff` is no longer crowded out by `token_sample` events (events filter samples; `oldSessionId` uses the latest rebind).
+- Docs: AGENTS config/tool tables note `tokenSampleMs`/`tokenRetentionDays` and the token trend fields; basis documented as "session-level sampling, estimated".
 
 ## 0.9.0 (2026-11-10)
 
