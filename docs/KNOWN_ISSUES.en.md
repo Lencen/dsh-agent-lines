@@ -23,10 +23,10 @@ English | [中文](KNOWN_ISSUES.md)
 
 | # | Gap | Symptom / impact | Plan |
 |---|---|---|---|
-| G1 | `failed` / `expired` invisible to agent tools | Only CLI `tail --line` shows them; models learn about failure from "I never got it", violating invariant I6 | 0.8.0 (`line_messages` by state) |
-| G2 | No `line_redeliver` / `line_purge` | Failed messages can only be redelivered or cleaned by editing SQLite by hand | 0.8.0 |
-| G3 | `delivered` has no ack timeout | A message can sit in `delivered` forever (agent crashed or forgot to ack) | 0.8.0: **flag and count only**, never auto-redeliver (that would break I2) |
-| G4 | No message-level event stream | Only line-level `line_events`; cannot answer "how many times a message was claimed, where it stalled, queueing vs processing time" | 0.8.0 (`message_events` + `line_trace`) |
+| G1 | ✅ Closed in **0.8.0**: `failed` / `expired` invisible to agent tools | `line_messages` by state and `line_trace` timeline | 0.8.0 |
+| G2 | ✅ Closed in **0.8.0**: no `line_redeliver` / `line_purge` | Provided (purge defaults to dryRun, requires before) | 0.8.0 |
+| G3 | ✅ Closed in **0.8.0**: `delivered` has no ack timeout | `ackTimeoutMs` flags and counts only (`line_metrics`); never auto-redelivers | 0.8.0 |
+| G4 | ✅ Closed in **0.8.0**: no message-level event stream | `message_events` (schema v13) + `line_trace` | 0.8.0 |
 | G5 | No `protocolVersion` in the envelope | Implementations of different versions cannot negotiate, reject, or degrade | 0.9.0 |
 | G6 | Protocol not machine-checkable | No JSON Schema, no conformance suite | 0.9.0 |
 | G7 | No DSH capability probing | Hard version range `>=0.2.1-rc.5 <0.3.0`; a new rc may break everything instead of degrading | 0.9.0 (probe + graceful degradation) |

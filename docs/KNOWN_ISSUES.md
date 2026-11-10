@@ -23,10 +23,10 @@
 
 | # | 缺口 | 现象 / 影响 | 计划 |
 |---|---|---|---|
-| G1 | `failed` / `expired` 在 agent 工具面不可见 | 只有 CLI `tail --line` 能看到；模型侧只能靠"我没收到"发现，违反不变量 I6 | 0.8.0（`line_messages` 按状态查） |
-| G2 | 没有 `line_redeliver` / `line_purge` | 失败消息只能手工改 SQLite 才能重投或清理 | 0.8.0 |
-| G3 | `delivered` 没有 ack 超时 | 消息可以永久停在 `delivered`（agent 崩了/忘了 ack） | 0.8.0：只**标记 + 报数**，不自动重投（自动重投会破坏 I2） |
-| G4 | 没有消息级事件流 | 只有线级 `line_events`；回答不了"claim 过几次、卡在哪一步、排队还是处理慢" | 0.8.0（`message_events` + `line_trace`） |
+| G1 | ✅ 已在 **0.8.0** 关闭：`failed` / `expired` 在 agent 工具面不可见 | 现由 `line_messages` 按状态查、`line_trace` 看时间线 | 0.8.0 |
+| G2 | ✅ 已在 **0.8.0** 关闭：没有 `line_redeliver` / `line_purge` | 已提供（purge 默认 dryRun、before 必填） | 0.8.0 |
+| G3 | ✅ 已在 **0.8.0** 关闭：`delivered` 没有 ack 超时 | `ackTimeoutMs` 只标记 + 报数（`line_metrics`），不自动重投 | 0.8.0 |
+| G4 | ✅ 已在 **0.8.0** 关闭：没有消息级事件流 | `message_events`（schema v13）+ `line_trace` | 0.8.0 |
 | G5 | 信封没有 `protocolVersion` | 不同版本实现之间无法协商/拒绝/降级 | 0.9.0 |
 | G6 | 协议文档不可校验 | 没有 JSON Schema，没有 conformance 用例 | 0.9.0 |
 | G7 | 没有 DSH 能力探测 | 靠版本区间 `>=0.2.1-rc.5 <0.3.0` 硬约束，新 rc 可能整体不可用而非降级 | 0.9.0（能力探测 + 优雅降级） |
