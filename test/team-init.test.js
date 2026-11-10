@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { initTeamWorkspace, parseTeamGoal, readTeamGoal, readDecisions } from '../lib/team-init.js'
+import { initTeamWorkspace, parseTeamGoal, readTeamGoal, readDecisions, resolveTeamRootDir } from '../lib/team-init.js'
 
 function temp() { return mkdtempSync(join(tmpdir(), 'agent-lines-team-init-')) }
 
@@ -73,4 +73,16 @@ test('parseTeamGoal reads optional workflow section', () => {
   assert.deepEqual(goal.missing, [])
   const bare = parseTeamGoal('# 团队目标\n\n## 团队目标\n写小说\n')
   assert.equal(bare.workflow, null)
+})
+
+test('resolveTeamRootDir accepts a parent/workspace dir and resolves the team child', () => {
+  const dir = temp()
+  try {
+    mkdirSync(join(dir, 'team-a'), { recursive: true })
+    writeFileSync(join(dir, 'team-a', 'TEAM.md'), '# x')
+    writeFileSync(join(dir, 'team-a', 'registry.json'), '{"version":1,"lines":[]}')
+    assert.equal(resolveTeamRootDir(join(dir, 'team-a')), join(dir, 'team-a'))
+    assert.equal(resolveTeamRootDir(dir), join(dir, 'team-a'))
+    assert.equal(resolveTeamRootDir(undefined), null)
+  } finally { rmSync(dir, { recursive: true, force: true }) }
 })

@@ -157,6 +157,10 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-30: unified teamRoot semantics (unreleased)
+
+- Team dir = explicit/config teamRoot or manager cwd, plus teamName; parent dirs resolve newest child; line_status discovers teams under cwd.
+
 ### 0.11.0-29: board follows newest team under a parent teamRoot (unreleased)
 
 - Parent `--team-root` resolves to the newest child team; each team reads its own TEAM.md goal/flow.

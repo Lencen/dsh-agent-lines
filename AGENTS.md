@@ -34,7 +34,7 @@
 | `ackTimeoutMs` | int ms | `600000` (min 60000) | **Report-only**: flags overdue `delivered`, never auto-retries |
 | `tokenSampleMs` | int ms | `60000` (min 5000) | Samples cumulative session `decodeTokens` into the events table (line_events, action token_sample); unchanged values are skipped; token trend is an estimate, not billing (0.10.0+) |
 | `tokenRetentionDays` | int | `30` (min 1, max 365) | Token samples older than this are pruned hourly (keeps line_events bounded) |
-| `teamRoot` | path or null | `null` (off) | Optional team workspace dir (`registry.json` + `charters/*.md`); read-only role cards for board/status; no DB migration |
+| `teamRoot` | path or null | `null` (off) | Optional team workspace **parent** or team dir. When it is a parent, `line_init_team({teamName})` creates `<teamRoot>/<teamName>` and `line_status`/board resolve the newest child team; when unset, `line_init_team({teamName})` falls back to the manager Session cwd. Read-only role cards; no DB migration |
 | `dbPath` | path | see §1 | Must be a local filesystem |
 | `pollMs` | int ms | `500` | Delivery loop tick |
 | `leaseTtlMs` | int ms | `30000` | Owner lease heartbeat |

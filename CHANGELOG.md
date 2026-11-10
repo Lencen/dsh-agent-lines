@@ -2,6 +2,16 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.0-30 (未发布)
+
+### teamRoot 语义统一：工作区父目录 / 当前工作区回退（S5n）
+
+- `line_init_team({teamName})`：显式 `teamRoot` > 配置 `teamRoot` > **manager 当前工作区（cwd）**；团队目录 = base/<teamName>。不配 `teamRoot` 也能把团队建在当前工作区。
+- `teamRoot` 可以是**工作区父目录**：`line_status.teamWorkspace` 与看板都会自动解析最新子团队；也可以直接给团队目录。
+- `line_status` 在未配置 `teamRoot` 时，从当前 Session cwd 找团队（工作区/<团队名>），不再显示 disabled。
+- 文档：AI-USAGE 说明"不配就落当前工作区"；AGENTS 更新 teamRoot 语义。
+- 无 DB 迁移、无协议变化。
+
 ## 0.11.0-29 (未发布)
 
 ### 看板 --team-root 支持父目录自动跟随团队（S5m）

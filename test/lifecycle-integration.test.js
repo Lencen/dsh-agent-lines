@@ -332,3 +332,14 @@ test('line_create always bootstraps visible lines; per-call bootstrap:false is i
     } finally { check.close() }
   } finally { h.cleanup() }
 })
+
+test('line_init_team defaults to the manager cwd when teamRoot is not configured', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const res = await h.tools.get('line_init_team').execute({ teamName: 'cwd-team' }, exec(h.manager))
+    assert.equal(res.teamName, 'cwd-team')
+    assert.ok(existsSync(join(h.dir, 'cwd-team', 'TEAM.md')))
+    assert.ok(existsSync(join(h.dir, 'cwd-team', 'charters', 'manager.md')))
+  } finally { h.cleanup() }
+})

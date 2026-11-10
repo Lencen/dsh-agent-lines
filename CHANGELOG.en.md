@@ -2,6 +2,16 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-30 (unreleased)
+
+### Unified teamRoot semantics: workspace parent / cwd fallback (S5n)
+
+- `line_init_team({teamName})`: explicit `teamRoot` > config `teamRoot` > **manager current workspace (cwd)**; team dir = base/<teamName>. Teams can live in the current workspace without config.
+- `teamRoot` may be a **workspace parent**: `line_status.teamWorkspace` and the board resolve the newest child team; it may also be the team dir itself.
+- `line_status` without `teamRoot` now discovers the team under the current Session cwd instead of showing disabled.
+- docs updated (AI-USAGE / AGENTS).
+- No DB migration, no protocol change.
+
 ## 0.11.0-29 (unreleased)
 
 ### Board --team-root accepts a parent dir and follows the newest team (S5m)

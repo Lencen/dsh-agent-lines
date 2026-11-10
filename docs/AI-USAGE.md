@@ -11,12 +11,12 @@
 ## 1. 五步建团队（一次成功的顺序）
 
 1. 确认绑定：`line_status`（未绑定则 `line_claim_manager`）。
-2. 配置 `teamRoot`（工作区父目录，绝对路径；配置见 [DEPLOY.md](DEPLOY.md)）。
+2. `teamRoot`（可选）：不配时 `line_init_team` 落在 **manager 当前工作区**（cwd）；配了则团队目录 = `<teamRoot>/<团队名>`（配置见 [DEPLOY.md](DEPLOY.md)）。
 3. 建线：`line_create({label, role})`，一条线一个 label（如 dev/test/uiux/release）；多条线用批量式 `line_create({lines:[{label,role},…]})` 一次调用完成（0.11.0-24 起），返回 `{created,skipped,failed,counts}`。建线后插件会发 onboarding 并等待会话可见（`visibleInSidebar:true`），团队立刻出现在 DSH 侧栏。
 4. 初始化团队工作区（**只调一次**）：
    `line_init_team({ teamName: "<团队名>" })`
    - 在 `<teamRoot>/<团队名>/` 生成 `TEAM.md`、`charters/*.md`、`decisions/README.md`、`registry.json`；
-   - **必须给 teamName**（只配了 teamRoot 时也不要把工作区根当团队根，会报 `LINE_TEAM_NAME_REQUIRED`）；
+   - **必须给 teamName**；团队目录 = 显式 `teamRoot`（最终目录）或（配置的 `teamRoot` / manager 当前工作区）+ `teamName`，不要平铺到工作区根（会报 `LINE_TEAM_NAME_REQUIRED`）；
    - 已存在默认跳过，`overwrite:true` 才覆盖；
    - **参数只给一种**：最终团队目录 `teamRoot`，或 `teamName`（配合配置 `teamRoot`）；两者同时给时 `teamRoot` 当父目录、`teamName` 当子目录（0.11.0-23 起）。不要"先生成到父目录再 mv"，那会触发覆盖写前的 read 校验错误链；
    - `decisions/` 只放**待决策**事项；初始化留痕写 `TEAM.md`/README，已处理的决策在 md 里加 `## 状态` + `已采纳`（看板不再当作待决策）。
