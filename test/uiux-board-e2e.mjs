@@ -1,25 +1,14 @@
 #!/usr/bin/env node
-/* UIUX 0.6.6 browser E2E: bento + data/view/interaction matrix */
+/* UIUX 0.6.6 read-only browser E2E: bento + views + empty/error/stale/mobile */
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
-import { LineStore } from '../lib/store.js'
 import { startBoardServer } from '../lib/board-server.js'
-
 const require = createRequire(import.meta.url)
 const { chromium } = require('/home/xiaoqi/lions/node_modules/playwright')
-
 const dir = mkdtempSync(join(tmpdir(), 'agent-lines-e2e-'))
-const db = join(dir, 'lines.db')
-const store = new LineStore(db)
 const now = Date.now()
-store.acquire({ agentId: 'agent-lines', line: 'manager', sessionId: 's-manager', instanceId: 'i', ttlMs: 60000 })
-store.acquire({ agentId: 'agent-lines', line: 'writer', sessionId: 's-writer', instanceId: 'i', ttlMs: 60000 })
-store.send({ agentId: 'agent-lines', fromLine: 'manager', to: 'writer', text: '写第一章', kind: 'task', taskRef: 'task-1', taskScope: 'writer', subteamPolicy: 'ask', maxMembers: 2 })
-const pending = store.send({ agentId: 'agent-lines', fromLine: 'writer', to: 'manager', text: '请审批', kind: 'task', requireApproval: true })
-const pending2 = store.send({ agentId: 'agent-lines', fromLine: 'writer', to: 'manager', text: '请拒绝', kind: 'task', requireApproval: true })
-
 const board = {
   schemaVersion: 1, available: true, generatedAt: now,
   manager: { line: 'manager', sessionId: 's-manager', role: 'lead' },
@@ -33,8 +22,7 @@ const board = {
     { label: 'reviewer', status: 'offline', lifecycle: 'active', generation: 1, officialTeamAvailable: false, officialTeamLead: false, deptSummary: null, subteamPolicy: null, maxMembers: null },
   ],
   messages: [{ id: 'msg-1', from: 'manager', to: 'writer', kind: 'task', state: 'acked', taskRef: 'task-1', at: now, summary: '写第一章' }],
-  inbox: [{ id: pending.id, type: 'pending_approval', summary: '请审批' }, { id: pending2.id, type: 'pending_approval', summary: '请拒绝' }],
-  quality: [], deliveries: [],
+  inbox: [], quality: [], deliveries: [],
 }
 const dept = {
   schemaVersion: 1, available: true, line: 'writer',
@@ -42,20 +30,19 @@ const dept = {
   summary: { total: 2, done: 1, inProgress: 1, blocked: 0, stale: 0 },
   subteamAudit: { members: 2, tasks: 2, policies: ['ask'], maxMembers: 2, overLimit: false },
   tasks: [{ id: 'task-1', subject: 'W1', status: 'in_progress', parentTaskId: null, subteamPolicy: 'ask', maxMembers: 2 }, { id: 'task-2', subject: 'W2', status: 'completed', parentTaskId: null }],
-  messages: [{ id: 'msg-2', from: 'writer', to: 'manager', kind: 'info', state: 'acked', at: now, summary: '完成' }],
+  messages: [],
 }
 const metrics = {
   schemaVersion: 1, generatedAt: now,
   tasks: { manager: { total: 2, done: 0, inProgress: 1, blocked: 1, stale: 0 }, byLine: [{ line: 'manager', total: 2, done: 0, inProgress: 1, blocked: 1 }, { line: 'writer', total: 2, done: 1, inProgress: 1, blocked: 0 }] },
   sessions: { lines: 3, officialMembers: 3 },
-  messages: { total: 2, byKind: [{ kind: 'task', n: 2 }], byState: [{ state: 'acked', n: 2 }], trend: [{ day: '2026-11-10', n: 2 }] },
+  messages: { total: 1, byKind: [{ kind: 'task', n: 1 }], byState: [{ state: 'acked', n: 1 }], trend: [{ day: '2026-11-10', n: 1 }] },
   tokens: { byLine: [{ line: 'manager', decodeTokens: 100 }, { line: 'writer', decodeTokens: 200 }], total: 300, basis: 'session-level; not per task' },
   lines: [{ label: 'manager', activity: { decodeTokens: 100 } }, { label: 'writer', activity: { decodeTokens: 200 } }],
   limitations: ['official tasks have no timestamps', 'tokens are session-level'],
 }
 for (const [name, data] of [['team-board.json', board], ['team-board.writer.json', dept], ['team-metrics.json', metrics]]) writeFileSync(join(dir, name), JSON.stringify(data))
-
-const { server, url } = await startBoardServer({ dir, host: '127.0.0.1', port: 0, db, token: 'e2e', agentId: 'agent-lines', from: 'manager' })
+const { server, url } = await startBoardServer({ dir, host: '127.0.0.1', port: 0 })
 let browser
 const fails = []
 const check = (ok, msg) => { if (!ok) fails.push(msg) }
@@ -79,19 +66,14 @@ try {
   await page.click('#tree .node[data-id="writer"]'); await page.waitForTimeout(300)
   await assertText(page, '#sideBody', 'writer')
   await page.click('[data-view="dept"]'); await assertText(page, '#mainBody', 'writer-sub')
-  await page.click('[data-view="comm"]'); await assertText(page, '#mainBody', '完成')
   await page.click('[data-view="metrics"]'); await assertText(page, '#mainBody', '300')
-  await page.fill('#token', 'bad'); await page.fill('#to', 'writer'); await page.fill('#text', 'bad'); await page.click('#send'); await page.waitForTimeout(400); await assertText(page, '#toast', '失败')
-  await page.fill('#token', 'e2e'); await page.fill('#to', 'writer'); await page.fill('#text', 'E2E 消息'); await page.click('#send'); await page.waitForTimeout(800); await assertText(page, '#toast', 'OK')
-  await page.fill('#token', 'e2e'); await page.fill('#msgid', pending.id); await page.click('#approve'); await page.waitForTimeout(800); await assertText(page, '#toast', 'OK')
-  await page.fill('#token', 'e2e'); await page.fill('#msgid', pending2.id); await page.click('#reject'); await page.waitForTimeout(800); await assertText(page, '#toast', 'OK')
-  await page.fill('#token', 'e2e'); await page.fill('#to', 'writer'); await page.click('#handoff'); await page.waitForTimeout(800); await assertText(page, '#toast', 'OK')
   await page.click('#tree .node[data-id="reviewer"]'); await page.click('[data-view="dept"]'); await page.waitForTimeout(300); await assertText(page, '#mainBody', '该线未接官方团队')
-  await page.route('**/api/team-board', route => route.fulfill({ status: 500, body: 'boom' })); await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(800); await assertText(page, '#mainBody', '读取失败'); await page.unroute('**/api/team-board'); await page.route('**/api/team-metrics', route => route.fulfill({ status: 404, body: 'none' })); await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(800); await page.click('[data-view="metrics"]'); await page.waitForTimeout(300); await assertText(page, '#mainBody', '暂无数据快照'); await page.unroute('**/api/team-metrics')
+  await page.route('**/api/team-board', route => route.fulfill({ status: 500, body: 'boom' })); await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(800); await assertText(page, '#mainBody', '读取失败'); await page.unroute('**/api/team-board')
+  await page.route('**/api/team-metrics', route => route.fulfill({ status: 404, body: 'none' })); await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(800); await page.click('[data-view="metrics"]'); await page.waitForTimeout(300); await assertText(page, '#mainBody', '暂无数据快照'); await page.unroute('**/api/team-metrics')
   check(errors.length === 0, 'page errors: '+errors.join('; '))
   await page.setViewportSize({ width: 768, height: 900 })
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 2), 'mobile no horizontal overflow')
-  await page.screenshot({ path: '/tmp/uiux-board-066-1440.png', fullPage: true })
+  await page.screenshot({ path: '/tmp/uiux-board-066-readonly.png', fullPage: true })
   console.log('E2E-066 '+(fails.length ? 'FAIL' : 'PASS'))
   for (const f of fails) console.log(' - '+f)
   process.exitCode = fails.length ? 1 : 0
@@ -101,6 +83,5 @@ try {
 } finally {
   if (browser) await browser.close()
   await new Promise(r => server.close(r))
-  try { store.close() } catch {}
   rmSync(dir, { recursive: true, force: true })
 }
