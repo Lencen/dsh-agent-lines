@@ -78,7 +78,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 | `line_manager_ack` | manager | `messageId`, `decision?(approve|reject)` | Approve/reject pending `task` messages |
 | `line_observe` | manager | `line?`, `since?`, `limit?` | Read-only cross-line feed |
 | `line_communications` | manager | filters | Read-only communication board |
-| `line_metrics` | manager | `days?` | Read-only data board: messages (+ `messages.ackOverdue`) and token trend — top-level `tokens.total/today/window/perDay[]/perMessage/samples/sampleIntervalMs/windowDays/timezoneOffsetMinutes/basis`, per line `tokens.byLine[].decodeTokens/today/window/ratePerMinute/samples` |
+| `line_metrics` | manager | `days?` | Read-only data board: messages (+ `messages.ackOverdue`) and token trend — top-level `tokens.total/today/window/perDay[]` are **totalTokens** (uncached input + output + cache read/write), plus `outputTotal/todayOutput/windowOutput/perDayOutput`, `inputTokens/cacheReadTokens/cacheWriteTokens`, `perMessage/samples/sampleIntervalMs/windowDays/timezoneOffsetMinutes/basis`; per line `tokens.byLine[].decodeTokens(output)/outputTokens/inputTokens/cacheReadTokens/cacheWriteTokens/totalTokens/today/todayOutput/window/windowOutput/ratePerMinute/samples` |
 | `line_team_board` | manager | — | Read-only official Agent Teams board + host snapshot |
 | `line_department_board` | manager | `line` | Lazily read one line's official team/tasks |
 

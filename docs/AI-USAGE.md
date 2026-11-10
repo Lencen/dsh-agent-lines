@@ -31,7 +31,7 @@
 - 建团队全程**只调一次** `line_status`；不要在建团队阶段调 `line_metrics` / `line_team_board` / `line_messages`（输出大、不参与建团队）。
 - 机械建团队可用低 reasoning / 便宜模型（配置层 `agent-default-model`），完成后再切回；
 - 批量建线：`line_create({lines:[…]})` 一次调用替代 N 次单建，少 N-1 个模型步（每步都要重发上下文，是总 token 的大头）；
-- **token 口径**：看板/line_metrics 的 `decodeTokens` 只是**生成 token（output）** 的近似；DSH 统计的总 token 含输入与缓存读取，实测可达它的 30–80 倍（如 5.9M vs 71k）。真实花销以 DSH 统计为准，别拿 130k 当总成本。
+- **token 口径（0.11.0-25+）**：`line_metrics` 同时给 `decodeTokens/outputTokens`（仅生成）与 **`totalTokens`（未缓存输入 + 输出 + 缓存读写）**，看板成本默认按 `totalTokens` 统计；DSH 会话统计就是 totalTokens 口径。老的 0.11.0-24 只报 output，实测总 token 可达它的 30–80 倍（5.9M vs 71k），别拿 output 当总成本。
 - 顺序建议：先 `line_create`（`bootstrap:false`）→ `line_init_team` → 写 TEAM.md/charters → 只给要开工的线下第一条任务（唤醒本身就是 token 开销）。
 
 ## 2. 看板（只读，主要给用户看）

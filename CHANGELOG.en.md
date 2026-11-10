@@ -2,6 +2,16 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-25 (unreleased)
+
+### Token metrics now use totalTokens (input + output + cache) (S5i)
+
+- Sampling reads DSH's `tokenUsage` projection (uncachedInputTokens / outputTokens / cacheReadTokens / cacheWriteTokens) and records **totalTokens = uncached input + output + cache read/write**; the token_sample detail keeps every bucket.
+- `line_metrics.tokens` now defaults to totalTokens: top-level `total/today/window/perDay[]` are total tokens; new `outputTotal/todayOutput/windowOutput/perDayOutput`, `inputTokens/cacheReadTokens/cacheWriteTokens`; per-line entries expose both buckets and totalTokens.
+- Board cost / per-line cost / per-day token charts read totalTokens; sampling dedupe compares all buckets.
+- docs: AI-USAGE updated (totalTokens is the DSH-basis number; output alone is not total cost).
+- No DB migration, no protocol change, read-only.
+
 ## 0.11.0-24 (unreleased)
 
 ### Batch line creation + sampling-short display + token basis (S5h)

@@ -195,3 +195,19 @@ test('pruneTokenSamples keeps lifecycle events and token samples of other lines'
     assert.equal(store.tokenSamples({ agentId: 'agent-demo', line: 'frontend', since: 0, until: 9999 }).length, 1)
   } finally { cleanup() }
 })
+
+test('tokenTrend tracks totalTokens from input + cache buckets', () => {
+  const { store, cleanup } = tempStore()
+  try {
+    store.acquire({ agentId: 'agent-demo', line: 'frontend', sessionId: 's-f', instanceId: 'i-a', ttlMs: 60000 })
+    const t0 = Date.UTC(2026, 0, 2, 10, 0)
+    store.recordTokenSample({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 10, inputTokens: 100, cacheReadTokens: 900, cacheWriteTokens: 0, totalTokens: 1010, now: t0 })
+    store.recordTokenSample({ agentId: 'agent-demo', line: 'frontend', decodeTokens: 30, inputTokens: 300, cacheReadTokens: 2700, cacheWriteTokens: 0, totalTokens: 3030, now: t0 + 60000 })
+    const trend = store.tokenTrend({ agentId: 'agent-demo', lines: ['frontend'], days: 7, now: t0 + 120000, tzOffsetMinutes: 0 })
+    assert.equal(trend.today, 20, 'output increment')
+    assert.equal(trend.todayTotal, 2020, 'total increment = (300+30+2700) - (100+10+900)')
+    assert.equal(trend.lines[0].latestTotal, 3030)
+    assert.equal(trend.lines[0].windowTotal, 2020)
+    assert.deepEqual(trend.perDayTotal, [{ date: '2026-01-02', tokens: 2020 }])
+  } finally { cleanup() }
+})

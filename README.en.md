@@ -157,6 +157,11 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-25: token metrics now use totalTokens (unreleased)
+
+- line_metrics/board default to totalTokens (uncached input + output + cache); output buckets kept.
+- Sampling reads DSH tokenUsage projection; docs updated.
+
 ### 0.11.0-24: batch line creation + sampling-short display + token basis (unreleased)
 
 - line_create accepts lines[] batch (returns created/skipped/failed/counts).

@@ -158,6 +158,11 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
+### 0.11.0-25：token 统计切到 totalTokens（未发布）
+
+- line_metrics/看板默认按 totalTokens（未缓存输入+输出+缓存读写）统计；保留 decodeTokens/output 分桶。
+- 采样读取 DSH tokenUsage 投影；文档口径更新。
+
 ### 0.11.0-24：批量建线 + 采样不足显示 + token 口径（未发布）
 
 - line_create 支持 lines[] 批量建线（一次调用返回 created/skipped/failed/counts）。

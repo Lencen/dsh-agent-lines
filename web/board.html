@@ -499,7 +499,7 @@ function mapData(live,board,metrics,health){
  lineList.forEach(function(x){
   var ws=wsBy[x.label]||null,t=taskBy[x.label]||{};
   var rec={id:x.label,name:(ws&&ws.name)||x.registryName||x.role||x.label,status:(x.lifecycle==='hibernating'?'hibernating':(x.status==='online'?'active':'hibernating')),tasks:Number(t.total)||0,members:[],rebinds:[],generation:x.generation||1,roleText:x.role||'',oldSessionId:null,charter:ws?{source:ws.source,updated:ws.updatedAt?fmtDay(ws.updatedAt):'不可得',sections:ws.sections||{}}:{source:'charters/'+x.label+'.md',updated:'不可得',sections:{}}};
-  if(x.label==='manager'){var mt=tokBy[x.label]||{};rec.tokensNum=(mt.today!==undefined?(Number(mt.today)/1000):0);rec.tokens=(mt.today!==undefined?Number(mt.today):0);manager=rec}else others.push(rec);
+  if(x.label==='manager'){var mt=tokBy[x.label]||{};rec.tokensNum=((mt.totalTokens!==undefined?Number(mt.totalTokens):(mt.decodeTokens!==undefined?Number(mt.decodeTokens):0))/1000);rec.tokens=(mt.totalTokens!==undefined?Number(mt.totalTokens):(mt.decodeTokens!==undefined?Number(mt.decodeTokens):0));manager=rec}else others.push(rec);
  });
  DATA.managerLine=manager;DATA.lines=others;
  var totals={tasks:0,done:0,doing:0,blocked:0,overdue:0};
@@ -511,9 +511,9 @@ function mapData(live,board,metrics,health){
  DATA.retired=lineList.filter(function(l){return l.lifecycle==='retired'}).map(function(l){return {label:l.label,name:l.registryName||l.role||l.label,roleText:l.role||'',retiredAt:'不可得',reason:'不可得',generation:l.generation||1,oldSessionId:'不可得'}});
  var trend=((live&&live.messages&&live.messages.trend)||[]);
  DATA.trend.msgLab=trend.map(function(x){return x.day});DATA.trend.messages=trend.map(function(x){return Number(x.count)||0});
- var perDay=((metrics&&metrics.tokens&&metrics.tokens.perDay)||[]);
+ var perDay=((metrics&&metrics.tokens&&(metrics.tokens.perDayTotal||metrics.tokens.perDay))||[]);
  DATA.trend.tokLab=perDay.map(function(x){return x.date});DATA.trend.tokens=perDay.map(function(x){return Number(x.tokens)||0});
- var msgBy={};((board&&board.messages)||[]).forEach(function(m){if(m.from!=null)msgBy[m.from]=(msgBy[m.from]||0)+1;if(m.to!=null)msgBy[m.to]=(msgBy[m.to]||0)+1});var aggLines=(manager?[manager]:[]).concat(others);DATA.agg=aggLines.map(function(l){var t=taskBy[l.id]||{},tk=tokBy[l.id]||{};return {name:l.name,role:l.roleText,tasks:Number(t.total)||0,doing:Number(t.inProgress)||0,blocked:Number(t.blocked)||0,overdue:Number(t.stale)||0,done:Number(t.done)||0,msgs:msgBy[l.id]||0,active:l.status,tokens:(tk.today!==undefined?Number(tk.today):0),tokensNum:(tk.today!==undefined?(Number(tk.today)/1000):0)}});
+ var msgBy={};((board&&board.messages)||[]).forEach(function(m){if(m.from!=null)msgBy[m.from]=(msgBy[m.from]||0)+1;if(m.to!=null)msgBy[m.to]=(msgBy[m.to]||0)+1});var aggLines=(manager?[manager]:[]).concat(others);DATA.agg=aggLines.map(function(l){var t=taskBy[l.id]||{},tk=tokBy[l.id]||{};return {name:l.name,role:l.roleText,tasks:Number(t.total)||0,doing:Number(t.inProgress)||0,blocked:Number(t.blocked)||0,overdue:Number(t.stale)||0,done:Number(t.done)||0,msgs:msgBy[l.id]||0,active:l.status,tokens:(tk.totalTokens!==undefined?Number(tk.totalTokens):(tk.decodeTokens!==undefined?Number(tk.decodeTokens):0)),tokensNum:((tk.totalTokens!==undefined?Number(tk.totalTokens):(tk.decodeTokens!==undefined?Number(tk.decodeTokens):0))/1000)}});
  DATA.tokens=(metrics&&metrics.tokens)||{};
  DATA.boardMessages=(board&&board.messages)||[];
  DATA.generatedAt=(live&&live.generatedAt)||Date.now();

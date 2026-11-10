@@ -2,6 +2,16 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.0-25 (未发布)
+
+### token 统计切到 totalTokens（输入+输出+缓存）（S5i）
+
+- 采样读取 DSH `tokenUsage` 投影（uncachedInputTokens / outputTokens / cacheReadTokens / cacheWriteTokens），按 **totalTokens = 未缓存输入 + 输出 + 缓存读写** 记录；token_sample detail 同时保留各分桶。
+- `line_metrics.tokens` 默认口径改为 totalTokens：顶层 `total/today/window/perDay[]` 是总 token；新增 `outputTotal/todayOutput/windowOutput/perDayOutput`、`inputTokens/cacheReadTokens/cacheWriteTokens`；byLine 同步给分桶与 totalTokens。
+- 看板成本/按线消耗/按日 token 全部改读 totalTokens；采样去重比较全部分桶（任一变化即记录）。
+- 文档：AI-USAGE 更新 token 口径（totalTokens 才是 DSH 统计口径，output 不是总成本）。
+- 无 DB 迁移、无协议变化、只读。
+
 ## 0.11.0-24 (未发布)
 
 ### 批量建线 + 采样不足显示 + token 口径（S5h）
