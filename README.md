@@ -158,6 +158,12 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
+### 0.11.0-24：批量建线 + 采样不足显示 + token 口径（未发布）
+
+- line_create 支持 lines[] 批量建线（一次调用返回 created/skipped/failed/counts）。
+- 成本卡在样本<2 时显示「采样不足」+ 累计 decodeTokens，不再显示误导性的 0k。
+- 文档补 token 口径：decodeTokens 仅输出 token，DSH 总 token 含输入/缓存，实测差 30–80 倍。
+
 ### 0.11.0-23：line_init_team 参数修复 + 决策状态（未发布）
 
 - `line_init_team({teamRoot, teamName})` 同时给两个参数时，teamRoot 当父目录、teamName 当子目录（修"平铺到父目录→先生成再 mv→覆盖写报错"链）。

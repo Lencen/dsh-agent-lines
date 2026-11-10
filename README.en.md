@@ -157,6 +157,12 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-24: batch line creation + sampling-short display + token basis (unreleased)
+
+- line_create accepts lines[] batch (returns created/skipped/failed/counts).
+- Cost card shows "sampling not ready" + cumulative decodeTokens when samples<2 instead of a misleading 0k.
+- docs add the token basis: decodeTokens counts output only; DSH total (input/cache) measured 30–80× larger.
+
 ### 0.11.0-23: line_init_team parameter fix + decision status (unreleased)
 
 - `line_init_team({teamRoot, teamName})` now treats teamRoot as parent and teamName as subdir (fixes the "flatten to parent -> generate then mv -> overwrite errors" chain).

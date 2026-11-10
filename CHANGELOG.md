@@ -2,6 +2,15 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.0-24 (未发布)
+
+### 批量建线 + 采样不足显示 + token 口径（S5h）
+
+- `line_create` 支持批量 `lines:[{label,role?,title?}]`：一次调用建多条，返回 `{created,skipped,failed,counts}`；已存在 label 记为 skipped、单项失败不中断。用于减少 manager 建团队时的模型步数（每步都要重发上下文，是 DSH 总 token 的大头）。
+- 看板成本卡：token 采样数 < 2 时「今日/近 7 天」显示 **采样不足**，并显示 **累计 decodeTokens**（此前首分钟显示 0k，容易被误读成没花钱）。
+- 文档：AI-USAGE 补批量建线示例与 **token 口径**——decodeTokens 仅生成 token，DSH 统计总 token（含输入/缓存）实测可差 30–80 倍（干净环境实测：manager 会话 64 步，output 71,400，cacheRead 5,758,848，total 5,916,491）。
+- 无 DB 迁移、无协议变化、只读。
+
 ## 0.11.0-23 (未发布)
 
 ### line_init_team 参数修复 + 决策状态（S5g）

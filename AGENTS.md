@@ -55,7 +55,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 
 | Tool | Caller | Key parameters | Effect |
 |---|---|---|---|
-| `line_create` | manager | `label`, `replace?`, `force?`, `migrate?(queued|none)`, `bootstrap?`, `agentPreset?`, `workspace?`, `cwd?` | Creates a new Session and registers the line; reusing a label returns `created:false` |
+| `line_create` | manager | `label` or `lines[]` (`{label,role?,title?}` batch), `replace?`, `force?`, `migrate?(queued|none)`, `bootstrap?`, `agentPreset?`, `workspace?`, `cwd?` | Creates a new Session and registers the line; reusing a label returns `created:false`; batch form returns `{created,skipped,failed,counts}` |
 | `line_send` | anyone | `to`, `text`, `kind?(info|request|task|alert)`, `replyTo?`, `noReply?`, `taskRef?`, `parentTaskRef?`, `subteamPolicy?(auto|ask|never)`, `maxMembers?` | Durable enqueue; `task` from non-manager needs manager approval |
 | `line_inbox` | anyone | `limit?`, `includeAcked?` | Read **delivered** messages, does not mark read |
 | `line_ack` | anyone | `messageId` | Marks delivered → acked |

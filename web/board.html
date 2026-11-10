@@ -424,6 +424,8 @@ function fmtTime(ts){if(!ts)return '不可得';var d=new Date(Number(ts));if(isN
 function fmtDay(ts){var d=new Date(Number(ts));if(isNaN(d.getTime()))return '不可得';return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function num(n){return (n===null||n===undefined||isNaN(Number(n)))?'—':Number(n)}
 function kfmt(n){if(n===null||n===undefined||isNaN(Number(n)))return '不可得';return (Number(n)/1000).toFixed(0)+'k'}
+function tokenCumulative(tk){var rows=(tk&&tk.byLine)||[];var sum=0;rows.forEach(function(r){sum+=Number(r.decodeTokens)||0});return sum}
+function samplingShort(tk){return !!(tk&&tk.samples!==undefined&&Number(tk.samples)<2)}
 function resetData(){DATA.team={name:'',goal:{}};DATA.lines=[];DATA.managerLine=null;DATA.missions=[];DATA.decisions=[];DATA.retired=[];DATA.metrics={tasks:0,done:0,doing:0,blocked:0,overdue:0,agents:0};DATA.agg=[];DATA.trend={messages:[],tokens:[],msgLab:[],tokLab:[]};DATA.boardMessages=[];DATA.tokens={};}
 function patchChrome(){var name=DATA.team.name||'未采集团队';document.title=name+' · 团队看板';st('.brand',name+' · 团队看板')}
 function patchStatic(){
@@ -437,7 +439,8 @@ function patchStatic(){
  var pr=q('#overview-progress');if(pr)pr.style.width=(m.tasks>0?Math.round((m.done||0)/m.tasks*100):0)+'%';
  st('#kpi-doing',num(m.doing));st('#kpi-blocked',num(m.blocked));
  st('#kpi-overdue',num(m.overdue));st('#kpi-decisions',num(pendingDecisions().length));
- st('#kpi-cost-today',kfmt(tk.today));st('#kpi-cost-window',kfmt(tk.window));st('#kpi-cost-today2',kfmt(tk.today));st('#kpi-cost-window2',kfmt(tk.window));
+ var short=samplingShort(tk);var cum=tokenCumulative(tk);
+ st('#kpi-cost-today',short?'采样不足':kfmt(tk.today));st('#kpi-cost-window',short?('累计 '+kfmt(cum)):kfmt(tk.window));st('#kpi-cost-today2',short?'采样不足':kfmt(tk.today));st('#kpi-cost-window2',short?('累计 '+kfmt(cum)):kfmt(tk.window));
  st('#org-title',name);st('#org-plan',g.plan||'未采集');st('#org-rhythm',g.rhythm||'未采集');
  var t=DATA.generatedAt?new Date(DATA.generatedAt).toTimeString().slice(0,5):'—';
  var dt=q('#data-time'),dt2=q('#data-time2');if(dt)dt.textContent='数据 '+t;if(dt2)dt2.textContent='数据 '+t;

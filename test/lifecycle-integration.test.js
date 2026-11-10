@@ -280,3 +280,22 @@ test('line_init_team treats teamRoot as parent when teamName is also given', asy
     assert.ok(!existsSync(join(parent, 'TEAM.md')), 'no flat TEAM.md at parent root')
   } finally { h.cleanup() }
 })
+
+test('line_create batch creates multiple lines and reports skipped/failed', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const first = await h.tools.get('line_create').execute({ lines: [{ label: 'batch-a', role: '开发' }, { label: 'batch-b' }], bootstrap: false }, exec(h.manager))
+    assert.equal(first.batch, true)
+    assert.equal(first.counts.created, 2)
+    assert.equal(first.counts.failed, 0)
+    assert.ok(first.created.every(row => row.created === true && row.sessionId))
+    const again = await h.tools.get('line_create').execute({ lines: [{ label: 'batch-a' }, { label: 'batch-c' }], bootstrap: false }, exec(h.manager))
+    assert.equal(again.counts.created, 1)
+    assert.equal(again.counts.skipped, 1)
+    const bad = await h.tools.get('line_create').execute({ lines: [{ label: 'bad label' }], bootstrap: false }, exec(h.manager))
+    assert.equal(bad.counts.failed, 1)
+    assert.ok(bad.failed[0].code)
+    await assert.rejects(() => h.tools.get('line_create').execute({ label: 'x', lines: [{ label: 'y' }] }, exec(h.manager)), error => error.code === 'LINE_INVALID_ARGUMENT')
+  } finally { h.cleanup() }
+})

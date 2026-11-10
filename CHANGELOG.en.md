@@ -2,6 +2,15 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-24 (unreleased)
+
+### Batch line creation + sampling-short display + token basis (S5h)
+
+- `line_create` accepts batch `lines:[{label,role?,title?}]`: create many lines in one call, returning `{created,skipped,failed,counts}`; existing labels are skipped and per-item failures do not abort the batch. Reduces manager model steps during setup (each step re-sends context, the dominant part of DSH total tokens).
+- Board cost card: when token samples < 2, "today / last 7 days" show **sampling not ready**, plus cumulative decodeTokens (previously 0k looked like no spend).
+- docs: AI-USAGE adds the batch example and the token basis note — decodeTokens counts output tokens only; DSH total (input + cache) measured 30–80× larger (clean env: manager session 64 steps, output 71,400, cacheRead 5,758,848, total 5,916,491).
+- No DB migration, no protocol change, read-only.
+
 ## 0.11.0-23 (unreleased)
 
 ### line_init_team parameter fix + decision status (S5g)
