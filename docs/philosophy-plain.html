@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设计思想·白话版 — dsh-agent-lines</title>
+<meta name="description" content="用大白话讲清 dsh-agent-lines：它是给会忘事的 AI 建一支有名字、有工位、消息不丢的小队。不堆术语，三分钟读完。">
+<style>:root{--bg:#080b10;--panel:#0d1117;--line:#263241;--text:#e6edf3;--muted:#8b949e;--cyan:#58a6ff;--green:#7ee787;--warn:#f0b72f}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 80% 0%,#12314a 0,#080b10 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif;line-height:1.85;font-size:17px}
+a{color:var(--cyan);text-decoration:none}
+.wrap{max-width:860px;margin:0 auto;padding:0 24px}
+header{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid #1f2937}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text);font-weight:700}
+.mark{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#58a6ff,#7ee787)}
+nav a{color:var(--muted);margin-left:16px;font-size:14px}
+.hero{padding:48px 0 20px}
+.kicker{color:var(--green);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+h1{font-size:38px;line-height:1.25;margin:12px 0 14px;letter-spacing:-.02em}
+h1 span{color:var(--cyan)}
+.lead{color:#b7c3cf;font-size:18px}
+section{padding:28px 0;border-top:1px solid #161d27}
+h2{font-size:22px;margin:0 0 12px}
+h3{font-size:17px;margin:18px 0 8px;color:#cfd8e3}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:rgba(13,17,23,.82);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card b{display:block;margin-bottom:6px}
+.card p{color:var(--muted);font-size:14px;margin:0;line-height:1.7}
+.note{color:var(--muted);font-size:14px}
+.warn{border-left:3px solid var(--warn);padding:10px 14px;background:#141007;color:#e8d7a8;border-radius:6px;font-size:15px}
+ul{padding-left:22px}li{margin:6px 0}
+footer{padding:28px 0 44px;color:var(--muted);font-size:12px;border-top:1px solid #161d27}
+@media(max-width:820px){h1{font-size:30px}.cards{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="brand" href="./"><span class="mark"></span>dsh-agent-lines</a>
+  <nav><a href="philosophy.html">完整版</a><a href="index.html">返回介绍页</a><a href="philosophy-plain.html">白话版</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a></nav>
+</header>
+
+<main>
+<div class="hero">
+  <div class="kicker">写给第一次接触的人</div>
+  <h1>把会忘事的 AI，变成一支<span>有名字、有工位、消息不丢</span>的小队</h1>
+  <p class="lead">这一页不讲架构、不讲协议版本，只用大白话回答三件事：它是什么、它保证了什么、它不做什么。三分钟能读完。</p>
+</div>
+
+<section>
+  <h2>一、它像什么？</h2>
+  <p>想象一家小公司：每个员工有自己的<b>名字</b>和<b>工位</b>。</p>
+  <ul>
+    <li><b>名字</b>（我们叫"线"）= 这个人负责什么。名字是长期的，不会因为换工位就没了。</li>
+    <li><b>工位</b>（我们叫"会话"）= 这个 AI 现在在哪干活。工位会满、会坏、会换，但换工位时<b>名字不变</b>。</li>
+    <li><b>消息</b> = 员工之间递的纸条。纸条会先放进抽屉，不会因为对方在忙就丢掉。</li>
+  </ul>
+  <p class="note">一句话：现有的 AI 团队通常"人一走，记忆就没了"；这个插件给每个角色一个长期名字，让团队能一直开下去。</p>
+</section>
+
+<section>
+  <h2>二、它保证什么？（五条底线）</h2>
+  <div class="cards">
+    <div class="card"><b>1. 一张桌子一个人用</b><p>同一个工位（会话）同一时间只让一个进程写。避免两个"人"同时改同一张表，把事情记乱。</p></div>
+    <div class="card"><b>2. 纸条至少送到一次</b><p>消息会一直留着，直到对方真的收到。中途断了会重送，不会静默消失。</p></div>
+    <div class="card"><b>3. 收到要"签收"</b><p>对方回一个 ack 才算处理完。没签收的，系统会标出来，但<b>不会偷偷再送一次</b>——因为重复执行会把事情做两遍。</p></div>
+    <div class="card"><b>4. 不抢官方方向盘</b><p>官方"智能体团队"的任务板，我们只读不写。你想用它的任务依赖/面板，就继续用，我们在旁边补充长期角色线。</p></div>
+    <div class="card"><b>5. 失败不删，能查能救</b><p>投递失败的消息不会消失。可以查它卡在哪一步，也可以人工决定"重投"或"清理"。</p></div>
+    <div class="card"><b>6. 不装看不见的能力</b><p>运行环境缺什么能力，插件会明说并降级；不会假装自己会，也不会悄悄失败。</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>三、出问题去哪看？</h2>
+  <ul>
+    <li><b>消息去哪了？</b> → line_messages：按状态（排队/投递中/已送达/失败）查。</li>
+    <li><b>它经历了什么？</b> → line_trace：一条消息的完整时间线。</li>
+    <li><b>失败了能救吗？</b> → line_redeliver：把失败/过期的消息重新投一次（人决定，不自动）。</li>
+    <li><b>团队健康吗？</b> → doctor：失败数、超时未签收数、提示下一步。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>四、它不做什么？（先说清楚）</h2>
+  <ul>
+    <li>不做跨机器、多活、强隔离——它是本地优先的。</li>
+    <li>不内置加密和签名——安全靠你的机器和 DSH。</li>
+    <li>不抢官方任务板，不双向写回——只读融合。</li>
+    <li>不做"每个任务精确花多少 token"的账单——只给可解释的估算。</li>
+    <li>不做完整 IM——消息是给 agent 协作用的，不是聊天软件。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>五、三句话记住它</h2>
+  <div class="cards">
+    <div class="card"><b>1. 线是名字</b><p>角色长期在，工位可以换。</p></div>
+    <div class="card"><b>2. 消息不丢</b><p>至少送到一次；签收才算完；重投要人决定。</p></div>
+    <div class="card"><b>3. 不抢方向盘</b><p>官方团队管任务，我们管长期角色。</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">想看完整版（含七条不变量、五条取舍、明显不做的清单）：<a href="philosophy.html">设计思想·完整版</a>。</p>
+</section>
+
+<section>
+  <h2>想上手？</h2>
+  <p><a href="index.html#install">安装插件</a> · <a href="index.html#two-ways">两种用法</a> · <a href="https://github.com/Lencen/dsh-agent-lines">GitHub 仓库</a></p>
+</section>
+</main>
+
+<footer>
+  <p>dsh-agent-lines 0.9.0 · Apache-2.0 · 社区插件，不是 DeepSeek 官方产品。技术细节以 <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/PHILOSOPHY.md">PHILOSOPHY.md</a> 为准。</p>
+</footer>
+</div>
+</body>
+</html>

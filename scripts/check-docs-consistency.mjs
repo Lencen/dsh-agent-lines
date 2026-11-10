@@ -213,6 +213,27 @@ const PAIRS = [
   else fail('C12 philosophy web pages', bad.join('; '))
 }
 
+// ---------- C12b 设计思想白话版（小白友好） ----------
+{
+  const bad = []
+  const pkgVersion = JSON.parse(read('package.json')).version
+  for (const [rel, keyword] of [['docs/philosophy-plain.html', '白话'], ['docs/en/philosophy-plain.html', 'plain language']]) {
+    if (!existsSync(resolve(ROOT, rel))) { bad.push(rel + ' missing'); continue }
+    const html = read(rel)
+    if (!html.includes(pkgVersion)) bad.push(rel + ' version != package.json')
+    if (!html.includes(keyword)) bad.push(rel + ' missing keyword ' + keyword)
+    if (!html.includes('philosophy.html')) bad.push(rel + ' must link the full philosophy page')
+  }
+  for (const rel of ['docs/index.html', 'docs/en/index.html']) {
+    if (!read(rel).includes('philosophy-plain.html')) bad.push(rel + ' missing plain-version link')
+  }
+  const zhIndex = read('docs/index.html')
+  const labels = (zhIndex.match(/>设计思想</g) || []).length
+  if (labels !== 1) bad.push('docs/index.html must have exactly one 设计思想 nav entry (got ' + labels + ')')
+  if (bad.length === 0) ok('C12b plain-language philosophy pages (zh/en, version, links, single entry)')
+  else fail('C12b plain-language philosophy pages', bad.join('; '))
+}
+
 // ---------- C13 AGENTS.md 与代码一致（防 AI 契约漂移） ----------
 {
   const bad = []

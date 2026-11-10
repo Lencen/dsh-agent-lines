@@ -1,6 +1,6 @@
 # 设计思想
 
-[English](PHILOSOPHY.en.md) | 中文
+[English](PHILOSOPHY.en.md) | 中文｜[白话版（小白友好，网页）](philosophy-plain.html)
 
 > 本文回答"**为什么这样设计**"，不回答"怎么用"。
 > 用法见 [README](../README.md)，实现分层见 [ARCHITECTURE](ARCHITECTURE.md)，消息与状态机见 [PROTOCOL](PROTOCOL.md)，信任模型见 [SECURITY](SECURITY.md)。

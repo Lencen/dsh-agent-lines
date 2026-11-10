@@ -1,6 +1,6 @@
 # Design Philosophy
 
-English | [中文](PHILOSOPHY.md)
+English | [中文](PHILOSOPHY.md) | [Plain-language version (web)](philosophy-plain.html)
 
 > This document answers **why the project is designed this way**, not how to use it.
 > Usage: [README](../README.en.md). Layering: [ARCHITECTURE](ARCHITECTURE.en.md). Envelope and state machine: [PROTOCOL](PROTOCOL.en.md). Trust model: [SECURITY](SECURITY.en.md).
