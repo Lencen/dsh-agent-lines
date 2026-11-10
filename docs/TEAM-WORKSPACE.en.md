@@ -58,6 +58,10 @@ Source line always shows: `Source: charters/<label>.md · Updated <date>` (heade
 - The board is **read-only**: no edit or edit-jump entry, at most a file-path text; it never writes `charters/` or `registry.json`;
 - Charters are created and maintained by the manager agent; neither the plugin nor the board rewrites them.
 
+## 5b. Team-level info (optional)
+
+Optional: team-level info (goals / collaboration flow) comes from two optional sections in `<teamRoot>/README.md`: `## Goals` and `## Collaboration flow`; when missing, the board marks it "not collected" instead of inventing it.
+
 ## 6. Relationship to existing charters (no redefinition)
 
 - Existing 104 line-center charter bodies (positioning / responsibilities / outputs / boundaries / quality / collaboration / dispatch) are **content-sufficient**;
