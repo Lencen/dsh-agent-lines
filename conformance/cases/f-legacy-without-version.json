@@ -1,0 +1,110 @@
+{
+  "suite": "f-legacy-without-version",
+  "description": "没有 protocolVersion 的旧消息 -> 视为 0.3 并接受（对应 conformance/README.md 第 6 类）。",
+  "cases": [
+    {
+      "name": "f/envelope-without-protocolVersion",
+      "note": "0.9.0 之前的信封没有该字段",
+      "check": "schema",
+      "schema": "envelope.v0_4",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": true,
+        "protocolVersion": "0.3"
+      }
+    },
+    {
+      "name": "f/envelope-without-version-compatible",
+      "note": "版本协商把缺省解析为 0.3，与 0.4 同 major",
+      "check": "protocolVersion",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": true,
+        "protocolVersion": "0.3"
+      }
+    },
+    {
+      "name": "f/stored-message-without-protocol_version",
+      "note": "迁移前的存储行没有 protocol_version 列值（DB 默认 '0.3'）",
+      "check": "schema",
+      "schema": "message.v0_4",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info",
+        "state": "acked",
+        "attempts": 2,
+        "deliveredAt": 1793757000100,
+        "ackedAt": 1793757000200,
+        "lastError": null,
+        "claimed_by": "instance-a"
+      },
+      "expect": {
+        "ok": true,
+        "protocolVersion": "0.3"
+      }
+    }
+  ]
+}

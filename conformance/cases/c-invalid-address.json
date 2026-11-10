@@ -1,0 +1,172 @@
+{
+  "suite": "c-invalid-address",
+  "description": "非法 agentId / line 必须被拒绝（对应 conformance/README.md 第 3 类）。address 检查调用 lib/protocol.js 的 validateAgentId / validateLineLabel，错误码直接来自 LineError。",
+  "cases": [
+    {
+      "name": "c/agentId-uppercase",
+      "note": "大写字母违反 ^[a-z0-9][a-z0-9._-]*$",
+      "check": "address",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "protocolVersion": "0.4",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "Agent-Demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "LINE_INVALID_AGENT"
+      }
+    },
+    {
+      "name": "c/agentId-leading-dash",
+      "note": "首字符不能是分隔符",
+      "check": "address",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "protocolVersion": "0.4",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "LINE_INVALID_AGENT"
+      }
+    },
+    {
+      "name": "c/line-slash",
+      "note": "line 不允许 /",
+      "check": "address",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "protocolVersion": "0.4",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "back/end"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "LINE_INVALID_LINE"
+      }
+    },
+    {
+      "name": "c/line-too-long",
+      "note": "line 最长 64 字符",
+      "check": "address",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "protocolVersion": "0.4",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "LINE_INVALID_LINE"
+      }
+    },
+    {
+      "name": "c/schema-rejects-agentId-pattern",
+      "note": "schema 层同样拒绝非法 agentId",
+      "check": "schema",
+      "schema": "envelope.v0_4",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "protocolVersion": "0.4",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "Agent-Demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "SCHEMA_INVALID"
+      }
+    }
+  ]
+}

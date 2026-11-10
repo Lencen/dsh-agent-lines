@@ -1,0 +1,111 @@
+{
+  "suite": "d-major-mismatch",
+  "description": "protocolVersion major 与本实现（0.4）不同 -> LINE_PROTOCOL_MISMATCH，不投递，存储侧落 failed + last_error（对应 conformance/README.md 第 4 类）。",
+  "cases": [
+    {
+      "name": "d/major-1.0",
+      "note": "peer major 1 != local major 0",
+      "check": "protocolVersion",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "protocolVersion": "1.0",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "LINE_PROTOCOL_MISMATCH"
+      }
+    },
+    {
+      "name": "d/major-2.7",
+      "note": "major 2",
+      "check": "protocolVersion",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "protocolVersion": "2.7",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "LINE_PROTOCOL_MISMATCH"
+      }
+    },
+    {
+      "name": "d/stored-message-major-1.0",
+      "note": "存储侧 protocol_version 列 major 不兼容",
+      "check": "protocolVersion",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info",
+        "protocol_version": "1.0",
+        "state": "acked",
+        "attempts": 2,
+        "deliveredAt": 1793757000100,
+        "ackedAt": 1793757000200,
+        "lastError": null,
+        "claimed_by": "instance-a"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "LINE_PROTOCOL_MISMATCH"
+      }
+    }
+  ]
+}

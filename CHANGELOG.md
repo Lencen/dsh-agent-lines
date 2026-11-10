@@ -12,6 +12,13 @@
 - `claim()` 对 `major` 不兼容的消息不投递：落 `failed` + `last_error=LINE_PROTOCOL_MISMATCH` 并写事件（可查、可 redeliver/purge）。
 - 工具输出补 `protocolVersion`（`line_send` / `line_inbox` / `line_messages`）。
 
+### JSON Schema 与 conformance（S2b）
+
+- `schema/envelope.v0_4.json` / `schema/message.v0_4.json`：信封与存储消息的 JSON Schema（`additionalProperties: true`，旧信封无版本字段兼容）。
+- `conformance/`：语言无关的 conformance 用例集（6 组 22 条：合法/缺字段/非法地址/major 不兼容/minor 新字段/旧消息无版本）+ README（任意语言跑法）。
+- `test/conformance.test.js`：自写最小校验器跑 22 条用例（25 断言）。
+- 发布包 `files` 纳入 `schema/` 与 `conformance/`，外部实现可自测。
+
 ### 能力探测与传输（S2c）
 
 - `lib/capabilities.js`：`probeCapabilities(ctx)` 三态能力表（true/false/null）+ `requireCapability`（缺 `session.create` -> `LINE_CAPABILITY_MISSING`，带 hint）。

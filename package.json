@@ -16,6 +16,8 @@
     "lib",
     "bin",
     "scripts",
+    "schema",
+    "conformance",
     "cordis.patch.yml",
     "README.md",
     "README.en.md",

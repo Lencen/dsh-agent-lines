@@ -1,0 +1,175 @@
+{
+  "suite": "b-missing-required",
+  "description": "缺少必填字段必须被拒绝（对应 conformance/README.md 第 2 类）。错误码 SCHEMA_INVALID 是 conformance 层词汇，不对应 LINE_* 传输错误。",
+  "cases": [
+    {
+      "name": "b/missing-body",
+      "note": "缺 body.text 所在对象",
+      "check": "schema",
+      "schema": "envelope.v0_4",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "protocolVersion": "0.4",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "SCHEMA_INVALID"
+      }
+    },
+    {
+      "name": "b/missing-from-agentId",
+      "note": "from 存在但缺 agentId",
+      "check": "schema",
+      "schema": "envelope.v0_4",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "protocolVersion": "0.4",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "SCHEMA_INVALID"
+      }
+    },
+    {
+      "name": "b/missing-createdAt",
+      "note": "缺 createdAt",
+      "check": "schema",
+      "schema": "envelope.v0_4",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "protocolVersion": "0.4",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "SCHEMA_INVALID"
+      }
+    },
+    {
+      "name": "b/missing-id",
+      "note": "缺 id",
+      "check": "schema",
+      "schema": "envelope.v0_4",
+      "input": {
+        "protocolVersion": "0.4",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "SCHEMA_INVALID"
+      }
+    },
+    {
+      "name": "b/missing-state",
+      "note": "存储侧缺 state",
+      "check": "schema",
+      "schema": "message.v0_4",
+      "input": {
+        "id": "msg_0123456789abcdef0123456789abcdef",
+        "idempotencyKey": "caller:retry-1",
+        "from": {
+          "agentId": "agent-demo",
+          "line": "frontend",
+          "sessionId": "session-11111111-1111-1111-1111-111111111111"
+        },
+        "to": {
+          "agentId": "agent-demo",
+          "line": "backend"
+        },
+        "body": {
+          "text": "build 产物已就绪，请拉到 backend 线验收。"
+        },
+        "createdAt": 1793757000000,
+        "expiresAt": null,
+        "replyTo": null,
+        "rootMessageId": null,
+        "hop": 0,
+        "noReply": false,
+        "kind": "info",
+        "protocol_version": "0.4",
+        "attempts": 2,
+        "deliveredAt": 1793757000100,
+        "ackedAt": 1793757000200,
+        "lastError": null,
+        "claimed_by": "instance-a"
+      },
+      "expect": {
+        "ok": false,
+        "errorCode": "SCHEMA_INVALID"
+      }
+    }
+  ]
+}

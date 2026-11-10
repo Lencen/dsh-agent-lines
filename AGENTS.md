@@ -120,6 +120,8 @@ npm test   # unit 72 + docs consistency 13 + bento 9 + business smoke 9
 | Delivery loop | `lib/delivery.js` |
 | CLI | `bin/dsh-agent-lines.js` |
 | Gates | `scripts/check-docs-consistency.mjs`, `scripts/check-bento-alignment.mjs`, `scripts/business-smoke.mjs` |
+| Protocol schema | `schema/envelope.v0_4.json`, `schema/message.v0_4.json` |
+| Conformance cases | `conformance/cases/*.json` + `conformance/README.md` |
 | Human docs | `README.md` (+ `.en.md`), `docs/*.md` (+ `.en.md`), `docs/*.html` |
 
 ## 8. Common AI mistakes to avoid

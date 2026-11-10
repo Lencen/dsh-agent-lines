@@ -12,6 +12,13 @@ English | [中文](CHANGELOG.md)
 - `claim()` does not deliver major-incompatible messages: marks them `failed` with `last_error=LINE_PROTOCOL_MISMATCH` plus an event (queryable, redeliver/purge available).
 - Tool outputs expose `protocolVersion` (`line_send` / `line_inbox` / `line_messages`).
 
+### JSON Schema and conformance (S2b)
+
+- `schema/envelope.v0_4.json` / `schema/message.v0_4.json`: JSON Schema for the envelope and stored message (`additionalProperties: true`; legacy envelopes without a version field are accepted).
+- `conformance/`: language-agnostic conformance cases (6 groups / 22 cases: valid, missing fields, invalid address, major mismatch, newer minor with unknown fields, legacy without version) plus README (how to run from any language).
+- `test/conformance.test.js`: a minimal in-repo validator running the 22 cases (25 assertions).
+- The published package `files` now includes `schema/` and `conformance/` so external implementations can self-test.
+
 ### Capabilities and transport (S2c)
 
 - `lib/capabilities.js`: `probeCapabilities(ctx)` three-state table (true/false/null) plus `requireCapability` (missing `session.create` -> `LINE_CAPABILITY_MISSING` with a hint).
