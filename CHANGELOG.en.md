@@ -2,7 +2,7 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.10.0 (unreleased)
+## 0.10.0 (2026-11-10)
 
 ### Evaluation (S3c, report only)
 
