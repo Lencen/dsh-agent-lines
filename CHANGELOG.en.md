@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-20 (unreleased)
+
+### Board detail fixes (S5d-3)
+
+- Overview goal card restores the "from TEAM.md" badge (title and badge are separate nodes now); progress bar reflects real task completion (0 when no tasks).
+- Cost view "per-line cost" includes the manager line (previously only 8 role lines; manager's 21k tokens were not shown).
+- The rest is the same as 0.11.0-19 (high-fidelity UIUX unchanged, real data).
+
 ## 0.11.0-19 (unreleased)
 
 ### Board static slots and asset fix (S5d-2)
