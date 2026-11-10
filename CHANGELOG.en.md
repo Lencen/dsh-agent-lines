@@ -2,6 +2,14 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.0-15 (unreleased)
+
+### Board metric alignment (S5c-2)
+
+- Overview "members" now uses the official task-board projection (`team-board.members`) instead of showing "9 lines / 0 members" side by side.
+- Data view shows both "official members (snapshot)" and "team-board members" so source differences are visible, never merged.
+- The rest is the same as 0.11.0-14 (pure data-driven board, real charters, official task projection, gates).
+
 ## 0.11.0-14 (unreleased)
 
 ### Board real-data fix (S5c)

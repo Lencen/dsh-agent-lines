@@ -157,6 +157,11 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.11.0-15: board metric alignment (unreleased)
+
+- Overview "members" uses the official task-board projection (team-board.members); the data view shows both official-members (snapshot) and team-board members.
+- The rest is the same as 0.11.0-14.
+
 ### 0.11.0-14: board real-data fix (unreleased)
 
 Scenario: after 0.11.0-13, a hard refresh still showed prototype demo content (team goal / focus / org detail / tasks).

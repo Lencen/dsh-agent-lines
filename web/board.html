@@ -144,7 +144,7 @@ function renderOverview(){
   if(goal.available){gb.className='badge ok';gb.textContent='来自 TEAM.md';var h='<div class="kv">';h+='<span class="k">目标</span><span class="v">'+esc(goal.objective||'未采集')+'</span>';h+='<span class="k">简介</span><span class="v">'+esc(goal.summary||'未采集')+'</span>';h+='<span class="k">规划</span><span class="v" style="white-space:pre-wrap">'+esc(goal.plan||'未采集')+'</span>';h+='<span class="k">节奏</span><span class="v">'+esc(goal.rhythm||'未采集')+'</span>';h+='<span class="k">来源</span><span class="v">'+esc(goal.source||'未采集')+'</span>';h+='</div>';$('#goal-body').className='';$('#goal-body').innerHTML=h}else{gb.className='badge';gb.textContent='未采集';$('#goal-body').className='empty';$('#goal-body').textContent='未采集：团队工作区（TEAM.md）—— 配置 teamRoot 后显示'}
   var t=taskAgg();var lines=linesOf();var msgs=(state.live&&state.live.messages)||{};var tokens=(metricsOf().tokens)||{};
   var agentCount=((metricsOf().sessions)||{}).officialMembers;
-  $('#overview-kpis').innerHTML=kpi('任务',fmtNum(t.total))+kpi('完成',fmtNum(t.done))+kpi('进行中',fmtNum(t.inProgress))+kpi('阻塞',fmtNum(t.blocked))+kpi('线',fmtNum(lines.length))+kpi('成员',agentCount===undefined?'不可得':fmtNum(agentCount))+kpi('消息',fmtNum(msgs.total))+kpi('今日 token',tokens.today===undefined?'不可得':fmtNum(tokens.today));
+  $('#overview-kpis').innerHTML=kpi('任务',fmtNum(t.total))+kpi('完成',fmtNum(t.done))+kpi('进行中',fmtNum(t.inProgress))+kpi('阻塞',fmtNum(t.blocked))+kpi('线',fmtNum(lines.length))+kpi('成员',fmtNum(((boardOf().members)||[]).length))+kpi('消息',fmtNum(msgs.total))+kpi('今日 token',tokens.today===undefined?'不可得':fmtNum(tokens.today));
   var tasks=(boardOf().tasks)||[];
   var rank={blocked:0,in_progress:1,pending:2,completed:3,done:3};
   var focus=tasks.filter(function(x){return x.status!=='completed'&&x.status!=='done'}).sort(function(a,b){return (rank[a.status]===undefined?9:rank[a.status])-(rank[b.status]===undefined?9:rank[b.status])}).slice(0,5);
@@ -180,7 +180,7 @@ function renderTasks(){
 }
 function renderData(){
   var m=metricsOf();var t=taskAgg();var sess=m.sessions||{};var msgs=m.messages||{};
-  $('#data-kpis').innerHTML=kpi('线',fmtNum(sess.lines))+kpi('官方成员',fmtNum(sess.officialMembers))+kpi('任务',fmtNum(t.total))+kpi('消息',fmtNum(msgs.total))+kpi('ack 超时',fmtNum((msgs.ackOverdue||[]).reduce(function(a,x){return a+(Number(x.count)||0)},0)));
+  $('#data-kpis').innerHTML=kpi('线',fmtNum(sess.lines))+kpi('官方成员（快照）',fmtNum(sess.officialMembers))+kpi('团队板成员',fmtNum(((boardOf().members)||[]).length))+kpi('任务',fmtNum(t.total))+kpi('消息',fmtNum(msgs.total))+kpi('ack 超时',fmtNum((msgs.ackOverdue||[]).reduce(function(a,x){return a+(Number(x.count)||0)},0)));
   var lines=(m.lines)||[];var taskBy={};((m.tasks||{}).byLine||[]).forEach(function(r){taskBy[r.line]=r});
   if(lines.length===0){$('#data-lines').className='empty';$('#data-lines').textContent='未采集：按线数据'}else{
     var h='<table><thead><tr><th>线</th><th>状态</th><th>任务（总/完成/进行/阻塞）</th><th>turns</th><th>steps</th><th>decodeTokens</th></tr></thead><tbody>';
