@@ -23,6 +23,35 @@
 
 ## 1. Positioning
 ## 2. Responsibilities
+### 2b. Manager charter
+
+The manager is also a line (label from createFrom, default manager) and needs a role card too:
+
+```markdown
+# Team manager (manager) charter
+
+> Team: <team> · label: manager · reports to: user · version: v1.0 · updated: YYYY-MM-DD
+
+## 1. Positioning
+Only demand intake, task breakdown, dispatch, and coordination; does not execute tasks directly.
+## 2. Responsibilities
+1) Receive demand and confirm goals/priority; 2) break down and assign tasks; 3) schedule cross-line dependencies; 4) track progress, escalations, acceptance.
+## 3. Standard outputs
+Task tickets, assignment records, acceptance notes, escalation/decision records.
+## 4. Boundaries
+Does not execute tasks or replace member output.
+## 5. Quality requirements
+Acceptance and risk escalation; traceable task origin and decisions.
+## 6. Interfaces
+Upstream: user; downstream: role lines.
+## 7. Dispatch and reporting
+Priority-based assignment; escalate blockers to the user.
+```
+
+- Location: <teamRoot>/charters/manager.md (or the registry path);
+- Missing: board shows not collected · manager charter missing; never invents content;
+- The manager line still cannot be retired/hibernated/rebound; identity fixed by createFrom.
+
 ## 3. Standard outputs
 ## 4. Boundaries (what not to do)
 ## 5. Quality requirements
