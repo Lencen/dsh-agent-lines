@@ -24,7 +24,7 @@ This release is a **design-constitution release**: no behavior change.
 - The read-only board cut **already shipped in 0.6.6** (see the 0.6.6 entry); 0.7.0 no longer declares it again.
 - The docs site linked to a `v0.7.0` Release that did not exist; it now points to `releases/latest`.
 - README "Limitations" no longer claims "no handover" (handoff / rebind / replace exist since 0.3.6); status version `0.3.x` → `0.7.x`.
-- The 0.6.6 entry claimed a "check-bento-alignment gate", but there is no `scripts/` directory and no such script, and the E2E is not part of `npm test` → the claim was not reproducible. Reworded; shipping the gate script and wiring it into `npm test` is now a 0.8.0 item.
+- The 0.6.6 entry claimed a "check-bento-alignment gate": the script **does exist**, but in the **lions repository** (`lions/scripts/check-bento-alignment.cjs`), not inside this plugin package and not part of `npm test` (`test/*.test.js`) → for the plugin release it was a **cross-repository reference**, not reproducible. Reworded; shipping an in-package gate wired into `npm test` is now a 0.8.0 item.
 
 ## 0.6.6 (2026-11-10)
 
