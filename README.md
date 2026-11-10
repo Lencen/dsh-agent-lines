@@ -156,6 +156,30 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
+### 0.10.0：成本趋势与休眠（未发布，开发中）
+
+场景：团队长期挂着，想知道每天花了多少 token、空闲线怎么停。
+用法：line_metrics 看 tokens.today/perDay[]、byLine[].ratePerMinute（估算口径，非账单级）；tokenSampleMs / tokenRetentionDays 控制采样与保留；hibernate / line_wake 停投递、释放 lease、保留 Session/历史（S3b，尚未交付）。
+效果：成本可答（按日增量与速率）；采样去重 + 默认 30 天保留；休眠与 retire 区分，显式唤醒。
+
+### 0.9.0：协议版本化与可校验
+
+场景：多个实现或多个插件版本之间要互通，消息出问题要能定位。
+用法：消息信封带 protocolVersion（0.4）；用 schema/ 与 conformance/ 自测互操作；line_status.capabilities 看运行环境能力；失败消息用 line_messages / line_trace / line_redeliver 处置。
+效果：major 不兼容拒收（LINE_PROTOCOL_MISMATCH）、minor 兼容忽略未知字段；旧消息按 0.3 兼容；schema v13→v14 为 additive（无需手工迁移）；新增 memory transport。
+
+### 0.8.1：打包自包含
+
+场景：拿到发布包（npm/Release asset）要能直接做回测。
+用法：解包后直接跑包内脚本：scripts/business-smoke.mjs、scripts/check-docs-consistency.mjs、scripts/check-bento-alignment.mjs。
+效果：包内可自跑 9 项业务冒烟与文档/看板门禁；无功能变更。
+
+### 0.8.0：消息可观测与处置
+
+场景：消息发出去没回音或失败，要知道卡在哪、能不能救、会不会重投。
+用法：line_messages（按状态查 failed/expired）、line_trace（生命周期时间线）、line_redeliver（失败/过期重投）、line_purge（清理，默认 dryRun）、ackTimeoutMs（只报数）、doctor health。
+效果：消息全生命周期可查；失败不丢、可救；ack 超时只标记不自动重投（守 I2）。
+
 ### 0.7.0：设计宪法与文档版（无代码行为变更）
 
 场景：想知道"为什么这样设计、什么不能碰、哪些永远不会做"，或者要给外部实现对齐。

@@ -155,6 +155,30 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.10.0: cost trend and hibernation (unreleased, in progress)
+
+Scenario: a long-running team; you want to know daily token spend and how to park idle lines.
+Use: line_metrics exposes tokens.today/perDay[] and byLine[].ratePerMinute (estimated, not billing); tokenSampleMs / tokenRetentionDays control sampling and retention; hibernate / line_wake stop delivery, release the lease, and keep Session/history (S3b, not shipped yet).
+Effect: costs become answerable (daily deltas and rates); sampling dedup + 30-day retention by default; hibernation is distinct from retire and needs an explicit wake.
+
+### 0.9.0: versioned, machine-checkable protocol
+
+Scenario: multiple implementations or plugin versions must interoperate, and message failures must be diagnosable.
+Use: every envelope carries protocolVersion (0.4); self-test interop with schema/ and conformance/; line_status.capabilities shows what the running profile supports; handle failures with line_messages / line_trace / line_redeliver.
+Effect: incompatible major is rejected (LINE_PROTOCOL_MISMATCH), newer minor ignores unknown fields; legacy messages are treated as 0.3; schema v13 -> v14 is additive (no manual migration); new memory transport.
+
+### 0.8.1: self-contained package
+
+Scenario: a released package (npm / Release asset) must be testable as-is.
+Use: unpack and run the bundled scripts: scripts/business-smoke.mjs, scripts/check-docs-consistency.mjs, scripts/check-bento-alignment.mjs.
+Effect: the package can self-run 9 business smoke checks plus docs/board gates on its own; no functional change.
+
+### 0.8.0: message visibility and remediation
+
+Scenario: a message gets no reply or fails; you need to know where it is stuck, whether it can be rescued, and whether it will be re-sent.
+Use: line_messages (query failed/expired), line_trace (lifecycle timeline), line_redeliver (rescue failed/expired), line_purge (cleanup, dryRun by default), ackTimeoutMs (report-only), doctor health.
+Effect: the full message lifecycle is visible; failures are kept and rescurable; ack timeouts are flagged but never auto-redelivered (preserves I2).
+
 ### 0.7.0: design constitution and docs (no behavior change)
 
 Scenario: you want to know why the plugin is built this way, what must not be touched, and what it will never do — or you need to align a second implementation.

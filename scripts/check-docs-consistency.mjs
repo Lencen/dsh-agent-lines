@@ -112,6 +112,17 @@ const PAIRS = [
   else ok('C6 readme version sections (' + rz.length + ')')
 }
 
+// ---------- C6b README 覆盖最近发布版本（防版本小节过期） ----------
+{
+  const pkgVersion = JSON.parse(read('package.json')).version
+  const sections = [...read('README.md').matchAll(/^### (\d+\.\d+\.\d+)/gm)].map(m => m[1])
+  const changelogVersions = [...read('CHANGELOG.md').matchAll(/^## (\d+\.\d+\.\d+)/gm)].map(m => m[1])
+  const required = [...new Set([pkgVersion, ...changelogVersions.filter(v => v !== pkgVersion).slice(0, 3)])]
+  const missing = required.filter(v => !sections.includes(v))
+  if (missing.length) fail('C6b readme covers recent versions', 'missing: ' + missing.join(','))
+  else ok('C6b readme covers recent versions (' + required.join(',') + ')')
+}
+
 // ---------- C7 过期标记扫描（README/docs，排除 CHANGELOG） ----------
 {
   const files = ['README.md', 'README.en.md',
