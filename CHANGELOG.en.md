@@ -2,9 +2,9 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.8.0 (unreleased)
+## 0.8.0 (2026-11-10)
 
-> Next train. User decision 2026-11-10: **no separate 0.7.1**; docs fixes are folded into this release. Release is scheduled by the commercialization line and performed by github-maintenance-line (see RELEASE-HANDOFF-2026-11-10).
+> User decision 2026-11-10: no separate 0.7.1; docs fixes are folded into this release; **ship as soon as dev+tests (including business tests) are done, no fixed window**. Release execution is scheduled by the commercialization line and performed by github-maintenance-line.
 
 ### Documentation fixes (landed; folded from the former 0.7.1 candidate)
 

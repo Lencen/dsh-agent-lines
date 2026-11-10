@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-lines",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "DSH Agent 的持久、可寻址消息线（社区插件）。",
   "type": "module",
   "license": "Apache-2.0",
@@ -42,8 +42,9 @@
     "dsh": ">=0.2.1-rc.5 <0.3.0"
   },
   "scripts": {
-    "test": "node --test test/*.test.js && node scripts/check-docs-consistency.mjs && node scripts/check-bento-alignment.mjs",
+    "test": "node --test test/*.test.js && node scripts/check-docs-consistency.mjs && node scripts/check-bento-alignment.mjs && node scripts/business-smoke.mjs",
     "test:unit": "node --test test/*.test.js",
+    "test:business": "node scripts/business-smoke.mjs",
     "check:docs": "node scripts/check-docs-consistency.mjs",
     "check:bento": "node scripts/check-bento-alignment.mjs"
   },
