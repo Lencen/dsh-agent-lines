@@ -97,7 +97,7 @@ Recorded in: `line_send({ subteamPolicy, maxMembers })`, `line_team_board.lines[
 - The plugin does **not** identify tasks or dispatch them automatically; identification and dispatch are done by the L2 agent following this policy.
 - The official task board **cannot** set L1/L2 as owner and has no write-back (non-goal T5).
 - There is **no** per-line or per-task member cap (only the deployment-level `maxMembers`).
-- Once the official plugin exposes a pre-spawn interception or pre-execution approval API, this policy can become a **hard gate** (former 0.6.7 condition).
+- Once the DSH official Agent Teams plugin (built into DSH) exposes a pre-spawn interception or pre-execution approval API, this policy can become a **hard gate** (former 0.6.7 condition).
 
 ## 8. Change log
 

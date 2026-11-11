@@ -46,7 +46,7 @@ dsh-agent-lines board --db <lines.db> --dir <快照目录> --team-root <teamRoot
 - **顶栏与页脚显示插件版本**（来自 `/api/health.version`）；升级后硬刷新（Ctrl+F5）应与安装包版本一致。
 - 数据来源：`lines.db`（线/消息）、官方任务与成员投影（只读）、teamRoot（TEAM.md/charters/decisions）、`team-metrics.json`（token 估算，非账单）。
 - 缺失一律显示「暂无 / 不可得 / 未采集」，**不编造**；任务视图为空 = 官方任务投影为空，不是故障。
-- **任务页只读官方 Agent Teams 任务**；线层 `line_send(kind:"task", taskRef:…)` 的任务不会出现在该页，用 `line_observe`/`line_messages` 查看（0.11.3 计划增加线层任务视图）。
+- **任务页只读DSH 官方智能体团队插件（DSH内置） 任务**；线层 `line_send(kind:"task", taskRef:…)` 的任务不会出现在该页，用 `line_observe`/`line_messages` 查看（0.11.3 计划增加线层任务视图）。
 - 看板任务页四种空态：官方暂无任务 / 接口只返回计数缺少明细 / 渲染异常 / 线层任务说明；渲染异常会显示 console 摘要，不再静默空白。
 - 自动刷新只在页面可见时轮询（默认 10s，可调）；`/api/live` 支持 ETag。
 - agent 不通过看板操作；机器可读状态用 `dsh-agent-lines --db <db> --json status`（0.11.0+，含 `teamWorkspace`/`teamGoal`/`decisions` 摘要）。
@@ -77,7 +77,7 @@ line_handoff({ line: "writer", sections: {
 - 只有 `createFrom`（通常 manager）能建线/初始化团队/改角色/重投；
 - 团队工作区由插件只读读取，**不要手写 JSON 或散文件骗看板**；缺字段会显示「暂无/不可得」；
 - 团队名 = 团队根目录名；业务目标写 `TEAM.md`，两者可不同；
-- 官方 Agent Teams 投影只读，不可写回；
+- DSH 官方智能体团队插件（DSH内置） 投影只读，不可写回；
 - 失败消息用 `line_messages({states:["failed"]})` + `line_redeliver`；**不要**自动重投已投递消息（破坏 I2）；
 - 休眠线（`hibernating`）收发都返回 `LINE_HIBERNATING`，需 `line_wake`；`retired` 不可唤醒；
 - 一个 DSH 进程内不要同时打开线的 Session（`session/writer-held`）；不支持跨机/多活（`LINE_NETWORK_FILESYSTEM`）。
@@ -119,6 +119,6 @@ line_handoff({ line: "writer", sections: {
 | [AGENTS.md](../AGENTS.md) | 机器可读契约（工具/配置/硬约束） |
 | [PROTOCOL.md](PROTOCOL.md) | 消息状态机与错误码 |
 | [TEAM-WORKSPACE.md](TEAM-WORKSPACE.md) | 团队工作区目录与章程模板 |
-| [AGENT-TEAMS.md](AGENT-TEAMS.md) | 官方 Agent Teams 只读融合 |
+| [AGENT-TEAMS.md](AGENT-TEAMS.md) | DSH 官方智能体团队插件（DSH内置） 只读融合 |
 | [DEPLOY.md](DEPLOY.md) | 部署、配置、writer 冲突 |
 | [PHILOSOPHY.md](PHILOSOPHY.md) | 设计思想与不变量 I1–I7 |

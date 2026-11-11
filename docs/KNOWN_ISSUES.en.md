@@ -16,7 +16,7 @@ English | [中文](KNOWN_ISSUES.md)
 | B4 | No process isolation, no in-plugin policy sandbox | Permissions belong to DSH itself (`agentPreset` / tool allowlists) |
 | B5 | No static encryption, no sender signatures | Data at rest relies on full-disk encryption; peer content is prompt-level mitigation, not a hard boundary ([SECURITY](SECURITY.en.md)) |
 | B6 | Network filesystems unsupported | Databases on NFS/CIFS/SMB/FUSE are rejected with `LINE_NETWORK_FILESYSTEM` |
-| B7 | `maxLines` (default 16) is a deployment-level cap | Not a per-line/per-task hard limit; the official plugin exposes neither per-line caps nor a pre-spawn interception API |
+| B7 | `maxLines` (default 16) is a deployment-level cap | Not a per-line/per-task hard limit; the DSH official Agent Teams plugin (built into DSH) exposes neither per-line caps nor a pre-spawn interception API |
 | B8 | Read-only fusion with the official board, no write-back | PHILOSOPHY T5 |
 
 ## 2. Known gaps (pending, with target version)

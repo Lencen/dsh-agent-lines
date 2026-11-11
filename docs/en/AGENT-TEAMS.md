@@ -8,7 +8,7 @@ The user only sends a task to the manager; no export, no config, no plugin butto
 ~~~~text
 L1 manager session (the user only states goals)
   └─ L2 role session (long-lived role, durable memory)
-       └─ L3 official Agent Teams team inside that role session (teammates, task-scoped, parallel, released after use)
+       └─ L3 DSH official Agent Teams plugin (built into DSH) team inside that role session (teammates, task-scoped, parallel, released after use)
 ~~~~
 
 - L1 owns lines: create lines, dispatch, approve `subteamPolicy`, accept results.

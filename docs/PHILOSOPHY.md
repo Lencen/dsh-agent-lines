@@ -29,7 +29,7 @@
 
 ## 2. 两个插件各是什么
 
-DSH 官方"智能体团队"插件：**一个会话里装若干子 agent**。
+DSH 官方智能体团队插件（DSH内置）：**一个会话里装若干子 agent**。
 
     DSH 会话
       └─ 会话里的子 agent（任务型，任务结束释放或复用）
@@ -42,7 +42,7 @@ dsh-agent-lines：**多个会话组成一个团队**。
       ├─ 测试角色会话
       └─ 校对角色会话
 
-| 维度 | 官方智能体团队 | dsh-agent-lines |
+| 维度 | DSH 官方智能体团队插件（DSH内置） | dsh-agent-lines |
 |---|---|---|
 | 组织单位 | 会话内的子 agent | 跨会话的角色线 |
 | 记忆载体 | 父会话上下文 | 各自 Session 的持久历史 |
@@ -86,7 +86,7 @@ I6 是本仓**唯一一条已知的自我违反**，也是后续排期里优先�
   放弃：双活、跨机队列。理由：一个 Session 只能有一个 writer 是 DSH 的既成事实；在这个边界内，本地文件锁 + 租约是成本最低的正确性方案，代价写进 [ARCHITECTURE 边界](ARCHITECTURE.md) 而不是藏起来。
 - **T4 local-first 单一 transport（SQLite + WAL），而不是可插拔多后端。**
   放弃：开箱支持 Redis/PG。理由：SPI 形状保留，但**没有第二个实现的 SPI 是假设，不是接口**；等真有第二个人需要，再做。
-- **T5 只读融合官方插件，而不是双向写回。**
+- **T5 只读融合 DSH 官方智能体团队插件（DSH内置），而不是双向写回。**
   放弃：把两套任务板合并成一个。理由：一旦写回就要处理所有权冲突、并发覆盖、官方 schema 变更，会从"补充"变成"对抗"。
 - **T6 可见性优先于 token，而不是用隐藏成员省成本。**
   放弃：建线默认安静、省首轮 token 的优化。理由：用户看不到成员会以为团队没建成；token 可解释，失踪不可解释。0.11.0 起 `line_create` 默认 onboarding 并等待可见，逐次 `bootstrap:false` 不再生效。
@@ -170,7 +170,7 @@ I6 是本仓**唯一一条已知的自我违反**，也是后续排期里优先�
 | [PROTOCOL](PROTOCOL.md) | 信封、状态机、错误码、租约、幂等键 |
 | [SECURITY](SECURITY.md) | 信任模型、静态数据、网络、对端内容、DoD |
 | [DEPLOY](DEPLOY.md) | 部署与运维 |
-| [AGENT-TEAMS](AGENT-TEAMS.md) | 与官方智能体团队插件的只读融合（三级组织、字段、看板） |
+| [AGENT-TEAMS](AGENT-TEAMS.md) | 与DSH 官方智能体团队插件（DSH内置）的只读融合（三级组织、字段、看板） |
 | [DELEGATION-POLICY](DELEGATION-POLICY.md) | 二级线自己做还是开线内团队（7 维判定、A/B 规则、`subteamPolicy` 语义、持续更新） |
 
 ---

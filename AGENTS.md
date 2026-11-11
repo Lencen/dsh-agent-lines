@@ -79,7 +79,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 | `line_observe` | manager | `line?`, `since?`, `limit?` | Read-only cross-line feed |
 | `line_communications` | manager | filters | Read-only communication board |
 | `line_metrics` | manager | `days?` | Read-only data board: messages (+ `messages.ackOverdue`) and token trend — top-level `tokens.total/today/window/perDay[]` are **totalTokens** (uncached input + output + cache read/write), plus `outputTotal/todayOutput/windowOutput/perDayOutput`, `inputTokens/cacheReadTokens/cacheWriteTokens`, `perMessage/samples/sampleIntervalMs/windowDays/timezoneOffsetMinutes/basis`; per line `tokens.byLine[].decodeTokens(output)/outputTokens/inputTokens/cacheReadTokens/cacheWriteTokens/totalTokens/today/todayOutput/window/windowOutput/ratePerMinute/samples` |
-| `line_team_board` | manager | — | Read-only official Agent Teams board + host snapshot |
+| `line_team_board` | manager | — | Read-only DSH official Agent Teams plugin (built into DSH) board + host snapshot |
 | `line_department_board` | manager | `line` | Lazily read one line's official team/tasks |
 
 ## 4. Hard constraints (MUST / MUST NOT)
@@ -88,7 +88,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 - **MUST NOT** open a line's Session in another DSH process while the line process serves it (DSH rejects with `session/writer-held`; the message eventually fails).
 - **MUST NOT** delete a line's Session: delivery then fails permanently (`session/not-found`); use `line_retire`.
 - **MUST NOT** auto-retry a delivered message to "fix" a missing ack: it breaks invariant I2 (at-most-once effect). Use `line_ack` or an explicit `line_redeliver`.
-- **MUST NOT** write to the official Agent Teams board: the integration is read-only (non-goal).
+- **MUST NOT** write to the DSH official Agent Teams plugin (built into DSH) board: the integration is read-only (non-goal).
 - **MUST** keep the invariants I1–I7 in [PHILOSOPHY](docs/PHILOSOPHY.md); breaking one is a bug.
 
 ## 5. `line_status` fields

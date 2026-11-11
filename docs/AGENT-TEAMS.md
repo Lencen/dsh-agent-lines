@@ -8,7 +8,7 @@
 ~~~~text
 L1 管理线会话（用户只说目标）
   └─ L2 角色线会话（长期角色、持久记忆）
-       └─ L3 该角色会话里的官方智能体团队（teammate，任务型、并行、用完释放）
+       └─ L3 该角色会话里的DSH 官方智能体团队插件（DSH内置）（teammate，任务型、并行、用完释放）
 ~~~~
 
 - L1 管线：建线、派任务、批 `subteamPolicy`、验收；
@@ -44,7 +44,7 @@ L1 管理线会话（用户只说目标）
 manager 自动：
 1. 在 Agent Teams 任务板创建任务；
 2. 用 line 建/复用长期角色；
-3. 读 官方智能体团队插件服务.listTasks/listMembers；
+3. 读 DSH 官方智能体团队插件（DSH内置）服务.listTasks/listMembers；
 4. 按 teammate name 自动映射 line；
 5. 把任务、线、待审批放进 line_team_board。
 
@@ -69,7 +69,7 @@ manager 自动：
 
 ## 限制
 
-- 官方智能体团队插件服务 是 experimental 内部服务，不是稳定公开 API；
+- DSH 官方智能体团队插件（DSH内置）服务 是 experimental 内部服务，不是稳定公开 API；
 - 服务不可用就显示 unavailable；
 - L2 双向任务桥未批准。
 

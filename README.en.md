@@ -43,16 +43,16 @@ Stop reopening sessions and copying context by hand. Give one lead agent a long-
 | Scenario | Choose dsh-agent-lines | Don't (better fit) |
 |---|---|---|
 | Long-running project, no desire to re-explain context | ✅ each role keeps long-term memory | ❌ one-off small task: a normal Session is faster |
-| Several agents with stable roles (research/dev/test/release) | ✅ assign by name | ❌ only need a one-shot burst inside one Session: official Agent Teams is lighter |
+| Several agents with stable roles (research/dev/test/release) | ✅ assign by name | ❌ only need a one-shot burst inside one Session: DSH official Agent Teams plugin (built into DSH) is lighter |
 | Work must survive closing the window / restarting DSH | ✅ messages and state are durable | ❌ no restart survival needed |
 | Context fills up; the role must change but the role must not | ✅ `line_handoff` / `line_rebind` | ❌ only one-off multi-agent collaboration |
-| Need task dependency control, quality gates, a task board | ⚠️ read-only fusion with the official board; no own DAG | ✅ use the official DSH Agent Teams plugin (task DAG + panel) |
+| Need task dependency control, quality gates, a task board | ⚠️ read-only fusion with the official board; no own DAG | ✅ use the DSH official Agent Teams plugin (built into DSH) (task DAG + panel) |
 | Need cross-machine / active-active / strong isolation | ❌ unsupported (local SQLite + local lease) | ✅ choose a distributed solution |
 
 
 ## How the two team shapes look
 
-### Official "Agent Teams" plugin
+### DSH official Agent Teams plugin (built into DSH)
 
 ~~~text
 one DSH session
@@ -82,11 +82,11 @@ several DSH sessions form a team
 - The manager decomposes, dispatches and accepts results in its own session.
 - dsh-agent-lines itself provides no task board.
 
-## How it differs from official Agent Teams
+## How it differs from DSH official Agent Teams plugin (built into DSH)
 
 Not a replacement: they complement each other. One line: **Agent Teams owns the work, dsh-agent-lines owns the people and the messages.**
 
-| Dimension | Official Agent Teams | dsh-agent-lines |
+| Dimension | DSH official Agent Teams plugin (built into DSH) | dsh-agent-lines |
 |---|---|---|
 | Focus | Task orchestration and team collaboration | Long-lived roles and durable messaging |
 | Roles | Named teammates around tasks, process-internal lifetime | Lines persist across sessions and restarts |
@@ -98,13 +98,13 @@ Not a replacement: they complement each other. One line: **Agent Teams owns the 
 
 **Together:** lines own people, Agent Teams owns tasks, files own memory. The user sends work to the manager; the manager reads Agent Teams tasks and line status automatically, with no user export or config.
 
-Official Agent Teams is experimental; dsh-agent-lines is a community plugin, not an official DeepSeek product.
+DSH official Agent Teams plugin (built into DSH) is experimental; dsh-agent-lines is a community plugin, not an official DeepSeek product.
 
 ## What it is not (common multi-agent alternatives)
 
 Be clear about the boundaries before choosing:
 
-- **Not a DAG / workflow engine**: the plugin ships no task dependencies, state machine, or automatic acceptance/rework. The manager orchestrates flow through goals, TEAM.md `## 协作流程` and role prompts; when a subtask needs hard control, a role line uses the official DSH Agent Teams as a temporary L3 squad via `subteamPolicy` (lines records, displays and audits; it does not hard-block).
+- **Not a DAG / workflow engine**: the plugin ships no task dependencies, state machine, or automatic acceptance/rework. The manager orchestrates flow through goals, TEAM.md `## 协作流程` and role prompts; when a subtask needs hard control, a role line uses the DSH official Agent Teams plugin (built into DSH) as a temporary L3 squad via `subteamPolicy` (lines records, displays and audits; it does not hard-block).
 - **Not a chat-bot roster**: the first-class citizen is a long-lived role line (stable `label`, replaceable Session) with a mailbox, lease, handoff and wake-up, not a persona-only bot.
 - **Not an IM / chat app**: messages are work traces (`kind` / `state` / `replyTo` / ack) with delivery, acknowledgement and audit semantics, not social chat.
 - **Organizational infrastructure is decoupled from business intelligence**: the plugin owns roles, messages, persistence and the read-only board; how to split work, accept it and route the flow belongs to the manager model and role prompts.
@@ -118,7 +118,7 @@ Three collaboration styles on one base (mixable):
 
 ## Agent Teams integration (read-only; 0.5.1+, department view since 0.6.0)
 
-The user only sends a task to the manager. The manager automatically reads official Agent Teams tasks/members, maps teammate names to lines; no user export, no mapping config, no plugin buttons.
+The user only sends a task to the manager. The manager automatically reads DSH official Agent Teams plugin (built into DSH) tasks/members, maps teammate names to lines; no user export, no mapping config, no plugin buttons.
 
 Precondition: the manager line must also be the Agent Teams Lead/member; otherwise unavailable, never fall back to user export.
 
@@ -129,7 +129,7 @@ Read-only: no task writes, no lines.db writes, no manager turn; L2 is not approv
 ~~~~text
 L1 manager session (the user only states goals)
   └─ L2 role session (long-lived role, durable memory, line capabilities)
-       └─ L3 official Agent Teams team inside that role session (teammates, task-scoped, parallel, released after use)
+       └─ L3 DSH official Agent Teams plugin (built into DSH) team inside that role session (teammates, task-scoped, parallel, released after use)
 ~~~~
 
 - **L1 owns lines**: create lines, dispatch, approve policy (`subteamPolicy`), accept results.
@@ -370,7 +370,7 @@ Effect: three-level org tree; the parent sees department summaries without mergi
 
 ### 0.5.1: official team board and host snapshot
 
-Scenario: the team keeps long-lived roles but also wants to see the official Agent Teams board.  
+Scenario: the team keeps long-lived roles but also wants to see the DSH official Agent Teams plugin (built into DSH) board.  
 Use: the manager calls line_team_board; the plugin reads official tasks/members and writes team-board.json.  
 Effect: read-only integration; no user export/config; contract fields messages/quality/team/approval/deliveries.
 
@@ -603,7 +603,7 @@ dsh-agent-lines/
 ├── Worker Line             # worker: executes the actual work
 │   ├── (durable memory)    # context survives restarts
 │   └── line_inbox / line_ack
-├── Official Agent Teams    # official plugin: task board / deps / panel (read-only fusion)
+├── DSH official Agent Teams plugin (built into DSH)    # task board / deps / panel (read-only fusion)
 └── lines.db                # local state: lines, roles, messages, events, leases
 ~~~
 
