@@ -2,6 +2,17 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.5 (2026-11-11)
+
+### Articles and bilingual docs
+
+- Added the short article "Reflections on AI Organizations" in Chinese and English: the Chinese file uses a Chinese name (docs/关于AI组织的思考与探索.md), and the English file uses an English name (docs/en/THOUGHTS-ON-AI-ORGANIZATION.md).
+- Added the paper "From Workflow to Position: Organizational Design for Long-Lived AI Teams" in Chinese and English: Chinese docs/从流程到岗位.md; English docs/en/FROM-WORKFLOW-TO-POSITION.md.
+- README now links the articles; the docs-consistency gate covers the two new zh/en article pairs; the site version is synced to 0.11.5.
+- Compatible: no code, schema, or protocol changes; schema v15 and protocolVersion 0.4 unchanged.
+
+**0.11.5 is authoritative; 0.11.4 is the fallback.**
+
 ## 0.11.4 (2026-11-11)
 
 ### CLI parity + schema v15 dedupe indexes + fake-green fix

@@ -25,6 +25,8 @@ const PAIRS = [
   ['README.md', 'README.en.md'],
   ['CHANGELOG.md', 'CHANGELOG.en.md'],
   ['docs/PHILOSOPHY.md', 'docs/PHILOSOPHY.en.md'],
+  ['docs/关于AI组织的思考与探索.md', 'docs/en/THOUGHTS-ON-AI-ORGANIZATION.md'],
+  ['docs/从流程到岗位.md', 'docs/en/FROM-WORKFLOW-TO-POSITION.md'],
   ['docs/KNOWN_ISSUES.md', 'docs/KNOWN_ISSUES.en.md'],
   ['docs/DELEGATION-POLICY.md', 'docs/DELEGATION-POLICY.en.md'],
   ['docs/ARCHITECTURE.md', 'docs/ARCHITECTURE.en.md'],

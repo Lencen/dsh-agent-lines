@@ -49,4 +49,4 @@
 
 ## 版本
 
-当前 0.11.4。本文与代码不一致时，以 AGENTS.md / CHANGELOG 为准，并视为文档 bug。
+当前 0.11.5。本文与代码不一致时，以 AGENTS.md / CHANGELOG 为准，并视为文档 bug。

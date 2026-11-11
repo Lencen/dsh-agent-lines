@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current version: v0.11.4 (2026-11-11) — CLI/tool dedupe and parameter parity, schema v15 dedupe index, npm package fake-green fix, docs sync.
+> Current version: v0.11.5 (2026-11-11) — short and paper articles added in Chinese and English; docs and site synced.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -40,6 +40,14 @@ Stop reopening sessions and copying context by hand. Give one lead agent a long-
 | Team workspace / board | [docs/TEAM-WORKSPACE.md](docs/TEAM-WORKSPACE.md) | the board section below |
 | Design / contributing | [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) | [docs/ARCHITECTURE.en.md](docs/ARCHITECTURE.en.md), [docs/PROTOCOL.en.md](docs/PROTOCOL.en.md) |
 | Troubleshooting / upgrades | [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md) | [CHANGELOG.en.md](CHANGELOG.en.md) |
+
+**Further reading: on AI organizations**
+
+- Short (Chinese): [关于AI组织的思考与探索](docs/关于AI组织的思考与探索.md)
+- Short (English): [Reflections on AI Organizations](docs/en/THOUGHTS-ON-AI-ORGANIZATION.md)
+- Paper (Chinese): [从流程到岗位](docs/从流程到岗位.md)
+- Paper (English): [From Workflow to Position](docs/en/FROM-WORKFLOW-TO-POSITION.md)
+
 ## When to use it / when not to
 
 | Scenario | Choose dsh-agent-lines | Don't (better fit) |
@@ -187,7 +195,13 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.11.4: CLI parity + dedupe indexes + fake-green fix (current release)
+### 0.11.5: Articles and bilingual docs (current release)
+
+- Added the short article "Reflections on AI Organizations" and the paper "From Workflow to Position: Organizational Design for Long-Lived AI Teams," each in Chinese and English; Chinese files use Chinese names and English files use English names.
+- README links the articles; the docs-consistency gate covers the zh/en article pairs.
+- Compatible: no code/DB/protocol changes; schema v15 and protocolVersion 0.4 unchanged.
+
+### 0.11.4: CLI parity + dedupe indexes + fake-green fix
 
 - CLI send adds `--kind/--task-ref/--parent-task-ref/--task-scope/--subteam-policy/--max-members/--cc-manager/--require-approval/--force-distinct/--dedupe-window`; the digest uses the same fields as the tool layer; `DSH_AGENT_LINES_DEDUPE_WINDOW_MS` is shared by the plugin and CLI.
 - schema v15: messages gains `dedupe_digest` + indexes; dedupe lookup changes from a full LIKE scan to an equality index; lineTasks queries get indexes; old DBs are backfilled.
@@ -343,7 +357,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.11.4.tgz
+    bash install.sh ./dsh-agent-lines-0.11.5.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -635,7 +649,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current version `0.11.4` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current version `0.11.5` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 

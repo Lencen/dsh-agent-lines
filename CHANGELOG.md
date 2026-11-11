@@ -2,6 +2,17 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.5 (2026-11-11)
+
+### 文章与双语文档
+
+- 新增短版文章《关于AI组织的思考与探索》（中英）：中文文件使用中文名 docs/关于AI组织的思考与探索.md，英文文件使用英文名 docs/en/THOUGHTS-ON-AI-ORGANIZATION.md。
+- 新增论文版《从流程到岗位：长期 AI 团队的组织设计》（中英）：中文 docs/从流程到岗位.md，英文 docs/en/FROM-WORKFLOW-TO-POSITION.md。
+- README 增加文章入口；文档一致性门禁增加两对中英文章配对；站点版本同步到 0.11.5。
+- 兼容：无代码、schema、协议变更；schema v15、protocolVersion 0.4 不变。
+
+**以 0.11.5 为准，0.11.4 为回退位。**
+
 ## 0.11.4 (2026-11-11)
 
 ### CLI 一致 + schema v15 去重索引 + 测试假绿修复

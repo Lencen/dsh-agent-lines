@@ -6,7 +6,7 @@
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> 当前版本：v0.11.4（2026-11-11）——CLI 与工具层去重/参数一致、schema v15 去重索引、npm 包测试假绿修复、文档同步。
+> 当前版本：v0.11.5（2026-11-11）——新增短版与论文版文章（中英），文档与站点同步。
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
@@ -40,6 +40,14 @@ DSH 的 super agent 平替插件。
 | 团队工作区与看板 | [docs/TEAM-WORKSPACE.md](docs/TEAM-WORKSPACE.md) | 本文「看板」 |
 | 设计 / 贡献 | [docs/PHILOSOPHY.md](docs/PHILOSOPHY.md) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)、[docs/PROTOCOL.md](docs/PROTOCOL.md) |
 | 排障 / 升级 | [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) | [CHANGELOG.md](CHANGELOG.md) |
+
+**延伸阅读：关于 AI 组织**
+
+- 短版（中文）：[关于AI组织的思考与探索](docs/关于AI组织的思考与探索.md)
+- 短版（英文）：[Reflections on AI Organizations](docs/en/THOUGHTS-ON-AI-ORGANIZATION.md)
+- 论文版（中文）：[从流程到岗位：长期 AI 团队的组织设计](docs/从流程到岗位.md)
+- 论文版（英文）：[From Workflow to Position](docs/en/FROM-WORKFLOW-TO-POSITION.md)
+
 ## 什么时候用 / 什么时候不用
 
 | 场景 | 选 dsh-agent-lines | 不选（更适合别的方案） |
@@ -188,7 +196,13 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
-### 0.11.4：CLI 一致 + 去重索引 + 测试假绿修复（当前发布）
+### 0.11.5：文章与双语文档（当前发布）
+
+- 新增短版《关于AI组织的思考与探索》与论文版《从流程到岗位：长期 AI 团队的组织设计》，中英各一份；中文文件用中文名，英文文件用英文名。
+- README 增加文章入口；文档一致性门禁覆盖中英文章配对。
+- 兼容：无代码/DB/协议变更；schema v15、protocolVersion 0.4 不变。
+
+### 0.11.4：CLI 一致 + 去重索引 + 测试假绿修复
 
 - CLI send 新增 `--kind/--task-ref/--parent-task-ref/--task-scope/--subteam-policy/--max-members/--cc-manager/--require-approval/--force-distinct/--dedupe-window`，digest 与工具层同字段；`DSH_AGENT_LINES_DEDUPE_WINDOW_MS` 供插件与 CLI 共用。
 - schema v15：messages 增加 `dedupe_digest` 与索引，去重查询由全表 LIKE 改为等值索引；新增 lineTasks 查询索引；旧库自动回填。
@@ -360,7 +374,7 @@ L1 管理线会话（用户只说目标）
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.11.4.tgz
+    bash install.sh ./dsh-agent-lines-0.11.5.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -645,7 +659,7 @@ claim 不会对每个新会话自动执行：需要用户明确要求，或运�
 
 ## 状态
 
-当前版本 `0.11.4`（快速迭代期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
+当前版本 `0.11.5`（快速迭代期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
 
 ## 致谢
 
