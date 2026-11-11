@@ -117,7 +117,8 @@ const PAIRS = [
 {
   const pkgVersion = JSON.parse(read('package.json')).version
   const sections = [...read('README.md').matchAll(/^### (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/gm)].map(m => m[1])
-  const changelogVersions = [...read('CHANGELOG.md').matchAll(/^## (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/gm)].map(m => m[1])
+  const isInternalBuild = (v) => /^\d+\.\d+\.\d+-\d+$/.test(v)
+  const changelogVersions = [...read('CHANGELOG.md').matchAll(/^## (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/gm)].map(m => m[1]).filter(v => !isInternalBuild(v))
   const required = [...new Set([pkgVersion, ...changelogVersions.filter(v => v !== pkgVersion).slice(0, 3)])]
   const missing = required.filter(v => !sections.includes(v))
   if (missing.length) fail('C6b readme covers recent versions', 'missing: ' + missing.join(','))

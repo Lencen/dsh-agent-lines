@@ -2,6 +2,22 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.3 (2026-11-11)
+
+### 使用边界 + 去重修复 + 看板收口
+
+- **去重窗口修复**：改固定时间桶为滑动窗口（store 层 BEGIN IMMEDIATE 查最近 windowMs 内同 digest），跨桶边界不再重复；CLI 与工具层共用；新增跨桶/窗口外/显式 key/forceDistinct/self-send/CLI 测试。
+- **README 正式版化**：删除 0.11.0-13 至 0.11.0-30 内测构建小节（逐条保留在本 CHANGELOG），C6b 门禁只要求覆盖正式版本。
+- **看板线层任务视图**：任务页可切换「官方任务 / 线层任务」；/api/live.lineTasks 只读聚合 kind=task/taskRef，不伪造 DAG。
+- **teamRoot sidecar**：插件把配置的 teamRoot 写入 db 同目录 team-root，board 启动按「参数 → env → sidecar」解析并打印结果。
+- **只读说明**：看板页脚增加「为什么只读」链接。
+- **/api/live.tokens**：删除 0.11 早期遗留 unavailable 占位字段；成本数据仍来自 /api/team-metrics。
+- **使用边界文档**：新增 docs/USAGE-BOUNDARY.md 与英文版，README 引用并加一句摘要；不写早期/评分/无 SLA 等描述。
+- **CI**：安装 Chromium，运行 test:board-e2e --require-chrome；e2e 不再是 SKIP。
+- **历史注记**：0.11.2 安全清理导致 v0.9.0/v0.10.0/v0.11.0/v0.11.1 四个已发布 tag 的 target/commit SHA 变化；按 SHA 固定请改用版本号/npm。已发布 tag 不再 force-push/重指。
+- 兼容：无 DB 迁移（schema v14）、protocolVersion 0.4 不变；删除 /api/live.tokens 属 board API 兼容性变更。
+
+**以 0.11.3 为准，0.11.2 为回退位。**
 ## 0.11.2 (2026-11-11)
 
 ### 反馈修复：看板渲染、换代、交接与兼容字段

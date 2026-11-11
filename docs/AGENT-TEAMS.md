@@ -66,6 +66,8 @@ manager 自动：
 - 不写 lines.db；
 - 不触发管理线 turn；
 - 没有 taskRef 的消息只进沟通流，不硬挂任务。
+- 看板线层任务视图只读聚合 lines 消息；不写官方任务板，也不把线层任务伪装成官方 DAG。
+- board 的 teamRoot 解析顺序：参数 → env → 插件写入的 `team-root` sidecar；均无则提示未解析。
 
 ## 限制
 

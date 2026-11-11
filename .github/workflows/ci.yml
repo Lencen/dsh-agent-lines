@@ -17,5 +17,14 @@ jobs:
         run: npm install --ignore-scripts
       - name: Test
         run: npm test
+      - name: Setup Chrome for board e2e
+        if: matrix.node-version == 22
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v1
+      - name: Board e2e (required)
+        if: matrix.node-version == 22
+        env:
+          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: node scripts/board-render-e2e.mjs --require-chrome
       - name: Pack dry-run
         run: npm pack --dry-run

@@ -14,7 +14,7 @@ import { startBoardServer } from '../lib/board-server.js'
 
 const requireChrome = process.argv.includes('--require-chrome')
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-const candidates = ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser']
+const candidates = [process.env.CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean)
 const chrome = candidates.find(existsSync)
 if (!chrome) {
   console.log('BOARD_E2E: SKIP (no Chrome; release gate requires --require-chrome)')
@@ -31,6 +31,7 @@ const store = new LineStore(dbPath)
 const labels = ['manager','architect','outliner','writer','editor','continuity','proofreader','reviewer','archivist']
 for (const label of labels) store.acquire({ agentId: 'agent-deepseek', line: label, sessionId: 'sess-' + label, instanceId: 'inst', ttlMs: 600000, role: label === 'manager' ? '负责人' : label })
 store.rebind({ agentId: 'agent-deepseek', line: 'writer', sessionId: 'sess-writer-2', reason: 'e2e replace', migrate: 'queued' })
+store.send({ agentId: 'agent-deepseek', fromLine: 'manager', to: 'writer', text: 'e2e 线层任务：写第一章', kind: 'task', taskRef: 'T-E2E' })
 store.close()
 const tasks = []
 for (let i = 1; i <= 5; i++) tasks.push({ id: 'task-' + i, revision: 1, subject: '任务 ' + i, status: i === 5 ? 'in_progress' : 'completed', blockedBy: [], ownerName: i === 5 ? 'proofreader' : 'architect', ownerLine: i === 5 ? 'proofreader' : 'architect', writeScopes: [], staleOwner: false, lastMessage: null, children: [] })
@@ -84,6 +85,12 @@ try {
   check('数组快照：历史包含换代', await evaluate('(DATA.retired||[]).some(function(r){return r.label==="writer"&&r.kind==="rebind"})') === true)
   check('数组快照：成本拆分元素存在', await evaluate('!!document.querySelector("#cost-basis")') === true)
   check('数组快照：无 console 异常', exceptions.length === 0, JSON.stringify(exceptions.slice(0, 1)))
+  check('线层任务 tab 存在', await evaluate('!!document.querySelector("#tab-line-tasks")') === true)
+  await evaluate('document.querySelector("#tab-line-tasks").click(), true')
+  check('线层任务视图可见', await evaluate('!document.querySelector("#line-tasks-list").classList.contains("hidden")') === true)
+  check('线层任务内容可见', /写第一章/.test(String(await evaluate('document.querySelector("#line-tasks-list").textContent'))))
+  check('只读原因链接存在', await evaluate('!!document.querySelector("footer a[href*=SECURITY]")') === true)
+  await evaluate('document.querySelector("#tab-active").click(), true')
 
   const objectTasks = {}; for (const task of tasks) objectTasks[task.id] = task
   setBoard({ ...board, tasks: objectTasks })

@@ -2,6 +2,22 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.3 (2026-11-11)
+
+### Usage boundaries + dedupe fix + board polish
+
+- **Dedupe window fix**: replaced fixed time buckets with a sliding window (store-level BEGIN IMMEDIATE over recent windowMs/digest), so bucket boundaries no longer duplicate; CLI and tools share it; tests cover cross-bucket/outside-window/explicit key/forceDistinct/self-send/CLI.
+- **README released-version cleanup**: removed internal build sections 0.11.0-13 ... 0.11.0-30 (itemized here); C6b only requires released versions.
+- **Board line tasks view**: tasks view switches between official and line tasks; /api/live.lineTasks read-only aggregates kind=task/taskRef, no fake DAG.
+- **teamRoot sidecar**: the plugin writes configured teamRoot to a team-root file next to the db; the board resolves argument -> env -> sidecar and logs the result.
+- **Read-only explanation**: footer link to why read-only.
+- **/api/live.tokens**: removed the stale unavailable placeholder; cost data remains from /api/team-metrics.
+- **Usage-boundary doc**: new docs/USAGE-BOUNDARY.md and English version, linked from README with a one-line summary; no early-stage/rating/no-SLA copy.
+- **CI**: installs Chromium and runs test:board-e2e --require-chrome; e2e no longer SKIP.
+- **History note**: the 0.11.2 security rewrite changed the target/commit SHA of the four published tags v0.9.0/v0.10.0/v0.11.0/v0.11.1; use versions or npm instead of fixed SHAs. Published tags are no longer force-pushed.
+- Compatible: no DB migration (schema v14), protocolVersion 0.4 unchanged; removing /api/live.tokens is a board API compatibility change.
+
+**0.11.3 is authoritative; 0.11.2 is the fallback.**
 ## 0.11.2 (2026-11-11)
 
 ### Feedback fixes: board rendering, rebinds, handoff, compatibility

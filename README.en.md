@@ -6,11 +6,13 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current version: v0.11.2 (2026-11-11) — team workspace with a real-data board, members visible right after creation, team dirs follow the current workspace.
+> Current version: v0.11.3 (2026-11-11) — dedupe window fix, released-version README cleanup, board line tasks/teamRoot/read-only notes, usage-boundary doc.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
 > **100% Vibe Coding, fast iteration phase.**
+>
+> Scope and stable surface: [usage boundaries](docs/en/USAGE-BOUNDARY.md). It owns long-lived roles/messages/handoffs and a read-only board; it does not own DAGs, cross-machine sync, or multiple teams.
 
 A drop-in super-agent alternative for DSH.
 
@@ -185,7 +187,18 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.11.2: feedback fixes (current release)
+### 0.11.3: usage boundaries + dedupe fix + board polish (current release)
+
+- Dedupe switched to a sliding window: identical sends on opposite sides of a time bucket no longer duplicate; CLI and tools share the semantics; tests cover cross-bucket/outside-window/forceDistinct/self-send/CLI.
+- README only lists released versions; internal builds `0.11.0-13` ... `0.11.0-30` are folded into 0.11.0 and remain itemized in CHANGELOG; C6b only requires released versions.
+- Board tasks view can switch between official tasks and line tasks; line tasks aggregate `kind=task` / `taskRef`, without faking a DAG.
+- Board auto-resolves the teamRoot sidecar written by the plugin instead of silently staying off; footer adds a "why read-only" link.
+- Removed the stale `/api/live.tokens` placeholder; cost data still comes from `/api/team-metrics`.
+- New `docs/USAGE-BOUNDARY.md` (zh/en): scope / stable surface / will change / known boundaries / failure recovery and data responsibility.
+- Records the 0.11.2 security rewrite that changed the SHA of v0.9.0/v0.10.0/v0.11.0/v0.11.1; use versions or npm instead of fixed SHAs.
+- CI installs Chromium and runs `test:board-e2e --require-chrome`; the e2e gate no longer skips.
+- Compatible: no DB migration (schema v14), protocolVersion 0.4 unchanged; removing `/api/live.tokens` is a board API compatibility change.
+### 0.11.2: feedback fixes (history)
 
 - P1 board fixes: tasks/org no longer blank on snapshot shape mismatch; `/api/team-board` normalizes array/object/count with diagnostics; frontend `asArray` + visible errors + headless e2e.
 - Rebinds visible: `/api/live` exposes `oldSessionId/rebinds[]`; org detail shows generations; history includes rebinds.
@@ -196,102 +209,14 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 - 0.11.1 has the same functional code as 0.11.0 and only completes docs/site: README reading order and "what it is not", the official site section "why it is not an ordinary multi-agent plugin", philosophy T6/T7 and the boundary note, KNOWN_ISSUES/DEPLOY/AGENTS sync.
 - 0.11.0 was released from the 22:43 initial candidate (docs not yet completed); npm 0.11.0 is immutable, so 0.11.1 completes the docs.
-### 0.11.0: team workspace + visible on creation + real-data board (current release)
+### 0.11.0: team workspace + visible on creation + real-data board (history)
 
 - **Team workspace**: `line_init_team` creates TEAM.md / charters / decisions / registry; the board has five views (overview/org/tasks/data/cost) from real data, and the org view renders the goal and optional `## 协作流程` from TEAM.md.
 - **Visible on creation**: `line_create` always bootstraps and waits until the Session is `blank=false`, so members appear in the DSH sidebar immediately; per-call `bootstrap:false` no longer hides lines (0.11.0 behavior change).
 - **Team dir follows the workspace**: `teamRoot` is optional; without it the team is created under the manager cwd, and a parent `teamRoot` resolves the newest child team for the board/status.
 - **Token basis**: `line_metrics`/board default to totalTokens (uncached input + output + cache), with output buckets kept.
 - Batch line creation, JSON-safe batch results, removal of all prototype demo data, and restored high-fidelity UIUX.
-### 0.11.0-30: unified teamRoot semantics  (internal build)
-
-- Team dir = explicit/config teamRoot or manager cwd, plus teamName; parent dirs resolve newest child; line_status discovers teams under cwd.
-
-### 0.11.0-29: board follows newest team under a parent teamRoot  (internal build)
-
-- Parent `--team-root` resolves to the newest child team; each team reads its own TEAM.md goal/flow.
-
-### 0.11.0-28: new lines are visible immediately  (internal build)
-
-- line_create always bootstraps and waits until blank=false (visibleInSidebar); per-call bootstrap:false ignored.
-- Visibility beats token; docs updated.
-
-### 0.11.0-27: board collaboration flow is data-driven  (internal build)
-
-- Org view reads optional `TEAM.md` `## 协作流程`; no more fixed dev flow; missing shows "not collected".
-- docs updated.
-
-### 0.11.0-26: fix batch replace returning non-lossless JSON  (internal build)
-
-- Batch items are JSON-safe (missing lifecycle → null, added replaced flag); the replace operations themselves always ran, only the return failed validation.
-- Regression test added.
-
-### 0.11.0-25: token metrics now use totalTokens  (internal build)
-
-- line_metrics/board default to totalTokens (uncached input + output + cache); output buckets kept.
-- Sampling reads DSH tokenUsage projection; docs updated.
-
-### 0.11.0-24: batch line creation + sampling-short display + token basis  (internal build)
-
-- line_create accepts lines[] batch (returns created/skipped/failed/counts).
-- Cost card shows "sampling not ready" + cumulative decodeTokens when samples<2 instead of a misleading 0k.
-- docs add the token basis: decodeTokens counts output only; DSH total (input/cache) measured 30–80× larger.
-
-### 0.11.0-23: line_init_team parameter fix + decision status  (internal build)
-
-- `line_init_team({teamRoot, teamName})` now treats teamRoot as parent and teamName as subdir (fixes the "flatten to parent -> generate then mv -> overwrite errors" chain).
-- decisions support `## 状态`: 已采纳/已执行/已处理/已完成 are not counted as pending; do not put setup audit notes under decisions/.
-
-### 0.11.0-22: per-line chart includes manager + low-token setup  (internal build)
-
-- Per-line chart includes the manager line; messages counted per line.
-- AI-USAGE adds low-token setup: bootstrap:false (~65k tokens saved for 8 lines), one status call, no metrics during setup.
-
-### 0.11.0-21: agent usage manual v2  (internal build)
-
-- Rewrote docs/AI-USAGE.md: five-step setup, board guide, common errors → next step, acceptance checklist, doc index; aligned with real data and plugin version display.
-
-### 0.11.0-20: board detail fixes  (internal build)
-
-- Goal badge restored; progress reflects real completion; cost chart includes the manager line.
-- High-fidelity layout unchanged.
-
-### 0.11.0-19: board static slots and asset fix  (internal build)
-
-- All static data slots (topbar/overview/org/data/cost/footer) now bind to real data; fixed the ECharts asset path (/vendor/echarts.min.js) so data/cost charts render.
-- High-fidelity layout unchanged.
-
-### 0.11.0-18: restore high-fidelity UIUX + real-data adapter  (internal build)
-
-- Board restored to the approved high-fidelity prototype (layout/components/interactions/themes unchanged); only the data layer was rebuilt with real team goal/org/tasks/data/cost/charters.
-- Footer shows the plugin version; substitute hacks and demo copy removed.
-
-### 0.11.0-17: footer version fix  (internal build)
-
-- Footer prints the raw `/api/health.version` value (no more hardcoded 0.11.0- prefix).
-
-### 0.11.0-16: board shows plugin version  (internal build)
-
-- Topbar "插件版本 v0.11.0-16" and footer both show the plugin version, sourced from `/api/health.version`.
-
-### 0.11.0-15: board metric alignment  (internal build)
-
-- Overview "members" uses the official task-board projection (team-board.members); the data view shows both official-members (snapshot) and team-board members.
-- The rest is the same as 0.11.0-14.
-
-### 0.11.0-14: board real-data fix  (internal build)
-
-Scenario: after 0.11.0-13, a hard refresh still showed prototype demo content (team goal / focus / org detail / tasks).
-Fix: repaired the inline adapter syntax error in `web/board.html`; removed all demo data; five views are pure data-driven (`/api/live` + `/api/team-board` + `/api/team-metrics`); line detail reads real charter sections; tasks view shows the official task projection; added the `check-board-scripts` gate.
-Effect: no prototype residue; missing data renders as "no data / unavailable / not collected" instead of fabricated values.
-
-### 0.11.0-13: team workspace and board  (internal build)
-
-- Read-only teamRoot: registry.json, charters, TEAM.md (goal/summary/plan/cadence), decisions; missing shows unavailable.
-- New manager-only line_init_team (tools 25->26): idempotent init of TEAM.md, manager/line charters, decisions README, registry.
-- Zero-config manager role defaults to 负责人; charter is manage-only (no execution), coordinates resources, extracts goals and updates TEAM.md.
-- Board: five views, docked detail, ECharts, visible-only polling (10s adjustable, ETag).
-- status --json adds teamWorkspace/teamGoal/decisions; no DB migration, no protocol change.
+- Internal builds 0.11.0-13 ... 0.11.0-30 are folded into 0.11.0; see CHANGELOG for the itemized history.
 
 ### 0.10.0: cost trend and hibernation
 
@@ -411,7 +336,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.11.2.tgz
+    bash install.sh ./dsh-agent-lines-0.11.3.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -700,7 +625,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current version `0.11.2` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current version `0.11.3` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 

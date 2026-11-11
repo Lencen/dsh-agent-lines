@@ -46,8 +46,9 @@ dsh-agent-lines board --db <lines.db> --dir <快照目录> --team-root <teamRoot
 - **顶栏与页脚显示插件版本**（来自 `/api/health.version`）；升级后硬刷新（Ctrl+F5）应与安装包版本一致。
 - 数据来源：`lines.db`（线/消息）、官方任务与成员投影（只读）、teamRoot（TEAM.md/charters/decisions）、`team-metrics.json`（token 估算，非账单）。
 - 缺失一律显示「暂无 / 不可得 / 未采集」，**不编造**；任务视图为空 = 官方任务投影为空，不是故障。
-- **任务页只读DSH 官方智能体团队插件（DSH内置） 任务**；线层 `line_send(kind:"task", taskRef:…)` 的任务不会出现在该页，用 `line_observe`/`line_messages` 查看（0.11.3 计划增加线层任务视图）。
-- 看板任务页四种空态：官方暂无任务 / 接口只返回计数缺少明细 / 渲染异常 / 线层任务说明；渲染异常会显示 console 摘要，不再静默空白。
+- **任务页可切换「官方任务 / 线层任务」**：官方任务只读 DSH 官方智能体团队插件（DSH内置）；线层任务聚合 `line_send(kind:"task", taskRef:…)`，只读计数/最近消息，不伪造 DAG。
+- 看板任务页空态：官方暂无任务 / 接口只返回计数缺少明细 / 渲染异常 / 线层暂无任务；渲染异常会显示 console 摘要，不再静默空白。
+- board 启动时按 `--team-root` → `DSH_AGENT_LINES_TEAM_ROOT` → 插件写入的 `team-root` sidecar 解析团队目录；未解析会打印提示，不静默 off。页脚有「为什么只读」链接。
 - 自动刷新只在页面可见时轮询（默认 10s，可调）；`/api/live` 支持 ETag。
 - agent 不通过看板操作；机器可读状态用 `dsh-agent-lines --db <db> --json status`（0.11.0+，含 `teamWorkspace`/`teamGoal`/`decisions` 摘要）。
 

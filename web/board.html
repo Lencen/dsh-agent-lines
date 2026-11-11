@@ -43,7 +43,7 @@ a{color:var(--accent);text-decoration:none}.topbar{display:flex;align-items:cent
 </div>
 <div class="overlay" id="overlay"></div><aside class="drawer" id="drawer"><div class="sheet-handle"></div><button class="drawer-close" id="drawer-close" aria-label="关闭详情">×</button><div class="card"><div class="card-title" id="drawer-title">写手</div><div class="groups" id="drawer-body"></div></div></aside>
 </main>
-<footer class="footer">只读 · 插件版本 <span id="footer-version">未采集</span> · 数据来源：lines.db（线/消息）、官方团队投影（任务/成员）、团队工作区（TEAM.md/charters/decisions）、team-metrics（token 估算）· 缺失显示「暂无 / 不可得 / 未采集」，不编造</footer>
+<footer class="footer">只读 · 插件版本 <span id="footer-version">未采集</span> · 数据来源：lines.db（线/消息）、官方团队投影（任务/成员）、团队工作区（TEAM.md/charters/decisions）、team-metrics（token 估算）· <a href="https://github.com/Lencen/dsh-agent-lines/blob/main/docs/SECURITY.md" target="_blank" rel="noreferrer">为什么只读</a> · 缺失显示「暂无 / 不可得 / 未采集」，不编造</footer>
 <script>
 var DATA={team:{name:'线路中心 · dsh-agent-lines 团队'},lines:[
 {id:'chief-editor',name:'总编',status:'active',tasks:2,members:[{name:'agent-a',role:'lead',status:'进行中 1',description:'官方团队 lead，负责执行与汇报',tasks:1},{name:'agent-b',role:'member',status:'空闲',description:'官方团队成员，负责辅助任务',tasks:0}],charter:{source:'charters/chief-editor.md',updated:'2026-11-09',sections:{positioning:'终审与质量把关。',responsibilities:'审稿、定稿、质量门禁。',outputs:'终审意见、发布许可。',quality:'无错别字与事实错误。',boundaries:'不直接改写正文结构。'}}},
@@ -454,7 +454,7 @@ function num(n){return (n===null||n===undefined||isNaN(Number(n)))?'—':Number(
 function kfmt(n){if(n===null||n===undefined||isNaN(Number(n)))return '不可得';return (Number(n)/1000).toFixed(0)+'k'}
 function tokenCumulative(tk){var rows=(tk&&tk.byLine)||[];var sum=0;rows.forEach(function(r){sum+=Number(r.decodeTokens)||0});return sum}
 function samplingShort(tk){return !!(tk&&tk.samples!==undefined&&Number(tk.samples)<2)}
-function resetData(){DATA.team={name:'',goal:{}};DATA.tasksDiagnostic=null;DATA.tasksShape=null;DATA.renderError=null;DATA.stages=[];DATA.lines=[];DATA.managerLine=null;DATA.missions=[];DATA.decisions=[];DATA.retired=[];DATA.metrics={tasks:0,done:0,doing:0,blocked:0,overdue:0,agents:0};DATA.agg=[];DATA.trend={messages:[],tokens:[],msgLab:[],tokLab:[]};DATA.boardMessages=[];DATA.tokens={};}
+function resetData(){DATA.team={name:'',goal:{}};DATA.tasksDiagnostic=null;DATA.tasksShape=null;DATA.lineTasks=null;DATA.renderError=null;DATA.stages=[];DATA.lines=[];DATA.managerLine=null;DATA.missions=[];DATA.decisions=[];DATA.retired=[];DATA.metrics={tasks:0,done:0,doing:0,blocked:0,overdue:0,agents:0};DATA.agg=[];DATA.trend={messages:[],tokens:[],msgLab:[],tokLab:[]};DATA.boardMessages=[];DATA.tokens={};}
 function renderErrorBanner(){
  var id='board-error-banner';var old=document.getElementById(id);
  if(!DATA.renderError){if(old)old.remove();return}
@@ -544,6 +544,7 @@ function mapData(live,board,metrics,health){
  DATA.boardAvailable=!!board;
  DATA.tasksDiagnostic=(board&&board.tasksDiagnostic)||null;
  DATA.tasksShape=(board&&board.tasksShape)||null;
+ DATA.lineTasks=(live&&live.lineTasks)||null;
  DATA.renderError=null;
  var lineList=asArray(live&&live.lines),boardLineByLabel={},taskBy={},tokBy={},wsBy={};
  asArray(board&&board.lines).forEach(function(b){if(b&&b.label)boardLineByLabel[b.label]=b});
@@ -599,6 +600,44 @@ var _renderTasksBeforeAdapter=renderTasks;
 renderTasks=function(history){try{_renderTasksBeforeAdapter(history)}catch(e){safeRender('renderTasksInner',function(){throw e})}if(!(DATA.missions||[]).length){var box=document.querySelector('#missions');if(box)box.innerHTML=tasksEmptyHtml()}};
 resetData();patchChrome();rerender();load(true);
 setInterval(function(){if(document.visibilityState==='visible')load(false)},60000);
+})();
+</script><script>
+(function(){
+ var lineMode=false;
+ function ltText(s){return esc(String(s==null?'':s))}
+ function renderLineTasks(){
+  var box=document.getElementById('line-tasks-list');if(!box)return;
+  var lt=DATA.lineTasks;
+  if(!lt||lt.available===false){box.innerHTML='<div class="section"><div class="muted">线层任务不可得（/api/live 未提供 lineTasks）</div></div>';return}
+  var byState=lt.byState||{},total=Number(lt.total)||0;
+  var html='<div class="section"><div class="kv"><span class="k">任务消息</span><span class="v">'+total+'</span><span class="k">进行中</span><span>'+(Number(byState.queued)||0)+(Number(byState.claimed)||0)+(Number(byState.delivered)||0)+'</span><span class="k">已确认</span><span>'+(Number(byState.acked)||0)+'</span><span class="k">失败/过期</span><span>'+(Number(byState.failed)||0)+(Number(byState.expired)||0)+'</span></div><div class="muted" style="margin-top:6px">来源：line_send(kind="task") / taskRef 消息；不是官方任务 DAG，只读聚合。</div></div>';
+  var rows=Array.isArray(lt.byLine)?lt.byLine:[];
+  if(rows.length){html+='<div class="section"><table class="tbl"><thead><tr><th>线</th><th>总数</th><th>进行</th><th>已确认</th><th>失败</th></tr></thead><tbody>';rows.forEach(function(r){html+='<tr><td>'+ltText(r.line)+'</td><td>'+Number(r.total||0)+'</td><td>'+Number(r.open||0)+'</td><td>'+Number(r.acked||0)+'</td><td>'+Number(r.failed||0)+'</td></tr>'});html+='</tbody></table></div>'}
+  var recent=Array.isArray(lt.recent)?lt.recent:[];
+  html+='<div class="section"><div class="h">最近 '+recent.length+' 条</div>';
+  if(!recent.length)html+='<div class="muted">暂无线层任务消息</div>';
+  recent.forEach(function(m){html+='<div style="padding:4px 0;border-bottom:1px dashed var(--border)"><div><b>'+ltText(m.from)+'</b> → <b>'+ltText(m.to)+'</b> <span class="badge">'+ltText(m.state)+'</span> '+(m.taskRef?'<span class="muted">taskRef '+ltText(m.taskRef)+'</span>':'')+'</div><div class="muted">'+ltText(String(m.summary||'').slice(0,120))+'</div></div>'});
+  html+='</div>';
+  box.innerHTML=html;
+ }
+ function applyMode(){
+  var list=document.getElementById('line-tasks-list');var missions=document.getElementById('missions');
+  var lineBtn=document.getElementById('tab-line-tasks');var active=document.getElementById('tab-active');var hist=document.getElementById('tab-history');
+  if(!list||!missions)return;
+  if(lineMode){if(missions)missions.classList.add('hidden');list.classList.remove('hidden');if(lineBtn)lineBtn.setAttribute('aria-selected','true');if(active)active.setAttribute('aria-selected','false');if(hist)hist.setAttribute('aria-selected','false');renderLineTasks()}
+  else{if(missions)missions.classList.remove('hidden');list.classList.add('hidden');if(lineBtn)lineBtn.setAttribute('aria-selected','false')}
+ }
+ function install(){
+  var hist=document.getElementById('tab-history');if(!hist||document.getElementById('tab-line-tasks'))return;
+  var btn=document.createElement('button');btn.className='tab';btn.id='tab-line-tasks';btn.setAttribute('role','tab');btn.setAttribute('aria-selected','false');btn.textContent='线层任务';hist.parentNode.insertBefore(btn,hist.nextSibling);
+  var list=document.createElement('div');list.id='line-tasks-list';list.className='hidden';var missions=document.getElementById('missions');missions.parentNode.insertBefore(list,missions.nextSibling);
+  btn.onclick=function(){lineMode=true;applyMode()};
+  document.getElementById('tab-active').addEventListener('click',function(){lineMode=false;applyMode()});
+  hist.addEventListener('click',function(){lineMode=false;applyMode()});
+  setInterval(function(){if(lineMode)renderLineTasks()},2000);
+  applyMode();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script></body>
 </html>

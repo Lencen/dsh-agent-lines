@@ -183,3 +183,38 @@ test('P1-01 rebind history is capped at 10 per line (single SQL window)', async 
     assert.equal(writer.rebinds[0].from, 's-11')
   } finally { await new Promise(resolve => server.close(resolve)); rmSync(dir, { recursive: true, force: true }) }
 })
+
+test('0.11.3 /api/live exposes lineTasks and no stale tokens field', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-linetasks-'))
+  const dbPath = join(dir, 'lines.db')
+  const store = new LineStore(dbPath)
+  store.acquire({ agentId: 'agent-demo', line: 'manager', sessionId: 's-m', instanceId: 'i-m', ttlMs: 60000 })
+  store.acquire({ agentId: 'agent-demo', line: 'writer', sessionId: 's-w', instanceId: 'i-w', ttlMs: 60000 })
+  store.send({ agentId: 'agent-demo', fromLine: 'manager', to: 'writer', text: '写第 1 章', kind: 'task', taskRef: 'T-1' })
+  store.send({ agentId: 'agent-demo', fromLine: 'manager', to: 'writer', text: '普通消息' })
+  store.close()
+  const { server, url } = await startBoardServer({ dir, dbPath, host: '127.0.0.1', port: 0 })
+  try {
+    const payload = await (await fetch(new URL('/api/live', url))).json()
+    assert.equal(payload.tokens, undefined)
+    assert.equal(payload.lineTasks.available, true)
+    assert.equal(payload.lineTasks.total, 1)
+    assert.equal(payload.lineTasks.byLine[0].line, 'writer')
+    assert.equal(payload.lineTasks.recent[0].taskRef, 'T-1')
+    assert.match(payload.lineTasks.recent[0].summary, /写第 1 章/)
+  } finally { await new Promise(resolve => server.close(resolve)); rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('0.11.3 board reads team-root sidecar when --team-root is absent', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-sidecar-'))
+  const dbPath = join(dir, 'lines.db')
+  const store = new LineStore(dbPath); store.close()
+  writeFileSync(join(dir, 'TEAM.md'), '# 团队\n\n## 目标\n- 测试团队侧车\n')
+  writeFileSync(join(dir, 'team-root'), dir + '\n')
+  const started = await startBoardServer({ dir, dbPath, host: '127.0.0.1', port: 0 })
+  try {
+    assert.equal(started.teamRoot, dir)
+    const payload = await (await fetch(new URL('/api/live', started.url))).json()
+    assert.equal(payload.teamName, dir.split('/').pop())
+  } finally { await new Promise(resolve => started.server.close(resolve)); rmSync(dir, { recursive: true, force: true }) }
+})

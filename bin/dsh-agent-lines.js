@@ -6,7 +6,7 @@
 import { existsSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { LineStore, defaultDbPath } from '../lib/store.js'
-import { LineError, PROTOCOL_VERSION, lineId } from '../lib/protocol.js'
+import { LineError, PROTOCOL_VERSION, dedupeDigest, lineId, parseTarget } from '../lib/protocol.js'
 import { loadTeamWorkspace } from '../lib/team-workspace.js'
 import { readTeamGoal, readDecisions } from '../lib/team-init.js'
 import { startBoardServer } from '../lib/board-server.js'
@@ -68,11 +68,12 @@ async function main() {
     const host = String(opts.host ?? '127.0.0.1')
     const port = Number(opts.port ?? 4090)
     const teamRoot = opts['team-root'] !== undefined ? String(opts['team-root']) : process.env.DSH_AGENT_LINES_TEAM_ROOT
-    const { server, url } = await startBoardServer({ dir, dbPath: opts.db, teamRoot, host, port })
+    const started = await startBoardServer({ dir, dbPath: opts.db, teamRoot, host, port })
+    const { server, url } = started
     console.log('[agent-lines] board: ' + url)
     console.log('[agent-lines] snapshots: ' + dir)
     console.log('[agent-lines] live: /api/live (db: ' + opts.db + ')')
-    console.log('[agent-lines] teamRoot: ' + (teamRoot ?? '(off)'))
+    console.log('[agent-lines] teamRoot: ' + (started.teamRoot ?? '(off)'))
     console.log('[agent-lines] read-only')
     process.on('SIGINT', () => { server.close(() => process.exit(0)) })
     return 0
@@ -156,12 +157,17 @@ async function main() {
       const from = need(opts.from, 'from')
       const to = need(opts.to, 'to')
       const text = need(opts.text, 'text')
+      const agentId = String(opts.agent ?? 'agent-deepseek')
+      const targetLineId = parseTarget(to, agentId).lineId
+      const explicitKey = opts.key !== undefined && String(opts.key).trim().length > 0
       const row = store.send({
-        agentId: String(opts.agent ?? 'agent-deepseek'),
+        agentId,
         fromLine: from,
         to,
         text,
-        idempotencyKey: opts.key,
+        idempotencyKey: explicitKey ? opts.key : undefined,
+        dedupeDigest: explicitKey ? null : dedupeDigest({ from: lineId(agentId, from), to: targetLineId, text, replyTo: opts['reply-to'] }),
+        dedupeWindowMs: explicitKey ? 0 : 5000,
         replyTo: opts['reply-to'],
       })
       print({ id: row.id, from: `${row.from_agent}#${row.from_line}`, to: `${row.to_agent}#${row.to_line}`, state: row.state, deduplicated: row.deduplicated === true }, opts.json)

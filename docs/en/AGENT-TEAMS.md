@@ -60,7 +60,9 @@ Snapshot files (`team-board.json` / `team-metrics.json`) carry `schemaVersion` a
 - no task writes;
 - no lines.db writes;
 - no manager turn;
-- messages without taskRef stay in the communication stream.
+- messages without taskRef stay in the communication stream;
+- the board's line-tasks view aggregates lines messages read-only; it never writes the official board or fakes an official DAG;
+- board teamRoot resolution: argument -> env -> plugin-written team-root sidecar; if none, print unresolved.
 
 ## Limits
 
