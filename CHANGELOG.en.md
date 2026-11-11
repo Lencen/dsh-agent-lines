@@ -2,6 +2,20 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.2 (2026-11-11)
+
+### Feedback fixes: board rendering, rebinds, handoff, compatibility
+
+- **P1-04**: normalize team-board snapshots (array/object map/count) with `tasksShape/tasksDiagnostic`; frontend `asArray`, visible errors, four empty states; new headless `board-render-e2e`.
+- **P1-01**: `/api/live` lines expose `oldSessionId` and `rebinds[]` (single SQL over line_events); the board shows generation handoffs.
+- **P1-02**: replace/retire retitle the old Session to `【退役YYMMDD】original title`; best-effort, failures degrade without breaking the main flow.
+- **P1-03**: `line_handoff` accepts optional `sections` (current/todos/conventions/pitfalls) and `extra`, truncating with `truncated`.
+- **P2-02**: history includes generations; **P2-04**: replace inherits role/title; **P2-05**: restored compatible `/api/live` `counts`; **P2-06**: task stages read TEAM.md `## 协作流程`, missing shows "not collected".
+- **P3-01**: TEAM.md template hints; **P3-02**: cost view splits cache read/output/uncached input.
+- Compatible: no DB migration (schema v14), protocolVersion 0.4 unchanged; new script `scripts/board-render-e2e.mjs` (`npm run test:board-e2e`).
+- Install/packaging/CI: `install.sh` defaults to `@latest` (local current-version tgz when present), removing the hard-coded 0.7.0; README drops the 0.6.0 tarball example and marks 0.6.5 as a pre-readonly historical record; removed dead `web/board.v11-port.html`; added GitHub Actions `ci.yml` (Node 22/24 runs npm test + pack dry-run).
+
+**0.11.2 is authoritative; 0.11.1 is the fallback.**
 ## 0.11.1 (2026-11-10)
 
 ### Documentation completion (same functional code as 0.11.0)

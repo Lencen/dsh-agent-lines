@@ -357,3 +357,48 @@ test('line_status discovers the team under the manager cwd when teamRoot is unse
     assert.equal(status.teamGoal.objective, '短视频团队')
   } finally { h.cleanup() }
 })
+
+test('P1-02 replace/retire retitles old Sessions with retirement stamp', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const created = await h.tools.get('line_create').execute({ label: 'writer', role: 'writer', title: '正文写手', bootstrap: false }, exec(h.manager))
+    const replaced = await h.tools.get('line_create').execute({ label: 'writer', replace: true, force: true, bootstrap: false }, exec(h.manager))
+    assert.equal(replaced.role, 'writer')
+    const tag = h.renamed.filter(item => item.sessionId === created.sessionId).find(item => String(item.title).startsWith('【退役'))
+    assert.ok(tag, 'rename called for replaced old session')
+    assert.match(tag.title, /^【退役[0-9]{6}】正文写手/)
+    const editor = await h.tools.get('line_create').execute({ label: 'editor', role: 'editor', bootstrap: false }, exec(h.manager))
+    await h.tools.get('line_retire').execute({ line: 'editor', reason: 'test' }, exec(h.manager))
+    const retireTag = h.renamed.filter(item => item.sessionId === editor.sessionId).find(item => String(item.title).startsWith('【退役'))
+    assert.ok(retireTag, 'rename called for retired session')
+    assert.match(retireTag.title, /^【退役[0-9]{6}】/)
+  } finally { h.cleanup() }
+})
+
+test('P1-03 line_handoff accepts business sections and extra', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    await h.tools.get('line_create').execute({ label: 'writer', role: 'writer', title: '写手', bootstrap: false }, exec(h.manager))
+    const md = await h.tools.get('line_handoff').execute({ line: 'writer', sections: { current: '第 3 章', todos: '接第 4 章', pitfalls: '不要改大纲' }, extra: '依赖：编辑器' }, exec(h.manager))
+    assert.match(md.markdown, /## 5 业务交接/)
+    assert.match(md.markdown, /第 3 章/)
+    assert.match(md.markdown, /依赖：编辑器/)
+    assert.equal(md.businessSections.current.text, '第 3 章')
+    const json = await h.tools.get('line_handoff').execute({ line: 'writer', format: 'json', sections: { current: '第 4 章' } }, exec(h.manager))
+    assert.equal(json.businessSections.current.text, '第 4 章')
+    assert.equal(json.extra, null)
+  } finally { h.cleanup() }
+})
+
+test('P3-01 TEAM.md template includes a fill hint without fake content', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const res = await h.tools.get('line_init_team').execute({ teamName: 'tpl-team' }, exec(h.manager))
+    const md = readFileSync(join(h.dir, 'tpl-team', 'TEAM.md'), 'utf8')
+    assert.match(md, /填写提示/)
+    assert.equal(res.teamName, 'tpl-team')
+  } finally { h.cleanup() }
+})

@@ -47,7 +47,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
 <div class="wrap">
 <header>
   <a class="brand" href="../"><span class="mark"></span>dsh-agent-lines</a>
-  <nav><a href="#two-ways">Two ways</a><a href="#reading">Reading order</a><a href="philosophy.html">Philosophy</a><a href="philosophy-plain.html">Plain</a><a href="../">中文</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a></nav>
+  <nav><a href="#two-ways">Two ways</a><a href="#reading">Reading order</a><a href="#maturity">Maturity</a><a href="philosophy.html">Philosophy</a><a href="philosophy-plain.html">Plain</a><a href="../">中文</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a></nav>
 </header>
 <main>
 <section class="hero" style="border:0;padding-bottom:20px">
@@ -59,7 +59,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
       <a class="btn primary" href="#start">How to start</a>
       <a class="btn" href="#install">Install</a>
     </div>
-    <p class="note" style="margin-top:10px">Latest version: <b>v0.11.1</b> (GitHub Release / npm); this page is written for that version. 0.11.0 adds a team workspace and real-data board, members visible right after creation, and team dirs that follow the current workspace.</p>
+    <p class="note" style="margin-top:10px">Latest version: <b>v0.11.2</b> (GitHub Release / npm); this page is written for that version. 0.11.0 adds a team workspace and real-data board, members visible right after creation, and team dirs that follow the current workspace.</p>
   </div>
   <div class="shot">
     <img src="../assets/first-use.gif" alt="A lead creates member lines and gets acknowledgements">
@@ -107,6 +107,17 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
     <div class="card"><b>Not a chat-bot roster</b><p>A long-lived role line has a stable name, replaceable session, mailbox, lease, handoff and wake-up; not a persona-only bot.</p></div>
     <div class="card"><b>Organizational base vs business intelligence</b><p>Roles / messages / persistence / board belong to the plugin; decomposition, acceptance and rework belong to the manager and role prompts.</p></div>
   </div>
+</section>
+
+<section id="maturity">
+  <h2>Maturity and production use</h2>
+  <div class="warn">Early developer preview: DSH and plugin interfaces, data formats may change. Pin both DSH and plugin versions in production; try in isolation and back up lines.db.</div>
+  <div class="cards">
+    <div class="card"><b>100% Vibe Coding</b><p>Code/tests/docs are AI-generated. The repo has unit tests, business smoke, board e2e and CI, but you must review the code and run the tests; no commercial SLA.</p></div>
+    <div class="card"><b>Community, one maintainer</b><p>Not an official DeepSeek product; currently one primary maintainer; use GitHub Issues; no response-time or long-term compatibility commitment.</p></div>
+    <div class="card"><b>Secure defaults</b><p>Local SQLite, read-only board, bound to 127.0.0.1 by default; do not expose publicly; the plugin does not collect telemetry.</p></div>
+  </div>
+  <p class="note">For production-grade stability, start with a non-critical team and wait for the 0.12+ contract to settle.</p>
 </section>
 
 <section id="two-ways">

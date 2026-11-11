@@ -6,7 +6,15 @@ set -euo pipefail
 # Override with: DSH_PROFILE=my-profile bash install.sh [package|tarball]
 
 DSH_BIN="${DSH_BIN:-dsh}"
-PKG="${1:-dsh-agent-lines@0.7.0}"
+VERSION="$(node -p "require('./package.json').version" 2>/dev/null || true)"
+PKG="${1:-}"
+if [ -z "$PKG" ]; then
+  if [ -n "$VERSION" ] && [ -f "./dsh-agent-lines-$VERSION.tgz" ]; then
+    PKG="./dsh-agent-lines-$VERSION.tgz"
+  else
+    PKG="dsh-agent-lines@latest"
+  fi
+fi
 DSH_HOME="${DSH_HOME:-$HOME/.dsh}"
 PROFILES="$DSH_HOME/profiles"
 
@@ -15,10 +23,6 @@ PROFILES="$DSH_HOME/profiles"
 for dir in "$HOME/.npm-global/bin" "$HOME/nodejs/bin" "$HOME/.local/bin"; do
   [ -d "$dir" ] && PATH="$dir:$PATH"
 done
-
-if [ "$PKG" = "dsh-agent-lines@0.7.0" ] && [ -f ./dsh-agent-lines-0.7.0.tgz ]; then
-  PKG=./dsh-agent-lines-0.7.0.tgz
-fi
 
 if ! command -v "$DSH_BIN" >/dev/null 2>&1; then
   echo "dsh not found on PATH. Install DeepSeek Harness first, or set DSH_BIN." >&2

@@ -46,6 +46,8 @@ dsh-agent-lines board --db <lines.db> --dir <快照目录> --team-root <teamRoot
 - **顶栏与页脚显示插件版本**（来自 `/api/health.version`）；升级后硬刷新（Ctrl+F5）应与安装包版本一致。
 - 数据来源：`lines.db`（线/消息）、官方任务与成员投影（只读）、teamRoot（TEAM.md/charters/decisions）、`team-metrics.json`（token 估算，非账单）。
 - 缺失一律显示「暂无 / 不可得 / 未采集」，**不编造**；任务视图为空 = 官方任务投影为空，不是故障。
+- **任务页只读官方 Agent Teams 任务**；线层 `line_send(kind:"task", taskRef:…)` 的任务不会出现在该页，用 `line_observe`/`line_messages` 查看（0.11.3 计划增加线层任务视图）。
+- 看板任务页四种空态：官方暂无任务 / 接口只返回计数缺少明细 / 渲染异常 / 线层任务说明；渲染异常会显示 console 摘要，不再静默空白。
 - 自动刷新只在页面可见时轮询（默认 10s，可调）；`/api/live` 支持 ETag。
 - agent 不通过看板操作；机器可读状态用 `dsh-agent-lines --db <db> --json status`（0.11.0+，含 `teamWorkspace`/`teamGoal`/`decisions` 摘要）。
 
@@ -56,6 +58,17 @@ dsh-agent-lines board --db <lines.db> --dir <快照目录> --team-root <teamRoot
 | 建线 / 发任务 / 收消息 / 确认 | line_create / line_send / line_inbox / line_ack |
 | 管理 | line_list / line_status / line_messages / line_trace |
 | 交接 / 退线 / 休眠 / 唤醒 | line_handoff / line_retire / line_hibernate / line_wake |
+
+交接业务字段示例：
+
+```text
+line_handoff({ line: "writer", sections: {
+  current: "第 3 章初稿已完成 80%",
+  todos: "接第 4 章；把第 3 章交编辑",
+  conventions: "每章 3000 字，标题格式见大纲",
+  pitfalls: "不要改设定集；总编终审前不要发布"
+}, extra: "依赖：编辑的校对清单" })
+```
 | 角色 / 团队初始化 | line_set_role / line_init_team |
 | 数据 / 看板 | line_metrics / line_team_board / line_department_board |
 

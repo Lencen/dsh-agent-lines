@@ -6,11 +6,11 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current version: v0.11.1 (2026-11-10) — team workspace with a real-data board, members visible right after creation, team dirs follow the current workspace.
+> Current version: v0.11.2 (2026-11-11) — team workspace with a real-data board, members visible right after creation, team dirs follow the current workspace.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
-> **100% Vibe Coding.** The architecture, code, tests, and docs were produced in AI agent sessions. It is experimental: review the code and run an integration test before production use.
+> **100% Vibe Coding.** The architecture, code, tests, and docs were produced in AI agent sessions. It is experimental: review the code and run an integration test before production use; read "Maturity and production use" below first.
 
 A drop-in super-agent alternative for DSH.
 
@@ -27,6 +27,17 @@ Stop reopening sessions and copying context by hand. Give one lead agent a long-
 - **Zero-config**: an unbound root Session can bind itself with `line_claim_manager({ confirm: "bind-manager" })` (needs `allowClaim`; on by default in zero-config).
 - **Delivery semantics**: at-least-once; idempotency authority is DSH's `requestId`; failed states are queryable and recoverable (`line_messages` / `line_trace` / `line_redeliver`); **ack timeout is reported, never auto-retried**.
 - **AI operation contract**: [AGENTS.md](AGENTS.md) (config keys, 26 tools, `line_status` fields, hard rules). Design: [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) | [web](https://lencen.github.io/dsh-agent-lines/en/philosophy.html).
+
+## Maturity and production use (read first)
+
+- **Stage: early / developer preview.** DSH itself is in developer preview; DSH APIs, plugin interfaces and data formats may evolve. **Pin both the DSH version and the plugin version**; do not track `latest` in production.
+- **Recommended**: try in an isolated `DSH_HOME` or a non-critical team first; read [CHANGELOG](CHANGELOG.en.md) and [KNOWN_ISSUES](docs/KNOWN_ISSUES.en.md) before upgrading, back up `lines.db`, and do not make it your only task/memory source.
+- **100% Vibe Coding**: code, tests and docs are produced in AI agent sessions. The repo has unit tests, business smoke, board e2e and CI, but you must still **review the code and run the tests yourself**; no commercial SLA.
+- **Release process**: candidates freeze before release; 0.11.0 needed a 0.11.1 docs fix (recorded deviation), and the freeze rule is now enforced. CI runs `npm test` + `npm pack --dry-run`; board e2e is a release gate.
+- **Community/support**: community plugin, not an official DeepSeek product; currently one primary maintainer; use GitHub Issues, no response-time or long-term compatibility commitment.
+- **Security defaults**: local SQLite, read-only board, bound to 127.0.0.1 by default; do not expose the board/API publicly; the plugin itself does not collect telemetry (DSH itself is separate).
+
+> If you need production-grade stability, start with a non-critical team and wait for the interface/data contract to settle in 0.12+.
 
 ## Reading order (what to read first)
 
@@ -185,7 +196,14 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.11.1: documentation completion (current release)
+### 0.11.2: feedback fixes (current release)
+
+- P1 board fixes: tasks/org no longer blank on snapshot shape mismatch; `/api/team-board` normalizes array/object/count with diagnostics; frontend `asArray` + visible errors + headless e2e.
+- Rebinds visible: `/api/live` exposes `oldSessionId/rebinds[]`; org detail shows generations; history includes rebinds.
+- Better handoffs: replace/retire retitle the old Session with `【退役YYMMDD】`; `line_handoff` accepts `sections/extra`.
+- Task stages read TEAM.md `## 协作流程`; replace inherits role; `/api/live` `counts` restored; cost view splits cache read/output.
+- No DB migration, no protocol change; new `npm run test:board-e2e`.
+### 0.11.1: documentation completion (0.11.1 history)
 
 - 0.11.1 has the same functional code as 0.11.0 and only completes docs/site: README reading order and "what it is not", the official site section "why it is not an ordinary multi-agent plugin", philosophy T6/T7 and the boundary note, KNOWN_ISSUES/DEPLOY/AGENTS sync.
 - 0.11.0 was released from the 22:43 initial candidate (docs not yet completed); npm 0.11.0 is immutable, so 0.11.1 completes the docs.
@@ -329,6 +347,8 @@ Scenario: the manager wants to send, approve/reject pending tasks, or hand off d
 Use: board actions require `x-board-token`; still bound to 127.0.0.1; without a token the board is read-only.
 Effect: functional version only; no hard subteam blocking (still waiting on the official API).
 
+> Note: **the board is read-only since 0.6.6**; this entry is a 0.6.5 historical record and is not available in the current version. See "Limitations".
+
 ### 0.6.4: built-in read-only web board
 
 Scenario: the manager does not want to call tools every time and wants to see team tasks/departments in a browser.
@@ -402,7 +422,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.6.0.tgz
+    bash install.sh ./dsh-agent-lines-0.11.2.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 

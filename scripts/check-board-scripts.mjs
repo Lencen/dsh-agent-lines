@@ -37,6 +37,12 @@ check('B3 无写接口调用', !/\/api\/actions/.test(html))
 check('B4 只读声明 >=2', (html.match(/只读/g) || []).length >= 2)
 check('B5 必备视图与详情槽', html.includes('data-view="overview"') && html.includes('data-view="org"') && html.includes('data-view="tasks"') && html.includes('data-view="data"') && html.includes('data-view="cost"') && html.includes('drawer-title') && html.includes('drawer-body'))
 
+check('B6 P1-04 前端防御（asArray/错误可见/无静默 catch）',
+  /function asArray\(/.test(html) && /function safeRender\(/.test(html) && /tasksEmptyHtml\(/.test(html) && !/try\{renderTasks\(false\)\}catch\(e\)\{\}/.test(html) && /officialTeamAvailable/.test(html) && /deptSummary/.test(html))
+const boardServerPath = resolve(ROOT, 'lib/board-server.js')
+const boardServer = existsSync(boardServerPath) ? readFileSync(boardServerPath, 'utf8') : ''
+check('B7 P1-04 服务端归一（normalizeBoardSnapshot + 诊断字段）',
+  /export function normalizeBoardSnapshot\(/.test(boardServer) && /normalizeBoardSnapshot\(board\)/.test(boardServer) && /tasksDiagnostic/.test(boardServer) && /tasksShape/.test(boardServer))
 const failures = checks.filter(c => !c.pass)
 if (json) console.log(JSON.stringify({ ok: failures.length === 0, file: target, checks }, null, 1))
 else {

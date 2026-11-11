@@ -47,7 +47,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
 <div class="wrap">
 <header>
   <a class="brand" href="./"><span class="mark"></span>dsh-agent-lines</a>
-  <nav><a href="#two-ways">两种用法</a><a href="#reading">阅读顺序</a><a href="philosophy.html">设计思想</a><a href="philosophy-plain.html">白话版</a><a href="en/index.html">English</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a></nav>
+  <nav><a href="#two-ways">两种用法</a><a href="#reading">阅读顺序</a><a href="#maturity">成熟度</a><a href="philosophy.html">设计思想</a><a href="philosophy-plain.html">白话版</a><a href="en/index.html">English</a><a href="https://github.com/Lencen/dsh-agent-lines">GitHub</a><a href="https://github.com/Lencen/dsh-agent-lines/releases/latest">Release</a></nav>
 </header>
 <main>
 <section class="hero" style="border:0;padding-bottom:20px">
@@ -59,7 +59,7 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
       <a class="btn primary" href="#start">怎么开始</a>
       <a class="btn" href="#install">安装插件</a>
     </div>
-    <p class="note" style="margin-top:10px">最新版本：<b>v0.11.1</b>（GitHub Release / npm），下方介绍按此版本写；0.11.x 新增：团队工作区与真实数据看板、成员建完即见、团队目录跟随当前工作区。</p>
+    <p class="note" style="margin-top:10px">最新版本：<b>v0.11.2</b>（GitHub Release / npm），下方介绍按此版本写；0.11.x 新增：团队工作区与真实数据看板、成员建完即见、团队目录跟随当前工作区。</p>
   </div>
   <div class="shot">
     <img src="assets/first-use.gif" alt="负责人创建成员线并收到确认">
@@ -107,6 +107,17 @@ footer{padding:30px 0 46px;color:var(--muted);font-size:12px;border-top:1px soli
     <div class="card"><b>不是聊天机器人花名册</b><p>长期角色线有稳定名字、可换会话、消息邮箱、租约、交接与唤醒；不是只换人设。</p></div>
     <div class="card"><b>组织底座 vs 业务智能</b><p>角色 / 消息 / 持久化 / 看板归插件；怎么拆、怎么验收、怎么返工归负责人和角色提示词。</p></div>
   </div>
+</section>
+
+<section id="maturity">
+  <h2>成熟度与生产使用</h2>
+  <div class="warn">早期 developer preview：DSH 与插件接口、数据格式都可能变化。生产使用请同时锁定 DSH 版本和插件版本，先隔离试用并备份 lines.db。</div>
+  <div class="cards">
+    <div class="card"><b>100% Vibe Coding</b><p>代码/测试/文档由 AI 生成；已有单测、业务冒烟、看板 e2e 与 CI，但仍需你自行审阅并跑测试，不提供商业 SLA。</p></div>
+    <div class="card"><b>社区、单人维护</b><p>非 DeepSeek 官方产品；当前主要维护者 1 人；问题走 GitHub Issues，不承诺响应时间或长期兼容窗口。</p></div>
+    <div class="card"><b>安全默认</b><p>本地 SQLite、只读看板、默认只绑 127.0.0.1；不要暴露公网；插件本身不收集遥测。</p></div>
+  </div>
+  <p class="note">如果你需要生产级稳定，建议先在非关键团队试用，等 0.12+ 接口/数据契约收敛后再扩大范围。</p>
 </section>
 
 <section id="two-ways">

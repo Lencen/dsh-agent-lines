@@ -42,6 +42,7 @@ test('board server /api/live reads lines.db read-only', async () => {
   store.acquire({ agentId: 'agent-demo', line: 'manager', sessionId: 's-m', instanceId: 'i-m', ttlMs: 60000 })
   store.acquire({ agentId: 'agent-demo', line: 'writer', sessionId: 's-w', instanceId: 'i-w', ttlMs: 60000 })
   store.send({ agentId: 'agent-demo', fromLine: 'manager', to: 'writer', text: 'hello' })
+  store.rebind({ agentId: 'agent-demo', line: 'writer', sessionId: 's-w2', reason: 'context full', migrate: 'queued' })
   store.close()
   const { server, url } = await startBoardServer({ dir, dbPath, host: '127.0.0.1', port: 0 })
   try {
@@ -121,4 +122,64 @@ test('board server resolves a parent teamRoot to the newest child team', async (
     await new Promise(resolve => server.close(resolve))
     rmSync(dir, { recursive: true, force: true })
   }
+})
+
+test('P1-01 /api/live exposes rebinds and counts', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-rebind-'))
+  const dbPath = join(dir, 'lines.db')
+  const store = new LineStore(dbPath)
+  store.acquire({ agentId: 'agent-demo', line: 'manager', sessionId: 's-m', instanceId: 'i-m', ttlMs: 60000 })
+  store.acquire({ agentId: 'agent-demo', line: 'writer', sessionId: 's-w1', instanceId: 'i-w', ttlMs: 60000 })
+  store.send({ agentId: 'agent-demo', fromLine: 'manager', to: 'writer', text: 'hello' })
+  store.rebind({ agentId: 'agent-demo', line: 'writer', sessionId: 's-w2', reason: 'context full', migrate: 'queued' })
+  store.close()
+  const { server, url } = await startBoardServer({ dir, dbPath, host: '127.0.0.1', port: 0 })
+  try {
+    const payload = await (await fetch(new URL('/api/live', url))).json()
+    const writer = payload.lines.find(line => line.label === 'writer')
+    assert.equal(writer.oldSessionId, 's-w1')
+    assert.equal(writer.rebinds.length, 1)
+    assert.equal(writer.rebinds[0].from, 's-w1')
+    assert.equal(writer.rebinds[0].to, 's-w2')
+    assert.equal(writer.rebinds[0].reason, 'context full')
+    assert.equal(payload.messages.counts.queued, 1)
+    assert.equal(payload.counts.queued, 1)
+  } finally { await new Promise(resolve => server.close(resolve)); rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('P1-04 team-board snapshot shapes are normalized', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-shape-'))
+  const dbPath = join(dir, 'lines.db')
+  const store = new LineStore(dbPath)
+  store.acquire({ agentId: 'agent-demo', line: 'manager', sessionId: 's-m', instanceId: 'i-m', ttlMs: 60000 })
+  store.close()
+  const { server, url } = await startBoardServer({ dir, dbPath, host: '127.0.0.1', port: 0 })
+  try {
+    writeFileSync(join(dir, 'team-board.json'), JSON.stringify({ available: true, tasks: { 'task-1': { id: 'task-1', subject: 'x', status: 'completed' } } }))
+    let payload = await (await fetch(new URL('/api/team-board', url))).json()
+    assert.equal(payload.tasksShape, 'object')
+    assert.equal(payload.tasks.length, 1)
+    writeFileSync(join(dir, 'team-board.json'), JSON.stringify({ available: true, tasks: 5 }))
+    payload = await (await fetch(new URL('/api/team-board', url))).json()
+    assert.equal(payload.tasksShape, 'count')
+    assert.equal(payload.tasks.length, 0)
+    assert.match(payload.tasksDiagnostic, /缺少任务明细/)
+  } finally { await new Promise(resolve => server.close(resolve)); rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('P1-01 rebind history is capped at 10 per line (single SQL window)', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-rebindcap-'))
+  const dbPath = join(dir, 'lines.db')
+  const store = new LineStore(dbPath)
+  store.acquire({ agentId: 'agent-demo', line: 'writer', sessionId: 's-0', instanceId: 'i', ttlMs: 60000 })
+  for (let i = 1; i <= 12; i++) store.rebind({ agentId: 'agent-demo', line: 'writer', sessionId: 's-' + i, reason: 'r' + i, migrate: 'queued' })
+  store.close()
+  const { server, url } = await startBoardServer({ dir, dbPath, host: '127.0.0.1', port: 0 })
+  try {
+    const payload = await (await fetch(new URL('/api/live', url))).json()
+    const writer = payload.lines.find(line => line.label === 'writer')
+    assert.equal(writer.rebinds.length, 10)
+    assert.equal(writer.oldSessionId, 's-11')
+    assert.equal(writer.rebinds[0].from, 's-11')
+  } finally { await new Promise(resolve => server.close(resolve)); rmSync(dir, { recursive: true, force: true }) }
 })

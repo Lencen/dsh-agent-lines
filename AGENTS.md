@@ -65,7 +65,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 | `line_trace` | manager or involved line | `messageId` | Lifecycle timeline from `message_events` |
 | `line_redeliver` | manager | `messageId`, `to?`, `resetAttempts?` | Only `failed`/`expired`; requeue + audit event |
 | `line_purge` | manager | `before` (required), `states?`, `dryRun?` (default true) | Delete terminal messages; writes `purged` events |
-| `line_handoff` | manager | `line`, `format?(md|json)`, `limit?` | Structured handoff snapshot (no model call) |
+| `line_handoff` | manager | `line`, `format?(md|json)`, `limit?`, `sections?`(`current/todos/conventions/pitfalls`), `extra?` | Structured handoff snapshot; optional business sections/extra are appended (max 2000/section, 8000 extra) |
 | `line_retire` | manager | `line`, `reason?` | Soft retire; keeps Session/history (terminal) |
 | `line_set_role` | manager | `line`, `role` | Update a line's short role text (persisted; used by org view/role cards) |
 | `line_init_team` | manager | `overwrite?`, `teamRoot?`, `teamName?` | Initialize/merge team workspace files: `TEAM.md`, `charters/manager.md`, `charters/<line>.md`, `decisions/README.md`, `registry.json` (idempotent; teamRoot optional — falls back to the manager Session cwd when neither the arg nor config sets it) |
@@ -112,7 +112,8 @@ Lifecycle three states (0.10.0+): `active` (delivering), `hibernating` (parked: 
 ## 6. Versioning and gates (before any release)
 
 ```bash
-npm test   # unit tests + docs consistency 15 + bento 9 + business smoke 9 + board smoke 8 + board scripts 5
+npm test             # unit tests + docs consistency 15 + bento 9 + business smoke 9 + board smoke 8 + board scripts 7
+npm run test:board-e2e  # release gate: headless board render (array/object/count snapshot)
 ```
 
 - Breaking = envelope fields, state-machine semantics, error-code meaning, invariants → CHANGELOG "breaking" section + minor bump.

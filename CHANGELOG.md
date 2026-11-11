@@ -2,6 +2,20 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.2 (2026-11-11)
+
+### 反馈修复：看板渲染、换代、交接与兼容字段
+
+- **P1-04**：`/api/team-board` 快照归一（数组/对象 map/仅计数）+ `tasksShape/tasksDiagnostic`；前端 `asArray`、错误可见、任务空态四态；新增 headless `board-render-e2e`。
+- **P1-01**：`/api/live` 每线增加 `oldSessionId` 与 `rebinds[]`（line_events 单 SQL 聚合），看板「版本与交接」显示换代。
+- **P1-02**：`line_create({replace})` / `line_retire` 自动把旧 Session 标题改为 `【退役YYMMDD】原标题`；失败降级不影响主流程。
+- **P1-03**：`line_handoff` 增加可选 `sections`（当前/待办/口径/坑）与 `extra`，超长截断并返回 `truncated`。
+- **P2-02**：历史区包含换代（旧/新 sessionId、原因）；**P2-04**：replace 返回继承 role/title；**P2-05**：恢复 `/api/live` 兼容 `counts`；**P2-06**：任务阶段读 TEAM.md `## 协作流程`，缺失显示「未采集」。
+- **P3-01**：TEAM.md 模板加填写提示；**P3-02**：成本页拆分缓存读/输出/未缓存输入。
+- 兼容：无 DB 迁移（schema v14）、protocolVersion 0.4 不变；新增脚本 `scripts/board-render-e2e.mjs`（`npm run test:board-e2e`）。
+- 安装/打包/CI：`install.sh` 默认改为 `@latest`（本地有当前版本 tgz 时用本地包），移除写死的 0.7.0；README 去除 0.6.0 tarball 示例、注明 0.6.5 为历史只读前记录；删除死文件 `web/board.v11-port.html`；新增 GitHub Actions `ci.yml`（Node 22/24 跑 npm test + pack dry-run）。
+
+**以 0.11.2 为准，0.11.1 为回退位。**
 ## 0.11.1 (2026-11-10)
 
 ### 文档补齐（与 0.11.0 功能代码一致）

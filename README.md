@@ -6,11 +6,11 @@
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> 当前版本：v0.11.1（2026-11-10）——团队工作区与真实数据看板、成员建完即见、团队目录跟随当前工作区。
+> 当前版本：v0.11.2（2026-11-11）——团队工作区与真实数据看板、成员建完即见、团队目录跟随当前工作区。
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
-> **100% Vibe Coding。** 架构、代码、测试、文档都在 AI agent 会话中完成。它是实验性项目：生产使用前请审阅代码并跑一遍集成测试。
+> **100% Vibe Coding。** 架构、代码、测试、文档都在 AI agent 会话中完成。它是实验性项目：生产使用前请审阅代码并跑一遍集成测试；先读下方「成熟度与生产使用」。
 
 DSH 的 super agent 平替插件。
 
@@ -27,6 +27,17 @@ DSH 的 super agent 平替插件。
 - **零配置行为**：未绑定根会话可调用 `line_claim_manager({ confirm: "bind-manager" })` 自行绑定（需 `allowClaim: true`，零配置下默认开启）。
 - **投递语义**：至少一次；幂等权威是 DSH 的 `requestId`；失败态可查可救（`line_messages` / `line_trace` / `line_redeliver`），**ack 超时只报数不自动重投**。
 - **AI 操作契约**：[AGENTS.md](AGENTS.md)（配置字段、26 个工具、`line_status` 字段、硬性约束）；设计思想：[docs/PHILOSOPHY.md](docs/PHILOSOPHY.md)｜[网页版](https://lencen.github.io/dsh-agent-lines/philosophy.html)。
+
+## 成熟度与生产使用（先读）
+
+- **项目阶段：早期 / developer preview**。DSH 本身也处于 developer preview，DSH API、插件接口与数据格式都可能随版本演进；请**同时锁定 DSH 版本和插件版本**，不要在生产直接跟 `latest`。
+- **建议做法**：先在隔离的 `DSH_HOME`/非关键团队试用，升级前读 [CHANGELOG](CHANGELOG.md) 与 [KNOWN_ISSUES](docs/KNOWN_ISSUES.md)，并对 `lines.db` 做备份；不要把它当作唯一任务/记忆源。
+- **100% Vibe Coding**：代码、测试、文档由 AI 会话生成；仓库已有单测、业务冒烟、看板 e2e 与 CI，但仍要求使用者**自行审阅代码、跑测试**；不提供商业 SLA。
+- **发布流程**：候选包冻结后发布；0.11.0 曾因文档未补齐用 0.11.1 补齐（偏差已记录），此后候选冻结规则生效。CI 跑 `npm test` + `npm pack --dry-run`，看板 e2e 是发布门禁。
+- **社区与支持**：社区插件，非 DeepSeek 官方产品；当前主要维护者 1 人；问题走 GitHub Issues，不承诺响应时间或长期兼容窗口。
+- **安全默认**：本地 SQLite、只读看板、默认只绑 127.0.0.1；不要把接口暴露公网；插件本身不收集遥测（DSH 本体行为见 DSH 文档）。
+
+> 如果你需要“生产级稳定”，建议先把它放在非关键团队试用，等接口/数据契约在 0.12+ 收敛后再扩大范围。
 
 ## 阅读顺序（先看哪一页）
 
@@ -186,7 +197,14 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
-### 0.11.1：文档补齐（当前发布）
+### 0.11.2：反馈修复（当前发布）
+
+- 看板 P1 修复：任务/组织页不再因快照结构差异空白；`/api/team-board` 归一数组/对象/计数并给出诊断；前端 `asArray` + 错误可见 + headless e2e。
+- 换代可见：`/api/live` 增加 `oldSessionId/rebinds[]`，组织详情显示每代；历史区包含换代。
+- 换人更好用：replace/retire 自动给旧 Session 标题加 `【退役YYMMDD】`；`line_handoff` 支持 `sections/extra` 业务交接。
+- 任务阶段改读 TEAM.md `## 协作流程`；replace 返回继承 role；恢复 `/api/live` `counts`；成本页拆分缓存读/输出。
+- 无 DB 迁移、无协议变化；`npm run test:board-e2e` 新增。
+### 0.11.1：文档补齐（0.11.1 历史）
 
 - 0.11.1 与 0.11.0 功能代码一致，只补文档与站点：README 增加「阅读顺序」和「它不是什么」边界、官网增加「为什么不是普通多 agent 插件」、设计思想补 T6/T7 与边界说明、KNOWN_ISSUES/DEPLOY/AGENTS 同步。
 - 0.11.0 发布时用的是 22:43 的初版候选（文档未补齐）；npm 0.11.0 不可覆盖，因此以 0.11.1 补齐文档。
@@ -330,6 +348,8 @@ L1 管理线会话（用户只说目标）
 用法：dsh-agent-lines board --port 4090 --db $DSH_HOME/agent-lines/lines.db；用启动日志 token。
 效果：本地 token 保护；默认 127.0.0.1；POST 后 /api/live 刷新消息数；不硬拦截。
 
+> 注意：**0.6.6 起看板已改为只读**，本节是 0.6.5 的历史记录，当前版本不可用；当前边界见「限制」。
+
 ### 0.6.4：只读 Web 看板
 
 场景：负责人不想每次让模型调工具，想直接在浏览器看团队任务/部门。
@@ -419,7 +439,7 @@ L1 管理线会话（用户只说目标）
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.6.0.tgz
+    bash install.sh ./dsh-agent-lines-0.11.2.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
