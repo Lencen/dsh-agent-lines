@@ -402,3 +402,20 @@ test('P3-01 TEAM.md template includes a fill hint without fake content', async (
     assert.equal(res.teamName, 'tpl-team')
   } finally { h.cleanup() }
 })
+
+test('0.11.3 line_team_board writes team-root sidecar', async () => {
+  const h = harness()
+  try {
+    h.config.teamRoot = h.dir
+    await apply(h.ctx, h.config)
+    const originalGet = h.ctx.get
+    h.ctx.get = (name, strict) => name === 'agentTeams' ? {
+      tryMembership: () => ({ role: 'lead' }),
+      listMembers: () => [{ name: 'manager', role: 'lead', status: 'running' }],
+      listTasks: () => [],
+    } : originalGet(name, strict)
+    await h.tools.get('line_team_board').execute({}, exec(h.manager))
+    const sidecar = join(dirname(h.config.dbPath), 'team-root')
+    assert.equal(readFileSync(sidecar, 'utf8').trim(), h.dir)
+  } finally { h.cleanup() }
+})
