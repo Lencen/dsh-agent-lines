@@ -16,7 +16,7 @@
 | Runs inside | the DSH Host process (plugin), not a separate daemon |
 | Default DB | `DSH_HOME/agent-lines/lines.db` (`DSH_HOME` defaults to `~/.dsh`); override with config `dbPath` or env `DSH_AGENT_LINES_DB` |
 | DB mode | SQLite + WAL; file `0600`, directory `0700` |
-| Schema version | **14** (`PRAGMA user_version`); additive migrations only |
+| Schema version | **15** (`PRAGMA user_version`); additive migrations only |
 | Cross-machine | **not supported** (local lease + local SQLite by design) |
 
 ## 2. Configuration keys
@@ -43,7 +43,7 @@
 | `deliveryTimeoutMs` | int ms | `30000` | DSH prompt acceptance timeout |
 | `maxAttempts` | int | `8` | After that a message becomes `failed` |
 | `maxMessageBytes` | int | `65536` | Oversize rejected with `LINE_MESSAGE_TOO_LARGE` |
-| `dedupeWindowMs` | int ms | `5000` | Same-body sends collapse unless `forceDistinct` |
+| `dedupeWindowMs` | int ms | `5000` | Same-body sends collapse unless `forceDistinct`; env `DSH_AGENT_LINES_DEDUPE_WINDOW_MS` overrides when config omits it |
 | `maxReplyDepth` | int | `8` | `replyTo` chain limit (`LINE_REPLY_DEPTH_EXCEEDED`) |
 | `maxLines` | int | `16` | Deployment-level cap, **not** per-line/per-task |
 | `childPreset` | string | `standard` | DSH agent preset for created lines |
@@ -113,7 +113,7 @@ Lifecycle three states (0.10.0+): `active` (delivering), `hibernating` (parked: 
 
 ```bash
 npm test             # unit tests + docs consistency 15 + bento 9 + business smoke 9 + board smoke 8 + board scripts 7
-npm run test:board-e2e  # release gate: headless board render (array/object/count snapshot)
+npm run test:board-e2e -- --require-chrome  # release gate: headless board render; missing Chrome fails (exit 2)
 ```
 
 - Breaking = envelope fields, state-machine semantics, error-code meaning, invariants → CHANGELOG "breaking" section + minor bump.

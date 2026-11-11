@@ -6,7 +6,7 @@
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> 当前版本：v0.11.3（2026-11-11）——去重窗口修复、README 正式版化、看板线层任务/teamRoot/只读说明、使用边界文档。
+> 当前版本：v0.11.4（2026-11-11）——CLI 与工具层去重/参数一致、schema v15 去重索引、npm 包测试假绿修复、文档同步。
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
@@ -188,7 +188,14 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
-### 0.11.3：使用边界 + 去重修复 + 看板收口（当前发布）
+### 0.11.4：CLI 一致 + 去重索引 + 测试假绿修复（当前发布）
+
+- CLI send 新增 `--kind/--task-ref/--parent-task-ref/--task-scope/--subteam-policy/--max-members/--cc-manager/--require-approval/--force-distinct/--dedupe-window`，digest 与工具层同字段；`DSH_AGENT_LINES_DEDUPE_WINDOW_MS` 供插件与 CLI 共用。
+- schema v15：messages 增加 `dedupe_digest` 与索引，去重查询由全表 LIKE 改为等值索引；新增 lineTasks 查询索引；旧库自动回填。
+- npm 包不再“0 个测试也绿”：`npm test` 先跑 fail-closed 守卫；包内无 test/ 时明确失败，单测需从仓库运行。
+- 文档：使用边界补历史说明；README/CHANGELOG/AGENTS 同步 CLI 参数、schema v15；`/api/live.tokens` 的历史兼容说明保留。
+- 兼容：protocolVersion 0.4 不变；schema v14→v15 为 additive，升级前请备份 lines.db。
+### 0.11.3：使用边界 + 去重修复 + 看板收口（历史）
 
 - 去重窗口改为滑动窗口：跨时间桶边界的相同发送不再重复；CLI 与工具层同语义；补跨桶/窗口外/forceDistinct/self-send/CLI 测试。
 - README 正式版化：删除 `0.11.0-13`～`0.11.0-30` 内测构建小节，逐条保留在 CHANGELOG；C6b 门禁只要求覆盖正式版本。
@@ -353,7 +360,7 @@ L1 管理线会话（用户只说目标）
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.11.3.tgz
+    bash install.sh ./dsh-agent-lines-0.11.4.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -509,6 +516,9 @@ CLI：
 ```bash
 dsh-agent-lines list
 dsh-agent-lines send --from frontend-line --to backend-line --text "hi"
+dsh-agent-lines send --from manager --to writer --text "写第 1 章" --kind task --task-ref T-1
+dsh-agent-lines send --from manager --to writer --text "告警" --kind alert --cc-manager
+dsh-agent-lines send --from manager --to writer --text "重复测试" --dedupe-window 60000
 dsh-agent-lines inbox --line backend-line
 dsh-agent-lines ack --line backend-line --id msg_...
 dsh-agent-lines --json observe --line writer --limit 20
@@ -516,7 +526,7 @@ dsh-agent-lines claim --agent agent-demo --line manager --session "$DSH_SESSION_
 dsh-agent-lines doctor
 ```
 
-用 `--db` 或 `DSH_AGENT_LINES_DB` 指向插件同一个数据库。
+用 `--db` 或 `DSH_AGENT_LINES_DB` 指向插件同一个数据库；CLI 与插件的窗口可用 `DSH_AGENT_LINES_DEDUPE_WINDOW_MS` 共享。CLI 的 `--kind task` 默认 `ccManager` 为 true；需要进入审批时加 `--require-approval`。
 
 ## 传输
 
@@ -635,7 +645,7 @@ claim 不会对每个新会话自动执行：需要用户明确要求，或运�
 
 ## 状态
 
-当前版本 `0.11.3`（快速迭代期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
+当前版本 `0.11.4`（快速迭代期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
 
 ## 致谢
 

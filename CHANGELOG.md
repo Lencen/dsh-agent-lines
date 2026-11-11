@@ -2,6 +2,17 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.11.4 (2026-11-11)
+
+### CLI 一致 + schema v15 去重索引 + 测试假绿修复
+
+- **CLI 与工具层一致**：send 增加 --kind/--task-ref/--parent-task-ref/--task-scope/--subteam-policy/--max-members/--cc-manager/--require-approval/--force-distinct/--dedupe-window；digest 使用与工具层相同的 11 个字段；DSH_AGENT_LINES_DEDUPE_WINDOW_MS 供插件与 CLI 共用。
+- **schema v15**：messages 增加 dedupe_digest 列与 messages_dedupe 索引；去重查询从 LIKE 全表扫描改为等值索引；新增 messages_kind_created / messages_task_ref_created 服务 lineTasks；旧窗口 key 自动回填。
+- **测试假绿修复**：npm test 先跑 scripts/check-test-set.mjs；包内无 test/ 时明确失败（不再 0 tests 也 exit 0），单测需从仓库运行；CI 增加“包内测试必须 fail-closed”的反例校验。
+- 文档：USAGE-BOUNDARY 补 0.11.2 及之前跨桶重复、0.11.3 修复的历史说明；README/AGENTS 同步 CLI 参数/schema v15。
+- 兼容：protocolVersion 0.4 不变；schema v14 -> v15 为 additive；升级前备份 lines.db，不建议降级。
+
+**以 0.11.4 为准，0.11.3 为回退位。**
 ## 0.11.3 (2026-11-11)
 
 ### 使用边界 + 去重修复 + 看板收口

@@ -28,3 +28,15 @@ jobs:
         run: node scripts/board-render-e2e.mjs --require-chrome
       - name: Pack dry-run
         run: npm pack --dry-run
+      - name: Package test guard must fail closed
+        if: matrix.node-version == 22
+        run: |
+          rm -rf /tmp/pkg-guard && mkdir -p /tmp/pkg-guard
+          npm pack --pack-destination /tmp/pkg-guard >/dev/null
+          tar -xzf /tmp/pkg-guard/dsh-agent-lines-*.tgz -C /tmp/pkg-guard
+          cd /tmp/pkg-guard/package
+          if npm test > /tmp/pkg-guard-test.log 2>&1; then
+            echo "expected npm test to fail in the installed package"
+            exit 1
+          fi
+          grep -q 'no unit tests found' /tmp/pkg-guard-test.log

@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current version: v0.11.3 (2026-11-11) — dedupe window fix, released-version README cleanup, board line tasks/teamRoot/read-only notes, usage-boundary doc.
+> Current version: v0.11.4 (2026-11-11) — CLI/tool dedupe and parameter parity, schema v15 dedupe index, npm package fake-green fix, docs sync.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -187,7 +187,14 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.11.3: usage boundaries + dedupe fix + board polish (current release)
+### 0.11.4: CLI parity + dedupe indexes + fake-green fix (current release)
+
+- CLI send adds `--kind/--task-ref/--parent-task-ref/--task-scope/--subteam-policy/--max-members/--cc-manager/--require-approval/--force-distinct/--dedupe-window`; the digest uses the same fields as the tool layer; `DSH_AGENT_LINES_DEDUPE_WINDOW_MS` is shared by the plugin and CLI.
+- schema v15: messages gains `dedupe_digest` + indexes; dedupe lookup changes from a full LIKE scan to an equality index; lineTasks queries get indexes; old DBs are backfilled.
+- npm package no longer reports 0 tests as green: `npm test` runs a fail-closed guard first; an installed package without test/ fails explicitly, and unit tests must run from the source repo.
+- Docs: usage boundary gets the history note; README/CHANGELOG/AGENTS sync CLI options and schema v15; the `/api/live.tokens` compatibility note stays.
+- Compatible: protocolVersion 0.4 unchanged; schema v14 -> v15 is additive; back up lines.db before upgrading.
+### 0.11.3: usage boundaries + dedupe fix + board polish (history)
 
 - Dedupe switched to a sliding window: identical sends on opposite sides of a time bucket no longer duplicate; CLI and tools share the semantics; tests cover cross-bucket/outside-window/forceDistinct/self-send/CLI.
 - README only lists released versions; internal builds `0.11.0-13` ... `0.11.0-30` are folded into 0.11.0 and remain itemized in CHANGELOG; C6b only requires released versions.
@@ -336,7 +343,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.11.3.tgz
+    bash install.sh ./dsh-agent-lines-0.11.4.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -492,6 +499,9 @@ CLI:
 ```bash
 dsh-agent-lines list
 dsh-agent-lines send --from frontend-line --to backend-line --text "hi"
+dsh-agent-lines send --from manager --to writer --text "write chapter 1" --kind task --task-ref T-1
+dsh-agent-lines send --from manager --to writer --text "alert" --kind alert --cc-manager
+dsh-agent-lines send --from manager --to writer --text "dedupe test" --dedupe-window 60000
 dsh-agent-lines inbox --line backend-line
 dsh-agent-lines ack --line backend-line --id msg_...
 dsh-agent-lines --json observe --line writer --limit 20
@@ -499,7 +509,7 @@ dsh-agent-lines claim --agent agent-demo --line manager --session "$DSH_SESSION_
 dsh-agent-lines doctor
 ```
 
-Use `--db` or `DSH_AGENT_LINES_DB` to point the CLI at the plugin's database.
+Use `--db` or `DSH_AGENT_LINES_DB` to point the CLI at the plugin's database; `DSH_AGENT_LINES_DEDUPE_WINDOW_MS` shares the window with the plugin. CLI `--kind task` defaults `ccManager` to true; add `--require-approval` to enter the approval flow.
 
 ## Transports
 
@@ -625,7 +635,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current version `0.11.3` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current version `0.11.4` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 

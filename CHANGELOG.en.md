@@ -2,6 +2,17 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.4 (2026-11-11)
+
+### CLI parity + schema v15 dedupe indexes + fake-green fix
+
+- **CLI/tool parity**: send adds --kind/--task-ref/--parent-task-ref/--task-scope/--subteam-policy/--max-members/--cc-manager/--require-approval/--force-distinct/--dedupe-window; the digest uses the same 11 fields as the tool layer; DSH_AGENT_LINES_DEDUPE_WINDOW_MS is shared by plugin and CLI.
+- **schema v15**: messages gains dedupe_digest + messages_dedupe index; dedupe lookup changes from a LIKE full scan to an equality index; new messages_kind_created / messages_task_ref_created indexes serve lineTasks; legacy window keys are backfilled.
+- **fake-green fix**: npm test runs scripts/check-test-set.mjs first; an installed package without test/ fails explicitly instead of running 0 tests and exiting 0; unit tests run from the source repo; CI adds a package test that must fail closed.
+- Docs: USAGE-BOUNDARY adds the history note that 0.11.2 and earlier had bucket-boundary duplicates, fixed in 0.11.3; README/AGENTS sync CLI options/schema v15.
+- Compatible: protocolVersion 0.4 unchanged; schema v14 -> v15 is additive; back up lines.db before upgrading, downgrade is not recommended.
+
+**0.11.4 is authoritative; 0.11.3 is the fallback.**
 ## 0.11.3 (2026-11-11)
 
 ### Usage boundaries + dedupe fix + board polish

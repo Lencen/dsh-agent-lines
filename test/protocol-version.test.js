@@ -78,13 +78,13 @@ test('incompatible major is not delivered: failed + audited', () => {
   } finally { cleanup() }
 })
 
-test('schema v14 has protocol_version column with legacy default', () => {
+test('schema v15 has protocol_version column with legacy default', () => {
   const { store, cleanup } = tempStore()
   try {
     const cols = store.db.prepare('PRAGMA table_info(messages)').all().map(c => c.name)
     assert.ok(cols.includes('protocol_version'))
     const version = store.db.prepare('PRAGMA user_version').get()
-    assert.equal(version.user_version, 14)
+    assert.equal(version.user_version, 15)
   } finally { cleanup() }
 })
 
@@ -122,7 +122,7 @@ test('v13 database migrates additively to v14 with protocol_version default 0.3'
     try {
       const cols = reopened.db.prepare('PRAGMA table_info(messages)').all().map(c => c.name)
       assert.ok(cols.includes('protocol_version'), 'protocol_version column must be re-added')
-      assert.equal(reopened.db.prepare('PRAGMA user_version').get().user_version, 14)
+      assert.equal(reopened.db.prepare('PRAGMA user_version').get().user_version, 15)
       const row = reopened.messageById(sent.id)
       assert.equal(row.protocol_version, '0.3', 'legacy rows default to 0.3')
     } finally { reopened.close() }

@@ -16,7 +16,7 @@ function usage() {
   dsh-agent-lines [--db <path>] [--json] observe [--line <line>] [--since <epochMs>] [--limit N] [--agent <id>]
   dsh-agent-lines [--db <path>] [--json] list
   dsh-agent-lines [--db <path>] [--json] status [--team-root <dir>] [--agent <id>]
-  dsh-agent-lines [--db <path>] [--json] send --from <line> --to <line|agent#line> --text <text> [--agent <id>] [--key <key>] [--reply-to <id>]
+  dsh-agent-lines [--db <path>] [--json] send --from <line> --to <line|agent#line> --text <text> [--agent <id>] [--key <key>] [--reply-to <id>] [--kind info|request|task|alert] [--task-ref <ref>] [--parent-task-ref <ref>] [--task-scope <scope>] [--subteam-policy auto|ask|never] [--max-members N] [--cc-manager|--no-cc-manager] [--require-approval] [--force-distinct] [--dedupe-window <ms>]
   dsh-agent-lines [--db <path>] [--json] inbox --line <line> [--agent <id>] [--limit N] [--all]
   dsh-agent-lines [--db <path>] [--json] ack --line <line> --id <messageId> [--agent <id>]
   dsh-agent-lines [--db <path>] [--json] claim --line <line> --session <sessionId> [--agent <id>]
@@ -159,18 +159,44 @@ async function main() {
       const text = need(opts.text, 'text')
       const agentId = String(opts.agent ?? 'agent-deepseek')
       const targetLineId = parseTarget(to, agentId).lineId
+      const kind = opts.kind === undefined ? 'info' : String(opts.kind)
+      if (!['info', 'request', 'task', 'alert'].includes(kind)) throw new LineError('LINE_INVALID_KIND', '--kind must be info/request/task/alert')
+      const ccDefault = kind === 'task' || kind === 'alert'
+      const ccManager = opts['no-cc-manager'] !== undefined ? false : (opts['cc-manager'] !== undefined ? true : ccDefault)
+      const subteamPolicy = opts['subteam-policy'] === undefined ? null : String(opts['subteam-policy'])
+      if (subteamPolicy !== null && !['auto', 'ask', 'never'].includes(subteamPolicy)) throw new LineError('LINE_INVALID_ARGUMENT', '--subteam-policy must be auto/ask/never')
+      const maxMembers = opts['max-members'] === undefined ? null : Number(opts['max-members'])
+      if (maxMembers !== null && (!Number.isInteger(maxMembers) || maxMembers < 1)) throw new LineError('LINE_INVALID_ARGUMENT', '--max-members must be a positive integer')
       const explicitKey = opts.key !== undefined && String(opts.key).trim().length > 0
+      const forceDistinct = opts['force-distinct'] === true
+      const rawWindow = opts['dedupe-window'] ?? process.env.DSH_AGENT_LINES_DEDUPE_WINDOW_MS
+      let dedupeWindowMs = 5000
+      if (rawWindow !== undefined) {
+        dedupeWindowMs = Number(rawWindow)
+        if (!Number.isInteger(dedupeWindowMs) || dedupeWindowMs < 0 || dedupeWindowMs > 3600000) throw new LineError('LINE_INVALID_ARGUMENT', '--dedupe-window must be an integer from 0 to 3600000')
+      }
+      const digest = explicitKey || forceDistinct ? null : dedupeDigest({
+        from: lineId(agentId, from), to: targetLineId, text, replyTo: opts['reply-to'], kind, ccManager,
+        taskRef: opts['task-ref'], parentTaskRef: opts['parent-task-ref'], taskScope: opts['task-scope'], subteamPolicy, maxMembers,
+      })
       const row = store.send({
         agentId,
         fromLine: from,
         to,
         text,
         idempotencyKey: explicitKey ? opts.key : undefined,
-        dedupeDigest: explicitKey ? null : dedupeDigest({ from: lineId(agentId, from), to: targetLineId, text, replyTo: opts['reply-to'] }),
-        dedupeWindowMs: explicitKey ? 0 : 5000,
+        dedupeDigest: digest,
+        dedupeWindowMs,
         replyTo: opts['reply-to'],
+        kind, ccManager,
+        requireApproval: opts['require-approval'] === true,
+        taskRef: opts['task-ref'] ?? null,
+        parentTaskRef: opts['parent-task-ref'] ?? null,
+        taskScope: opts['task-scope'] ?? null,
+        subteamPolicy,
+        maxMembers,
       })
-      print({ id: row.id, from: `${row.from_agent}#${row.from_line}`, to: `${row.to_agent}#${row.to_line}`, state: row.state, deduplicated: row.deduplicated === true }, opts.json)
+      print({ id: row.id, from: `${row.from_agent}#${row.from_line}`, to: `${row.to_agent}#${row.to_line}`, state: row.state, kind: row.kind, taskRef: row.task_ref ?? null, deduplicated: row.deduplicated === true }, opts.json)
       return 0
     }
     if (command === 'inbox') {

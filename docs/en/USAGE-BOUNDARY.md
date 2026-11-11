@@ -17,7 +17,7 @@
 | Error codes | LINE_* only add, existing semantics do not change |
 | Message state machine | queued → claimed → delivered → acked, with failed/expired branches |
 | Delivery semantics | at-least-once; idempotency authority is DSH requestId / explicit idempotencyKey |
-| Database | schema v14, additive migrations only, no manual step |
+| Database | schema v15, additive migrations only, no manual step |
 
 ## 3. Will change: do not hard-depend
 
@@ -43,6 +43,10 @@
 - Data lives in local lines.db; the plugin collects no telemetry and has no automatic backup; back up yourself (quiesce then copy, or use the SQLite backup API);
 - The board is read-only and offers no recovery actions.
 
+## History
+
+0.11.2 and earlier had a bucket-boundary duplicate issue, fixed in 0.11.3; 0.11.4 adds indexes without changing semantics.
+
 ## Version
 
-Current 0.11.3. If this document and the code disagree, AGENTS.md / CHANGELOG win; treat it as a docs bug.
+Current 0.11.4. If this document and the code disagree, AGENTS.md / CHANGELOG win; treat it as a docs bug.

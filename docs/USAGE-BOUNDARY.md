@@ -17,7 +17,7 @@
 | 错误码 | LINE_* 只增不改，现有语义不变 |
 | 消息状态机 | queued → claimed → delivered → acked，failed/expired 为旁支 |
 | 投递语义 | 至少一次；幂等权威是 DSH requestId / 显式 idempotencyKey |
-| 数据库 | schema v14，只做增量迁移，无需手工操作 |
+| 数据库 | schema v15，只做增量迁移，无需手工操作 |
 
 ## 3. 会变：这些不要硬依赖
 
@@ -43,6 +43,10 @@
 - 数据在本地 lines.db；插件不采集遥测、无自动备份；请自行备份（停写后复制或用 SQLite 备份 API）；
 - 看板只读，不提供恢复操作。
 
+## 历史
+
+0.11.2 及之前存在跨桶边界重复问题，0.11.3 已修复；0.11.4 为去重查询加索引，不改变语义。
+
 ## 版本
 
-当前 0.11.3。本文与代码不一致时，以 AGENTS.md / CHANGELOG 为准，并视为文档 bug。
+当前 0.11.4。本文与代码不一致时，以 AGENTS.md / CHANGELOG 为准，并视为文档 bug。

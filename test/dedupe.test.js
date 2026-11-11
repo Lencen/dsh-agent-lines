@@ -122,3 +122,45 @@ test('CLI send uses the same sliding window', () => {
     assert.equal(second.id, first.id)
   } finally { rmSync(dir, { recursive: true, force: true }) }
 })
+
+test('CLI task send shares the tool digest and dedupes', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-dedupe-cli-task-'))
+  try {
+    const db = join(dir, 'lines.db')
+    const setup = new LineStore(db)
+    setup.acquire({ agentId: 'agent-deepseek', line: 'manager', sessionId: 's-m', instanceId: 'i-m', ttlMs: 60000 })
+    setup.acquire({ agentId: 'agent-deepseek', line: 'worker', sessionId: 's-w', instanceId: 'i-w', ttlMs: 60000 })
+    setup.close()
+    const args = ['bin/dsh-agent-lines.js', '--db', db, '--json', 'send', '--from', 'manager', '--to', 'worker', '--text', 'task same', '--kind', 'task', '--task-ref', 'T-1']
+    const first = JSON.parse(execFileSync(process.execPath, args, { cwd: process.cwd(), encoding: 'utf8' }))
+    assert.equal(first.kind, 'task')
+    assert.equal(first.deduplicated, false)
+    const store = new LineStore(db)
+    const digest = dedupeDigest({ from: 'agent-deepseek#manager', to: 'agent-deepseek#worker', text: 'task same', replyTo: undefined, kind: 'task', ccManager: true, taskRef: 'T-1' })
+    const second = store.send({ agentId: 'agent-deepseek', fromLine: 'manager', to: 'worker', text: 'task same', kind: 'task', ccManager: true, taskRef: 'T-1', dedupeDigest: digest, dedupeWindowMs: 5000 })
+    assert.equal(second.deduplicated, true)
+    assert.equal(second.id, first.id)
+    store.close()
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('schema v15 backfills dedupe_digest and uses the dedupe index', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-dedupe-backfill-'))
+  try {
+    const db = join(dir, 'lines.db')
+    const setup = new LineStore(db)
+    setup.acquire({ agentId: 'agent-demo', line: 'manager', sessionId: 's-m', instanceId: 'i-m', ttlMs: 60000 })
+    setup.acquire({ agentId: 'agent-demo', line: 'worker', sessionId: 's-w', instanceId: 'i-w', ttlMs: 60000 })
+    const digest = dedupeDigest({ from: 'agent-demo#manager', to: 'agent-demo#worker', text: 'legacy' })
+    const row = setup.send({ agentId: 'agent-demo', fromLine: 'manager', to: 'worker', text: 'legacy', dedupeDigest: digest, dedupeWindowMs: 5000 })
+    setup.db.prepare('UPDATE messages SET idempotency_key = ?, dedupe_digest = NULL WHERE id = ?').run('window:123:' + digest, row.id)
+    setup.db.exec('PRAGMA user_version = 14')
+    setup.close()
+    const reopened = new LineStore(db)
+    assert.equal(reopened.db.prepare('PRAGMA user_version').get().user_version, 15)
+    assert.equal(reopened.db.prepare('SELECT dedupe_digest FROM messages WHERE id = ?').get(row.id).dedupe_digest, digest)
+    const plan = reopened.db.prepare('EXPLAIN QUERY PLAN SELECT * FROM messages WHERE dedupe_digest = ? AND created_at >= ? ORDER BY created_at DESC LIMIT 1').all(digest, 0).map(r => r.detail).join(' ')
+    assert.match(plan, /USING INDEX messages_dedupe/)
+    reopened.close()
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
