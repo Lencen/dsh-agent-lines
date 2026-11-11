@@ -10,7 +10,7 @@ GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
-> **100% Vibe Coding。** 架构、代码、测试、文档都在 AI agent 会话中完成。它是实验性项目：生产使用前请审阅代码并跑一遍集成测试；先读下方「成熟度与生产使用」。
+> **100% Vibe Coding。** 架构、代码、测试、文档都在 AI agent 会话中完成。它是实验性项目：生产使用前请审阅代码并跑一遍集成测试。
 
 DSH 的 super agent 平替插件。
 
@@ -27,17 +27,6 @@ DSH 的 super agent 平替插件。
 - **零配置行为**：未绑定根会话可调用 `line_claim_manager({ confirm: "bind-manager" })` 自行绑定（需 `allowClaim: true`，零配置下默认开启）。
 - **投递语义**：至少一次；幂等权威是 DSH 的 `requestId`；失败态可查可救（`line_messages` / `line_trace` / `line_redeliver`），**ack 超时只报数不自动重投**。
 - **AI 操作契约**：[AGENTS.md](AGENTS.md)（配置字段、26 个工具、`line_status` 字段、硬性约束）；设计思想：[docs/PHILOSOPHY.md](docs/PHILOSOPHY.md)｜[网页版](https://lencen.github.io/dsh-agent-lines/philosophy.html)。
-
-## 成熟度与生产使用（先读）
-
-- **项目阶段：早期 / developer preview**。DSH 本身也处于 developer preview，DSH API、插件接口与数据格式都可能随版本演进；请**同时锁定 DSH 版本和插件版本**，不要在生产直接跟 `latest`。
-- **建议做法**：先在隔离的 `DSH_HOME`/非关键团队试用，升级前读 [CHANGELOG](CHANGELOG.md) 与 [KNOWN_ISSUES](docs/KNOWN_ISSUES.md)，并对 `lines.db` 做备份；不要把它当作唯一任务/记忆源。
-- **100% Vibe Coding**：代码、测试、文档由 AI 会话生成；仓库已有单测、业务冒烟、看板 e2e 与 CI，但仍要求使用者**自行审阅代码、跑测试**；不提供商业 SLA。
-- **发布流程**：候选包冻结后发布；0.11.0 曾因文档未补齐用 0.11.1 补齐（偏差已记录），此后候选冻结规则生效。CI 跑 `npm test` + `npm pack --dry-run`，看板 e2e 是发布门禁。
-- **社区与支持**：社区插件，非 DeepSeek 官方产品；当前主要维护者 1 人；问题走 GitHub Issues，不承诺响应时间或长期兼容窗口。
-- **安全默认**：本地 SQLite、只读看板、默认只绑 127.0.0.1；不要把接口暴露公网；插件本身不收集遥测（DSH 本体行为见 DSH 文档）。
-
-> 如果你需要“生产级稳定”，建议先把它放在非关键团队试用，等接口/数据契约在 0.12+ 收敛后再扩大范围。
 
 ## 阅读顺序（先看哪一页）
 

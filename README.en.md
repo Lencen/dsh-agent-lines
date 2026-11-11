@@ -10,7 +10,7 @@ GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
-> **100% Vibe Coding.** The architecture, code, tests, and docs were produced in AI agent sessions. It is experimental: review the code and run an integration test before production use; read "Maturity and production use" below first.
+> **100% Vibe Coding.** The architecture, code, tests, and docs were produced in AI agent sessions. It is experimental: review the code and run an integration test before production use.
 
 A drop-in super-agent alternative for DSH.
 
@@ -27,17 +27,6 @@ Stop reopening sessions and copying context by hand. Give one lead agent a long-
 - **Zero-config**: an unbound root Session can bind itself with `line_claim_manager({ confirm: "bind-manager" })` (needs `allowClaim`; on by default in zero-config).
 - **Delivery semantics**: at-least-once; idempotency authority is DSH's `requestId`; failed states are queryable and recoverable (`line_messages` / `line_trace` / `line_redeliver`); **ack timeout is reported, never auto-retried**.
 - **AI operation contract**: [AGENTS.md](AGENTS.md) (config keys, 26 tools, `line_status` fields, hard rules). Design: [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) | [web](https://lencen.github.io/dsh-agent-lines/en/philosophy.html).
-
-## Maturity and production use (read first)
-
-- **Stage: early / developer preview.** DSH itself is in developer preview; DSH APIs, plugin interfaces and data formats may evolve. **Pin both the DSH version and the plugin version**; do not track `latest` in production.
-- **Recommended**: try in an isolated `DSH_HOME` or a non-critical team first; read [CHANGELOG](CHANGELOG.en.md) and [KNOWN_ISSUES](docs/KNOWN_ISSUES.en.md) before upgrading, back up `lines.db`, and do not make it your only task/memory source.
-- **100% Vibe Coding**: code, tests and docs are produced in AI agent sessions. The repo has unit tests, business smoke, board e2e and CI, but you must still **review the code and run the tests yourself**; no commercial SLA.
-- **Release process**: candidates freeze before release; 0.11.0 needed a 0.11.1 docs fix (recorded deviation), and the freeze rule is now enforced. CI runs `npm test` + `npm pack --dry-run`; board e2e is a release gate.
-- **Community/support**: community plugin, not an official DeepSeek product; currently one primary maintainer; use GitHub Issues, no response-time or long-term compatibility commitment.
-- **Security defaults**: local SQLite, read-only board, bound to 127.0.0.1 by default; do not expose the board/API publicly; the plugin itself does not collect telemetry (DSH itself is separate).
-
-> If you need production-grade stability, start with a non-critical team and wait for the interface/data contract to settle in 0.12+.
 
 ## Reading order (what to read first)
 
