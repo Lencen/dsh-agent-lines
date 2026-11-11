@@ -10,7 +10,7 @@ GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
-> **100% Vibe Coding.** The architecture, code, tests, and docs were produced in AI agent sessions. It is experimental: review the code and run an integration test before production use.
+> **100% Vibe Coding, fast iteration phase.**
 
 A drop-in super-agent alternative for DSH.
 
@@ -700,7 +700,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Experimental `0.7.x`. DSH is in developer preview and its APIs can change. Pin both the DSH version and this plugin's version.
+Current version `0.11.2` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 

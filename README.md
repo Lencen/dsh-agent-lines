@@ -10,7 +10,7 @@ GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
-> **100% Vibe Coding。** 架构、代码、测试、文档都在 AI agent 会话中完成。它是实验性项目：生产使用前请审阅代码并跑一遍集成测试。
+> **100% Vibe Coding、快速迭代期。**
 
 DSH 的 super agent 平替插件。
 
@@ -710,7 +710,7 @@ claim 不会对每个新会话自动执行：需要用户明确要求，或运�
 
 ## 状态
 
-实验性 `0.7.x`。DSH 处于 developer preview，API 可能变化；请同时锁定 DSH 与插件版本。
+当前版本 `0.11.2`（快速迭代期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
 
 ## 致谢
 
