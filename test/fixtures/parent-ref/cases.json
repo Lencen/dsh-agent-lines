@@ -1,0 +1,398 @@
+{
+  "synthetic": true,
+  "source": "controlled fixture for PARENT-REF v0.4 (not production data)",
+  "projectionCases": [
+    {
+      "id": "F1-multi-parent",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F1",
+          "parentTaskRef": "L2-A",
+          "now": 1000
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F1",
+          "parentTaskRef": "L2-B",
+          "now": 2000
+        }
+      ],
+      "expect": {
+        "parentTaskRef": "L2-B"
+      }
+    },
+    {
+      "id": "F2-dangling",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F2",
+          "parentTaskRef": "L2-MISSING",
+          "now": 1000
+        }
+      ],
+      "expect": {
+        "parentTaskRef": "L2-MISSING"
+      }
+    },
+    {
+      "id": "F3-self",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F3",
+          "parentTaskRef": "L3-F3",
+          "now": 1000
+        }
+      ],
+      "expect": {
+        "parentTaskRef": "L3-F3"
+      }
+    },
+    {
+      "id": "F4-cycle",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F4",
+          "parentTaskRef": "L3-F5",
+          "now": 1000
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F5",
+          "parentTaskRef": "L3-F4",
+          "now": 2000
+        }
+      ],
+      "expect": {
+        "map": {
+          "L3-F4": "L3-F5",
+          "L3-F5": "L3-F4"
+        }
+      }
+    },
+    {
+      "id": "F6-no-parent",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F6",
+          "now": 1000
+        }
+      ],
+      "expect": {
+        "parentTaskRef": null
+      }
+    },
+    {
+      "id": "F7-scope-null",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F7",
+          "parentTaskRef": "L2-A",
+          "now": 1000
+        }
+      ],
+      "expect": {
+        "parentTaskRef": "L2-A"
+      }
+    },
+    {
+      "id": "F1b-latest-null",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F1B",
+          "parentTaskRef": "L2-A",
+          "now": 1000
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F1B",
+          "now": 2000
+        }
+      ],
+      "expect": {
+        "parentTaskRef": "L2-A"
+      }
+    },
+    {
+      "id": "F9-tie",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F9",
+          "parentTaskRef": "L2-E",
+          "now": 3000,
+          "id": "aaa"
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F9",
+          "parentTaskRef": "L2-F",
+          "now": 3000,
+          "id": "zzz"
+        }
+      ],
+      "expect": {
+        "parentTaskRef": "L2-F"
+      }
+    },
+    {
+      "id": "F1c-cross-agent",
+      "messages": [
+        {
+          "agent": "agent-a",
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "T-S",
+          "parentTaskRef": "L2-A",
+          "now": 1000
+        },
+        {
+          "agent": "agent-b",
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "T-S",
+          "parentTaskRef": "L2-B",
+          "now": 2000
+        }
+      ],
+      "expect": {
+        "perAgent": {
+          "agent-a": "L2-A",
+          "agent-b": "L2-B"
+        }
+      }
+    },
+    {
+      "id": "F8-cross-line",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "L3-F8",
+          "parentTaskRef": "L2-A",
+          "now": 1000
+        },
+        {
+          "from": "manager",
+          "to": "renderer",
+          "kind": "task",
+          "taskRef": "L3-F8",
+          "parentTaskRef": "L2-B",
+          "now": 2000
+        }
+      ],
+      "expect": {
+        "parentTaskRef": "L2-B"
+      }
+    }
+  ],
+  "liveCases": [
+    {
+      "id": "G1-counts",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "T1",
+          "now": 1000
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "T1",
+          "now": 1100
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "T1",
+          "now": 1200
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "T2",
+          "now": 1300
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "T2",
+          "now": 1400
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "T3",
+          "now": 1500
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "T3",
+          "now": 1600
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "now": 1700
+        }
+      ],
+      "expect": {
+        "total": 8,
+        "taskCount": 3,
+        "nullTaskRefCount": 1,
+        "byTaskRefLength": 3,
+        "byTaskRefMessageCountSum": 7,
+        "byLineTaskCount": {
+          "writer": 3
+        },
+        "since": null,
+        "filteredCount": 3,
+        "byTaskRefWindow": null
+      }
+    },
+    {
+      "id": "G2-cross-line",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "TX",
+          "now": 1000
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "TX",
+          "now": 1100
+        },
+        {
+          "from": "manager",
+          "to": "renderer",
+          "kind": "task",
+          "taskRef": "TX",
+          "now": 1200
+        },
+        {
+          "from": "manager",
+          "to": "renderer",
+          "kind": "task",
+          "taskRef": "TX",
+          "now": 1300
+        }
+      ],
+      "expect": {
+        "total": 4,
+        "taskCount": 1,
+        "nullTaskRefCount": 0,
+        "byTaskRefLength": 1,
+        "byTaskRefMessageCountSum": 4,
+        "byLineTaskCount": {
+          "writer": 1,
+          "renderer": 1
+        }
+      }
+    },
+    {
+      "id": "G3-since",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "A",
+          "now": 1000
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "B",
+          "now": 2000
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "C",
+          "now": 3000
+        }
+      ],
+      "since": 2000,
+      "expect": {
+        "total": 3,
+        "taskCount": 3,
+        "filteredCount": 2,
+        "since": 2000,
+        "byTaskRefWindow": {
+          "since": 2000,
+          "taskRefCount": 2,
+          "messageCount": 2,
+          "latestAt": 3000
+        }
+      }
+    },
+    {
+      "id": "H2-null-taskref",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "now": 1000
+        }
+      ],
+      "expect": {
+        "total": 1,
+        "taskCount": 0,
+        "nullTaskRefCount": 1,
+        "byTaskRefLength": 0,
+        "byTaskRefMessageCountSum": 0
+      }
+    }
+  ]
+}
