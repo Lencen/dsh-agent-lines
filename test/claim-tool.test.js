@@ -11,7 +11,7 @@ function harness({ allowClaim = true, roots = [], lineDefs = new Map() } = {}) {
   const rebinds = []
   const rebindManager = async (agent) => {
     rebinds.push(agent.session.id)
-    return { label: 'manager', sessionId: agent.session.id }
+    return { label: 'manager', sessionId: agent.session.id, oldSessionId: 'session-old', retiredTitleTagged: true, retiredTitleTag: '【退役261112】' }
   }
   registerClaimTool(ctx, { config: { allowClaim, createFrom: 'manager' }, lineDefs, rebindManager })
   return { tool: registered, rebinds }
@@ -23,7 +23,7 @@ test('claim tool binds an unbound root and requires confirm', async () => {
   const h = harness({ roots: [agent] })
   await assert.rejects(() => h.tool.execute({ confirm: 'yes' }, { agent }), /bind-manager/)
   const result = await h.tool.execute({ confirm: 'bind-manager' }, { agent })
-  assert.deepEqual(result, { line: 'manager', sessionId: 'session-new', claimed: true, already: false })
+  assert.deepEqual(result, { line: 'manager', sessionId: 'session-new', claimed: true, already: false, oldSessionId: 'session-old', retiredTitleTagged: true, retiredTitleTag: '【退役261112】' })
   assert.deepEqual(h.rebinds, ['session-new'])
 })
 
@@ -41,5 +41,7 @@ test('claim tool is a no-op for the current manager', async () => {
   const result = await h.tool.execute({ confirm: 'bind-manager' }, { agent })
   assert.equal(result.already, true)
   assert.equal(result.claimed, false)
+  assert.equal(result.oldSessionId, null)
+  assert.equal(result.retiredTitleTagged, false)
   assert.deepEqual(h.rebinds, [])
 })

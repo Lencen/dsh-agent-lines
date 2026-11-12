@@ -2,6 +2,17 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.11.6 (2026-11-11)
+
+### Manager handover + old manager retirement
+
+- **Manager handover tool**: adds line_handover_manager (manager-only, confirm: "handover-manager") to hand the manager role to an existing live root Session; it does not create a root Session.
+- **Automatic old-manager retirement**: line_claim_manager and line_handover_manager tag the old manager Session with 【退役YYMMDD】 when it is live; the handover is written to line_events (rebind).
+- **Tool count 26 → 27**; no schema or protocol changes; schema v15 and protocolVersion 0.4 unchanged.
+- **Boundary**: an already-offline Session cannot be renamed through the plugin (DSH public API limit); finish it during handover.
+
+**0.11.6 is authoritative; 0.11.5 is the fallback.**
+
 ## 0.11.5 (2026-11-11)
 
 ### Articles and bilingual docs

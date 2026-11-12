@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current version: v0.11.5 (2026-11-11) — short and paper articles added in Chinese and English; docs and site synced.
+> Current version: v0.11.6 (2026-11-11) — manager handover automation and automatic retired tagging of the old manager; 26 → 27 tools.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -28,7 +28,7 @@ Stop reopening sessions and copying context by hand. Give one lead agent a long-
 - **Hard constraints**: only the `createFrom` line (with `allowCreate: true`) may call `line_create`; **do not enable `allowCreate` on worker profiles**; one writer per Session; never open a line's Session in another DSH process (`session/writer-held`).
 - **Zero-config**: an unbound root Session can bind itself with `line_claim_manager({ confirm: "bind-manager" })` (needs `allowClaim`; on by default in zero-config).
 - **Delivery semantics**: at-least-once; idempotency authority is DSH's `requestId`; failed states are queryable and recoverable (`line_messages` / `line_trace` / `line_redeliver`); **ack timeout is reported, never auto-retried**.
-- **AI operation contract**: [AGENTS.md](AGENTS.md) (config keys, 26 tools, `line_status` fields, hard rules). Design: [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) | [web](https://lencen.github.io/dsh-agent-lines/en/philosophy.html).
+- **AI operation contract**: [AGENTS.md](AGENTS.md) (config keys, 27 tools, `line_status` fields, hard rules). Design: [docs/PHILOSOPHY.en.md](docs/PHILOSOPHY.en.md) | [web](https://lencen.github.io/dsh-agent-lines/en/philosophy.html).
 
 ## Reading order (what to read first)
 
@@ -195,7 +195,14 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.11.5: Articles and bilingual docs (current release)
+### 0.11.6: Manager handover + old manager retirement (current release)
+
+- Adds `line_handover_manager`: a manager hands the role to an existing live root Session; it does not create a root Session.
+- `line_claim_manager` / manager handover now tags the old manager Session with `【退役YYMMDD】` when it is live; the handover is written to line_events.
+- Tool count 26 → 27; no schema or protocol changes; schema v15 and protocolVersion 0.4 unchanged.
+- An already-offline Session cannot be renamed through the plugin (DSH public API limit); finish it during handover.
+
+### 0.11.5: Articles and bilingual docs
 
 - Added the short article "Reflections on AI Organizations" and the paper "From Workflow to Position: Organizational Design for Long-Lived AI Teams," each in Chinese and English; Chinese files use Chinese names and English files use English names.
 - README links the articles; the docs-consistency gate covers the zh/en article pairs.
@@ -357,7 +364,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.11.5.tgz
+    bash install.sh ./dsh-agent-lines-0.11.6.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -476,7 +483,8 @@ Tools:
 | Tool | Purpose |
 |---|---|
 | `line_status` | Read-only: current Session binding, manager Session live/persisted, lines, repair command; visible even when unbound; includes activity (not contextUsage) |
-| `line_claim_manager` | Bind this live root Session as manager; requires `allowClaim: true` and `confirm: "bind-manager"`; global, no shell needed |
+| `line_claim_manager` | Bind this live root Session as manager; requires `allowClaim: true` and `confirm: "bind-manager"`; global, no shell needed; tags the old manager Session retired when live |
+| `line_handover_manager` | Manager only: hand the manager role to an existing live root Session; tags the old manager Session retired when live; does not create a root Session |
 | `line_list` | List lines, status, unread counts, current line and role |
 | `line_create` | Manager only: create a line; same label is idempotent; replace:true swaps the label to a fresh Session |
 | `line_handoff` | Manager only: structured handoff snapshot (JSON/Markdown), no model call |
@@ -649,7 +657,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current version `0.11.5` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current version `0.11.6` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 

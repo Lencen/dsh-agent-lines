@@ -42,6 +42,7 @@
 - 健康检查：CLI doctor；
 - 数据在本地 lines.db；插件不采集遥测、无自动备份；请自行备份（停写后复制或用 SQLite 备份 API）；
 - 看板只读，不提供恢复操作。
+- 负责人交接：新 root 调 line_claim_manager，或当前 manager 调 line_handover_manager；旧 manager 在线时自动加退役标题。已下线 Session 不能通过工具补 rename（DSH 公开 API 限制），请在交接时完成。
 
 ## 历史
 
@@ -49,4 +50,4 @@
 
 ## 版本
 
-当前 0.11.5。本文与代码不一致时，以 AGENTS.md / CHANGELOG 为准，并视为文档 bug。
+当前 0.11.6。本文与代码不一致时，以 AGENTS.md / CHANGELOG 为准，并视为文档 bug。

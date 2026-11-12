@@ -419,3 +419,51 @@ test('0.11.3 line_team_board writes team-root sidecar', async () => {
     assert.equal(readFileSync(sidecar, 'utf8').trim(), h.dir)
   } finally { h.cleanup() }
 })
+
+test('0.11.6 manager claim tags the old manager Session retired', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const newRoot = { session: { id: 'session-root', header: { cwd: h.dir } }, ctx: h.ctx }
+    h.agents.set(newRoot.session.id, newRoot)
+    const result = await h.tools.get('line_claim_manager').execute({ confirm: 'bind-manager' }, exec(newRoot))
+    assert.equal(result.claimed, true)
+    assert.equal(result.oldSessionId, 'session-m')
+    assert.equal(result.retiredTitleTagged, true)
+    assert.ok(h.renamed.some(row => row.sessionId === 'session-m' && /退役/.test(row.title)))
+    const status = await h.tools.get('line_status').execute({}, exec(newRoot))
+    assert.equal(status.manager.sessionId, 'session-root')
+  } finally { h.cleanup() }
+})
+
+test('0.11.6 line_handover_manager hands over to a live root and tags the old manager', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const target = { session: { id: 'session-handover', header: { cwd: h.dir } }, ctx: h.ctx }
+    h.agents.set(target.session.id, target)
+    const result = await h.tools.get('line_handover_manager').execute({ sessionId: target.session.id, confirm: 'handover-manager', reason: 'test' }, exec(h.manager))
+    assert.equal(result.line, 'manager')
+    assert.equal(result.oldSessionId, 'session-m')
+    assert.equal(result.newSessionId, target.session.id)
+    assert.equal(result.retiredTitleTagged, true)
+    assert.ok(h.renamed.some(row => row.sessionId === 'session-m' && /退役/.test(row.title)))
+    const status = await h.tools.get('line_status').execute({}, exec(target))
+    assert.equal(status.manager.sessionId, target.session.id)
+  } finally { h.cleanup() }
+})
+
+test('0.11.6 manager claim succeeds even when the old title rename fails', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    h.ctx.sessionController.rename = async () => { throw new Error('offline') }
+    const newRoot = { session: { id: 'session-root-offline', header: { cwd: h.dir } }, ctx: h.ctx }
+    h.agents.set(newRoot.session.id, newRoot)
+    const result = await h.tools.get('line_claim_manager').execute({ confirm: 'bind-manager' }, exec(newRoot))
+    assert.equal(result.claimed, true)
+    assert.equal(result.retiredTitleTagged, false)
+    const status = await h.tools.get('line_status').execute({}, exec(newRoot))
+    assert.equal(status.manager.sessionId, newRoot.session.id)
+  } finally { h.cleanup() }
+})
