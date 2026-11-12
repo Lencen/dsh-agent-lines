@@ -112,9 +112,26 @@ try {
   console.log('FAIL ' + String(error && error.message ? error.message : error))
 } finally {
   try { ws?.close() } catch {}
-  try { chromeProc.kill('SIGKILL') } catch {}
+  try { if (chromeProc.exitCode === null && chromeProc.signalCode === null) chromeProc.kill('SIGKILL') } catch {}
+  // Q1 修复：SIGKILL 后必须先等 Chrome 退出，否则 rmSync 与 profile 写入竞态会偶发 ENOTEMPTY
+  await new Promise((resolve) => {
+    if (chromeProc.exitCode !== null || chromeProc.signalCode !== null) return resolve()
+    const timer = setTimeout(resolve, 5000)
+    const done = () => { clearTimeout(timer); resolve() }
+    chromeProc.once('exit', done)
+    chromeProc.once('error', done)
+  })
   await new Promise(resolve => server.close(resolve))
-  rmSync(dir, { recursive: true, force: true })
+  // 清理重试：Chrome 子进程可能有短暂残余写；清理失败只告警，断言结果单独决定退出码
+  let cleaned = false
+  for (let attempt = 1; attempt <= 10 && !cleaned; attempt++) {
+    try { rmSync(dir, { recursive: true, force: true }); cleaned = true }
+    catch (error) {
+      if (attempt === 10) console.warn('BOARD_E2E: cleanup warning after 10 attempts: ' + String(error?.code ?? '') + ' ' + String(error?.message ?? error))
+      else await sleep(200)
+    }
+  }
+  if (!cleaned) console.warn('BOARD_E2E: temp dir left for inspection: ' + dir)
 }
 console.log('')
 console.log(failures.length === 0 ? 'BOARD_E2E: PASS' : 'BOARD_E2E: FAIL (' + failures.length + ')')
