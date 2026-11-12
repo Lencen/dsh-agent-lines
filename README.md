@@ -198,7 +198,7 @@ L1 管理线会话（用户只说目标）
 
 ### 0.11.6：负责人交接 + 旧负责人退役（当前发布）
 
-- 新增 `line_handover_manager`：manager 把负责人角色交给一个已存在的 live 根 Session；不创建新 root。
+- 新增 `line_handover_manager`：manager 把负责人角色交给 live 根 Session，0.12.0 起支持 create:true 自动创建新 root。
 - `line_claim_manager` / 负责人交接在旧 manager 在线时自动给旧 Session 加 `【退役YYMMDD】` 标题；交接事件写入 line_events。
 - 看板任务页默认显示线层任务：按 taskRef 聚合卡片，支持筛选和点击看消息时间线；组织视图 L2 显示线任务、L3 成员显示从 L2 拆分的任务；官方任务保留为次级页签。
 - 工具数 26 → 27；无 schema / protocol 变更；schema v15、protocolVersion 0.4 不变。
@@ -502,7 +502,7 @@ level 是活跃度代理（low/medium/high），不是上下文使用率百分�
 |---|---|
 | `line_status` | 只读：当前会话绑定、manager Session 是否存在/live、线列表、修复命令；未绑定也可见；含 activity 活跃度（不是 contextUsage） |
 | `line_claim_manager` | 把当前 live 根 Session 绑成 manager；需要 `allowClaim: true` 和 `confirm: "bind-manager"`；全局工具，不需要 shell；旧 manager 在线时自动加退役标题 |
-| `line_handover_manager` | 仅管理线：把负责人角色交给一个已存在的 live 根 Session；旧 manager 在线时自动加退役标题；不创建新 root Session |
+| `line_handover_manager` | 仅管理线：把负责人角色交给 live 根 Session；`create:true` 自动创建新 root；旧 manager 在线时自动加退役标题 |
 | `line_list` | 列出线、状态、未读数、当前线和 role |
 | `line_create` | 仅管理线：创建新线；同 label 幂等；传 replace:true 可给同 label 换新 Session |
 | `line_handoff` | 仅管理线：生成结构化交接单（JSON/Markdown），不调模型 |

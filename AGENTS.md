@@ -75,7 +75,7 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 | `line_rename` | manager | `line`, `title?` | Sidebar title |
 | `line_move_workspace` | manager | `line`, `workspace` | Attach only when Session cwd == workspace path |
 | `line_claim_manager` | any root | `confirm:"bind-manager"` | Binds this root Session as manager (needs `allowClaim`); old manager Session is tagged retired when possible |
-| `line_handover_manager` | manager | `sessionId`, `reason?`, `confirm:"handover-manager"` | Hands the manager role to an existing live root Session; tags the old manager Session retired when possible; does not create root Sessions |
+| `line_handover_manager` | manager | `sessionId?`, `create?`, `reason?`, `confirm:"handover-manager"` | Hands the manager role to a live root Session; create:true creates a new root automatically; tags the old manager Session retired when possible |
 | `line_manager_ack` | manager | `messageId`, `decision?(approve|reject)` | Approve/reject pending `task` messages |
 | `line_observe` | manager | `line?`, `since?`, `limit?` | Read-only cross-line feed |
 | `line_communications` | manager | filters | Read-only communication board |

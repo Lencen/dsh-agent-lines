@@ -197,7 +197,7 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ### 0.11.6: Manager handover + old manager retirement (current release)
 
-- Adds `line_handover_manager`: a manager hands the role to an existing live root Session; it does not create a root Session.
+- Adds `line_handover_manager`: a manager hands the role to a live root Session; from 0.12.0, create:true can create a new root automatically.
 - `line_claim_manager` / manager handover now tags the old manager Session with `【退役YYMMDD】` when it is live; the handover is written to line_events.
 - Board tasks default to line-layer tasks: taskRef cards, status filters, and a message-timeline detail drawer; the org view shows L2 line tasks and L3 split tasks; official tasks remain a secondary tab.
 - Tool count 26 → 27; no schema or protocol changes; schema v15 and protocolVersion 0.4 unchanged.
@@ -485,7 +485,7 @@ Tools:
 |---|---|
 | `line_status` | Read-only: current Session binding, manager Session live/persisted, lines, repair command; visible even when unbound; includes activity (not contextUsage) |
 | `line_claim_manager` | Bind this live root Session as manager; requires `allowClaim: true` and `confirm: "bind-manager"`; global, no shell needed; tags the old manager Session retired when live |
-| `line_handover_manager` | Manager only: hand the manager role to an existing live root Session; tags the old manager Session retired when live; does not create a root Session |
+| `line_handover_manager` | Manager only: hand the manager role to a live root Session; create:true creates a new root; tags the old manager Session retired when live |
 | `line_list` | List lines, status, unread counts, current line and role |
 | `line_create` | Manager only: create a line; same label is idempotent; replace:true swaps the label to a fresh Session |
 | `line_handoff` | Manager only: structured handoff snapshot (JSON/Markdown), no model call |

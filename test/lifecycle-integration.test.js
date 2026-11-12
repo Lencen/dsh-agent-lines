@@ -467,3 +467,19 @@ test('0.11.6 manager claim succeeds even when the old title rename fails', async
     assert.equal(status.manager.sessionId, newRoot.session.id)
   } finally { h.cleanup() }
 })
+
+test('0.11.6 line_handover_manager can create a new root manager automatically', async () => {
+  const h = harness()
+  try {
+    await apply(h.ctx, h.config)
+    const result = await h.tools.get('line_handover_manager').execute({ create: true, confirm: 'handover-manager', reason: 'auto handover' }, exec(h.manager))
+    assert.equal(result.createdNew, true)
+    assert.equal(result.line, 'manager')
+    assert.equal(result.oldSessionId, 'session-m')
+    assert.equal(result.retiredTitleTagged, true)
+    assert.ok(result.newSessionId.startsWith('session-new-'))
+    assert.ok(h.renamed.some(row => row.sessionId === 'session-m' && /退役/.test(row.title)))
+    const status = await h.tools.get('line_status').execute({}, exec(h.agents.get(result.newSessionId)))
+    assert.equal(status.manager.sessionId, result.newSessionId)
+  } finally { h.cleanup() }
+})
