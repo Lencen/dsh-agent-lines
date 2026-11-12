@@ -83,7 +83,7 @@ for (const c of cases) {
       store.close()
       const { server, url } = await startBoardServer({ dir: workDir, dbPath, host: '127.0.0.1', port: 0 })
       try {
-        const query = c.since !== undefined ? '?since=' + String(c.since) : ''
+        const query = c.since !== undefined ? '?since=' + encodeURIComponent(String(c.since)) : ''
         const payload = await (await fetch(new URL('/api/live' + query, url))).json()
         const lt = payload.lineTasks ?? {}
         const byRef = Array.isArray(lt.byTaskRef) ? lt.byTaskRef : null

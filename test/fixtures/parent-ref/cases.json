@@ -393,6 +393,33 @@
         "byTaskRefLength": 0,
         "byTaskRefMessageCountSum": 0
       }
+    },
+    {
+      "id": "G4-empty-since",
+      "messages": [
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "A",
+          "now": 1000
+        },
+        {
+          "from": "manager",
+          "to": "writer",
+          "kind": "task",
+          "taskRef": "B",
+          "now": 2000
+        }
+      ],
+      "since": "",
+      "expect": {
+        "total": 2,
+        "taskCount": 2,
+        "filteredCount": 2,
+        "since": null,
+        "byTaskRefWindow": null
+      }
     }
   ]
 }

@@ -1,10 +1,11 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { apply } from '../lib/index.js'
 import { LineStore } from '../lib/store.js'
+import { startBoardServer } from '../lib/board-server.js'
 
 function boardHarness() {
   const dir = mkdtempSync(join(tmpdir(), 'agent-lines-parentref-'))
@@ -57,6 +58,16 @@ test('N11: line_team_board 与 line_department_board 全局投影一致（parent
     const none = await h.tools.get('line_team_board').execute({ byTaskRef: 'nope' }, exec(h.manager))
     assert.deepEqual(none.tasks, [])
     assert.equal(none.filteredCount, 0)
+    // P2/D4：byTaskRef 过滤不得覆盖快照；team-board.json 与 /api/team-board 仍为全量
+    const snapDir = dirname(h.config.dbPath)
+    const snap = JSON.parse(readFileSync(join(snapDir, 'team-board.json'), 'utf8'))
+    assert.equal(snap.tasks.length, 1, 'snapshot tasks 仍为全量')
+    assert.equal(snap.filteredCount, 1, 'snapshot filteredCount 为全量')
+    const { server, url } = await startBoardServer({ dir: snapDir, dbPath: h.config.dbPath, host: '127.0.0.1', port: 0 })
+    try {
+      const full = await (await fetch(new URL('/api/team-board', url))).json()
+      assert.equal(full.tasks.length, 1, '/api/team-board 仍返回全量')
+    } finally { await new Promise(resolve => server.close(resolve)) }
     assert.equal(first.taskRef, 'task-1')
   } finally { h.cleanup() }
 })
