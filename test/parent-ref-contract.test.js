@@ -87,3 +87,15 @@ test('parentTaskFor 全局最新非空 + id tie-breaker + 跨 agent 隔离', asy
     assert.equal(store.parentTaskFor({ agentId: 'agent-a', taskRef: 'T-9' }), 'P-Z')
   } finally { store.close(); rmSync(dir, { recursive: true, force: true }) }
 })
+test('不变量：schema user_version==15 与 protocolVersion==0.4 不随本实现变化', async () => {
+  const { PROTOCOL_VERSION } = await import('../lib/protocol.js')
+  const { DatabaseSync } = await import('node:sqlite')
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-parentref-inv-'))
+  const dbPath = join(dir, 'lines.db')
+  const store = new LineStore(dbPath); store.close()
+  const db = new DatabaseSync(dbPath)
+  try {
+    assert.equal(db.prepare('PRAGMA user_version').get().user_version, 15)
+    assert.equal(PROTOCOL_VERSION, '0.4')
+  } finally { db.close(); rmSync(dir, { recursive: true, force: true }) }
+})
