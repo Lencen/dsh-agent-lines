@@ -15,7 +15,7 @@ L1 管理线会话（用户只说目标）
 - L2 管活：拆解、判断"自己做还是开 L3"、产出与自检、回 L1；
 - L3 管并行：子任务、交叉验证、一次性质量点；
 - 官方任务板 owner 只能是 teammate（L1/L2 不能当 owner，只读映射）；
-- **任务树的父子关系由 lines 层投影**（`parentTaskRef` → `parentTaskId`）：官方任务板不提供 `parentTaskId`，board 只给引用；官方任务的 `officialTaskId` 只在本团队内有效，不等同于 lines 的任务 id；
+- **跨层父子关联唯一键是 `parentTaskRef`**（lines 层全局投影：按 taskRef 取最新非空 `parent_task_ref`，不限 to_line/task_scope）；官方任务板不提供 `parentTaskId`，输出中的 `parentTaskId` 是 **deprecated alias**，由 `parentTaskRef` 派生（同值），不再从官方任务独立投影；官方任务的 `officialTaskId` 只在本团队内有效，不等同于 lines 的任务 id；
 - 记忆与交付证据在文件里（唯一事实源）。
 
 ## 谁干活：L2 自己做，还是开 L3
@@ -56,9 +56,18 @@ manager 自动：
 
 快照文件（`team-board.json` / `team-metrics.json`）带 `schemaVersion` 与 `protocolVersion`；消费方**忽略未知字段**，新字段只增不改（0.9.0 S2 / F7）。
 
-- tasks：id、subject、status、ownerName、ownerLine、blockedBy、staleOwner、**parentTaskId**（由 lines 层按 `parentTaskRef` 投影，官方任务板不提供）；
+- tasks：id、subject、status、ownerName、ownerLine、blockedBy、staleOwner、**parentTaskRef**（唯一关联键，lines 投影）+ **parentTaskId**（deprecated alias，由 parentTaskRef 派生；官方任务板不提供）；
 - lines：label、role、session、在线、未读、activity；
 - inbox：pending_approval、blocked、stale_owner、line_offline、unavailable。
+
+### lineTasks 计数与 byTaskRef 口径（0.12.0）
+
+- `total/byState/byLine.total` = **消息条数**（union 口径，语义不变）；
+- `taskCount` = 非空 `task_ref` 的全局 distinct 数（null 不计、不按 kind 过滤）；`byLine[].taskCount` 按线计（各线之和可大于全局）；
+- `nullTaskRefCount` = union 中 `kind='task' AND task_ref IS NULL` 的消息数（**通常为 0**）；
+- `byTaskRef[]` = 按 taskRef 的全量聚合（messageCount/byState/byLine/firstAt/latestAt/parentTaskRef），按 latestAt 倒序；
+- `since` **只作用于 `byTaskRef[]`**（latestAt ≥ since），不影响 total/byState/byLine/recent；回显 `since`、`byTaskRefWindow`（since/taskRefCount/messageCount/latestAt）、`filteredCount`、`nextBefore`、`hasMore`；
+- **`byTaskRef` ≠ 官方 L3 `team-board.tasks`**：前者来自 lines messages（L2 口径），后者来自官方任务板（官方 task.id 口径），不得合并/互相覆盖。
 
 ## 只看不写
 

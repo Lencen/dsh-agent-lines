@@ -80,8 +80,8 @@ Manager-only unless noted. "Delivered" = peer messages addressed to the calling 
 | `line_observe` | manager | `line?`, `since?`, `limit?` | Read-only cross-line feed |
 | `line_communications` | manager | filters | Read-only communication board |
 | `line_metrics` | manager | `days?` | Read-only data board: messages (+ `messages.ackOverdue`) and token trend — top-level `tokens.total/today/window/perDay[]` are **totalTokens** (uncached input + output + cache read/write), plus `outputTotal/todayOutput/windowOutput/perDayOutput`, `inputTokens/cacheReadTokens/cacheWriteTokens`, `perMessage/samples/sampleIntervalMs/windowDays/timezoneOffsetMinutes/basis`; per line `tokens.byLine[].decodeTokens(output)/outputTokens/inputTokens/cacheReadTokens/cacheWriteTokens/totalTokens/today/todayOutput/window/windowOutput/ratePerMinute/samples` |
-| `line_team_board` | manager | — | Read-only DSH official Agent Teams plugin (built into DSH) board + host snapshot |
-| `line_department_board` | manager | `line` | Lazily read one line's official team/tasks |
+| `line_team_board` | manager | `byTaskRef?` | Read-only DSH official Agent Teams plugin (built into DSH) board + host snapshot; tasks carry `parentTaskRef` + deprecated `parentTaskId` alias; `byTaskRef` filters tasks by parentTaskRef |
+| `line_department_board` | manager | `line`, `byTaskRef?` | Lazily read one line's official team/tasks; same parentTaskRef/parentTaskId alias and `byTaskRef` filter |
 
 ## 4. Hard constraints (MUST / MUST NOT)
 

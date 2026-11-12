@@ -166,8 +166,12 @@ const PAIRS = [
     ['docs/AGENT-TEAMS.md', 'subteamPolicy'],
     ['docs/AGENT-TEAMS.md', 'parentTaskId'],
     ['docs/AGENT-TEAMS.md', 'parentTaskRef'],
+    ['docs/AGENT-TEAMS.md', 'byTaskRef'],
+    ['docs/AGENT-TEAMS.md', 'nullTaskRefCount'],
     ['docs/en/AGENT-TEAMS.md', 'parentTaskId'],
     ['docs/en/AGENT-TEAMS.md', 'parentTaskRef'],
+    ['docs/en/AGENT-TEAMS.md', 'byTaskRef'],
+    ['docs/en/AGENT-TEAMS.md', 'nullTaskRefCount'],
   ]
   const bad = need.filter(([f, k]) => !read(f).includes(k)).map(([f, k]) => f + ' missing ' + k)
   if (bad.length === 0) ok('C10 key fields documented')

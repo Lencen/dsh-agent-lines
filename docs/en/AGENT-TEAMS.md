@@ -15,7 +15,7 @@ L1 manager session (the user only states goals)
 - L2 owns the work: decompose, decide "do it myself or open L3", produce and self-check, report back.
 - L3 owns parallelism: subtasks, cross-verification, one-off quality points.
 - The official task board owner can only be a teammate (L1/L2 cannot own tasks; read-only mapping).
-- **Task-tree parent/child relations are projected by the lines layer** (`parentTaskRef` → `parentTaskId`): the official board does not expose this field; the board only carries the reference.
+- **The only cross-layer parent key is `parentTaskRef`** (projected globally by the lines layer: latest non-null `parent_task_ref` per taskRef, not limited by to_line/task_scope). The official board does not expose `parentTaskId`; the output `parentTaskId` is a **deprecated alias derived from `parentTaskRef`** (same value), not an independent projection from the official board.
 - Memory and evidence live in files (single source of truth).
 
 ## Who does the work: L2 or L3
@@ -51,9 +51,18 @@ When the manager calls the board, the plugin writes DSH_HOME/agent-lines/team-bo
 
 Snapshot files (`team-board.json` / `team-metrics.json`) carry `schemaVersion` and `protocolVersion`; consumers **ignore unknown fields**, new fields are additive only (0.9.0 S2 / F7).
 
-- tasks: id, subject, status, ownerName, ownerLine, blockedBy, staleOwner, **parentTaskId** (projected by the lines layer from `parentTaskRef`; the official board does not provide it);
+- tasks: id, subject, status, ownerName, ownerLine, blockedBy, staleOwner, **parentTaskRef** (the only parent key, projected by the lines layer) + **parentTaskId** (deprecated alias derived from parentTaskRef; the official board does not provide it);
 - lines: label, role, session, online, unread, activity;
 - inbox: pending_approval, blocked, stale_owner, line_offline, unavailable.
+
+### lineTasks counts and byTaskRef semantics (0.12.0)
+
+- `total/byState/byLine.total` = **message counts** (union semantics, unchanged);
+- `taskCount` = global distinct non-null `task_ref` (null excluded, no kind filter); `byLine[].taskCount` is per line (sum may exceed the global count);
+- `nullTaskRefCount` = union rows with `kind='task' AND task_ref IS NULL` (**usually 0**);
+- `byTaskRef[]` = full per-taskRef aggregation (messageCount/byState/byLine/firstAt/latestAt/parentTaskRef), sorted by latestAt desc;
+- `since` **only filters `byTaskRef[]`** (latestAt >= since); it does not affect total/byState/byLine/recent; echoes `since`, `byTaskRefWindow` (since/taskRefCount/messageCount/latestAt), `filteredCount`, `nextBefore`, `hasMore`;
+- **`byTaskRef` ≠ official L3 `team-board.tasks`**: the former comes from lines messages (L2 semantics), the latter from the official task board (official task.id semantics); never merge or overwrite them.
 
 ## Read-only
 
