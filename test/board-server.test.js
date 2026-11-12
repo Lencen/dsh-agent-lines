@@ -191,6 +191,7 @@ test('0.11.3 /api/live exposes lineTasks and no stale tokens field', async () =>
   store.acquire({ agentId: 'agent-demo', line: 'manager', sessionId: 's-m', instanceId: 'i-m', ttlMs: 60000 })
   store.acquire({ agentId: 'agent-demo', line: 'writer', sessionId: 's-w', instanceId: 'i-w', ttlMs: 60000 })
   store.send({ agentId: 'agent-demo', fromLine: 'manager', to: 'writer', text: '写第 1 章', kind: 'task', taskRef: 'T-1' })
+  store.send({ agentId: 'agent-demo', fromLine: 'manager', to: 'writer', text: '子任务', kind: 'task', taskRef: 'T-2', parentTaskRef: 'T-1' })
   store.send({ agentId: 'agent-demo', fromLine: 'manager', to: 'writer', text: '普通消息' })
   store.close()
   const { server, url } = await startBoardServer({ dir, dbPath, host: '127.0.0.1', port: 0 })
@@ -198,10 +199,12 @@ test('0.11.3 /api/live exposes lineTasks and no stale tokens field', async () =>
     const payload = await (await fetch(new URL('/api/live', url))).json()
     assert.equal(payload.tokens, undefined)
     assert.equal(payload.lineTasks.available, true)
-    assert.equal(payload.lineTasks.total, 1)
+    assert.equal(payload.lineTasks.total, 2)
     assert.equal(payload.lineTasks.byLine[0].line, 'writer')
-    assert.equal(payload.lineTasks.recent[0].taskRef, 'T-1')
-    assert.match(payload.lineTasks.recent[0].summary, /写第 1 章/)
+    const child = payload.lineTasks.recent.find(row => row.taskRef === 'T-2')
+    assert.ok(child, 'T-2 present')
+    assert.equal(child.parentTaskRef, 'T-1')
+    assert.equal(payload.lineTasks.recent.find(row => row.taskRef === 'T-1').parentTaskRef, null)
   } finally { await new Promise(resolve => server.close(resolve)); rmSync(dir, { recursive: true, force: true }) }
 })
 
