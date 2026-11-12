@@ -68,6 +68,11 @@ test('N11: line_team_board 与 line_department_board 全局投影一致（parent
       const full = await (await fetch(new URL('/api/team-board', url))).json()
       assert.equal(full.tasks.length, 1, '/api/team-board 仍返回全量')
     } finally { await new Promise(resolve => server.close(resolve)) }
+    // 部门看板同样：过滤只作用于 payload，部门快照仍全量
+    const noneDept = await h.tools.get('line_department_board').execute({ line: 'writer', byTaskRef: 'nope' }, exec(h.manager))
+    assert.deepEqual(noneDept.tasks, [])
+    const deptSnap = JSON.parse(readFileSync(join(snapDir, 'team-board.writer.json'), 'utf8'))
+    assert.equal(deptSnap.tasks.length, 1, '部门快照仍为全量')
     assert.equal(first.taskRef, 'task-1')
   } finally { h.cleanup() }
 })
