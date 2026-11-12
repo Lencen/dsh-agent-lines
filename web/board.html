@@ -604,36 +604,74 @@ setInterval(function(){if(document.visibilityState==='visible')load(false)},6000
 </script><script>
 (function(){
  var lineMode=true;
- function ltText(s){return esc(String(s==null?'':s))}
+ var lineTaskFilter='all';
+ function ltText(v){return esc(String(v==null?'':v))}
+ function groupState(states){
+  var ss=states||[];
+  if(ss.some(function(s){return s==='failed'||s==='expired'}))return 'failed';
+  if(ss.some(function(s){return s==='queued'||s==='claimed'||s==='delivered'}))return 'open';
+  return 'done';
+ }
+ function stateText(s){return s==='open'?'进行中':s==='failed'?'失败/过期':'已确认'}
+ function stateClass(s){return s==='open'?'badge-warn':s==='failed'?'badge-danger':'badge-ok'}
+ function fmtTime(ms){try{return ms?new Date(ms).toLocaleTimeString('zh-CN',{hour12:false}):'—'}catch(e){return '—'}}
+ function groupsOf(){
+  var lt=DATA.lineTasks||{};
+  var recent=Array.isArray(lt.recent)?lt.recent:[];
+  var map={};
+  recent.forEach(function(m){
+   var ref=m.taskRef?String(m.taskRef):('msg:'+String(m.id||''));
+   if(!map[ref])map[ref]={ref:ref,label:m.taskRef?'taskRef '+m.taskRef:'未关联任务',messages:[],from:{},to:{},states:[],latestAt:0};
+   var g=map[ref];g.messages.push(m);g.from[m.from]=1;g.to[m.to]=1;g.states.push(m.state);g.latestAt=Math.max(g.latestAt,Number(m.createdAt)||0);
+  });
+  return Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return b.latestAt-a.latestAt});
+ }
  function renderLineTasks(){
   var box=document.getElementById('line-tasks-list');if(!box)return;
   var lt=DATA.lineTasks;
-  if(!lt||lt.available===false){box.innerHTML='<div class="section"><div class="muted">线层任务不可得（/api/live 未提供 lineTasks）</div></div>';return}
+  if(!lt||lt.available===false){box.innerHTML='<div class="section"><div class="muted">线任务不可得（/api/live 未提供 lineTasks）</div></div>';return}
+  var groups=groupsOf();
+  var counts={open:0,done:0,failed:0};
+  groups.forEach(function(g){counts[groupState(g.states)]++});
   var byState=lt.byState||{},total=Number(lt.total)||0;
-  var html='<div class="section"><div class="kv"><span class="k">任务消息</span><span class="v">'+total+'</span><span class="k">进行中</span><span>'+(Number(byState.queued)||0)+(Number(byState.claimed)||0)+(Number(byState.delivered)||0)+'</span><span class="k">已确认</span><span>'+(Number(byState.acked)||0)+'</span><span class="k">失败/过期</span><span>'+(Number(byState.failed)||0)+(Number(byState.expired)||0)+'</span></div><div class="muted" style="margin-top:6px">来源：line_send(kind="task") / taskRef 消息；不是官方任务 DAG，只读聚合。</div></div>';
+  var html='<div class="section"><div class="kv"><span class="k">线任务</span><span class="v">'+groups.length+'</span><span class="k">任务消息</span><span>'+(total||groups.reduce(function(n,g){return n+g.messages.length},0))+'</span><span class="k">进行中</span><span>'+counts.open+'</span><span class="k">已确认</span><span>'+counts.done+'</span><span class="k">失败/过期</span><span>'+counts.failed+'</span></div><div class="muted" style="margin-top:6px">来源：line_send(kind="task") / taskRef 消息；按 taskRef 聚合，不是官方任务 DAG，只读。</div></div>';
+  html+='<div class="chips" style="margin-top:12px"><button class="chip" data-line-filter="all" aria-pressed="'+(lineTaskFilter==='all')+'">全部</button><button class="chip" data-line-filter="open" aria-pressed="'+(lineTaskFilter==='open')+'">进行中</button><button class="chip" data-line-filter="done" aria-pressed="'+(lineTaskFilter==='done')+'">已确认</button><button class="chip" data-line-filter="failed" aria-pressed="'+(lineTaskFilter==='failed')+'">失败/过期</button></div>';
+  var shown=groups.filter(function(g){return lineTaskFilter==='all'||groupState(g.states)===lineTaskFilter});
+  if(!shown.length){html+='<div class="section"><div class="muted">暂无匹配的线任务</div></div>'}
+  shown.forEach(function(g){
+   var st=groupState(g.states);var who=Object.keys(g.from).concat(Object.keys(g.to)).filter(function(v,i,a){return a.indexOf(v)===i}).join(' / ');
+   var last=g.messages[g.messages.length-1]||{};
+   html+='<div class="mission" data-line-task="'+ltText(g.ref)+'" role="button" tabindex="0"><div class="mission-head"><b>'+ltText(g.label)+'</b><span class="badge '+stateClass(st)+'">'+stateText(st)+'</span><span class="tag tag-lines">线任务</span><span class="grow"></span><span class="muted">'+g.messages.length+' 条消息</span></div><div class="mission-meta"><span>参与：'+ltText(who)+'</span><span>最近：'+ltText(last.from)+' → '+ltText(last.to)+' · '+fmtTime(g.latestAt)+'</span><span>状态：'+ltText(last.state||'')+'</span></div><div class="muted" style="margin-top:8px">'+ltText(String(last.summary||'').slice(0,160))+'</div></div>';
+  });
   var rows=Array.isArray(lt.byLine)?lt.byLine:[];
-  if(rows.length){html+='<div class="section"><table class="tbl"><thead><tr><th>线</th><th>总数</th><th>进行</th><th>已确认</th><th>失败</th></tr></thead><tbody>';rows.forEach(function(r){html+='<tr><td>'+ltText(r.line)+'</td><td>'+Number(r.total||0)+'</td><td>'+Number(r.open||0)+'</td><td>'+Number(r.acked||0)+'</td><td>'+Number(r.failed||0)+'</td></tr>'});html+='</tbody></table></div>'}
-  var recent=Array.isArray(lt.recent)?lt.recent:[];
-  html+='<div class="section"><div class="h">最近 '+recent.length+' 条</div>';
-  if(!recent.length)html+='<div class="muted">暂无线层任务消息</div>';
-  recent.forEach(function(m){html+='<div style="padding:4px 0;border-bottom:1px dashed var(--border)"><div><b>'+ltText(m.from)+'</b> → <b>'+ltText(m.to)+'</b> <span class="badge">'+ltText(m.state)+'</span> '+(m.taskRef?'<span class="muted">taskRef '+ltText(m.taskRef)+'</span>':'')+'</div><div class="muted">'+ltText(String(m.summary||'').slice(0,120))+'</div></div>'});
-  html+='</div>';
+  if(rows.length){html+='<div class="section"><div class="h">按线统计</div><table class="tbl"><thead><tr><th>线</th><th>总数</th><th>进行</th><th>已确认</th><th>失败</th></tr></thead><tbody>';rows.forEach(function(r){html+='<tr><td>'+ltText(r.line)+'</td><td>'+Number(r.total||0)+'</td><td>'+Number(r.open||0)+'</td><td>'+Number(r.acked||0)+'</td><td>'+Number(r.failed||0)+'</td></tr>'});html+='</tbody></table></div>'}
   box.innerHTML=html;
+  box.querySelectorAll('[data-line-filter]').forEach(function(btn){btn.onclick=function(){lineTaskFilter=btn.getAttribute('data-line-filter');renderLineTasks()}});
+  box.querySelectorAll('.mission[data-line-task]').forEach(function(el){el.onclick=function(){showLineTask(el.getAttribute('data-line-task'))};el.onkeydown=function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();showLineTask(el.getAttribute('data-line-task'))}}});
+ }
+ function showLineTask(ref){
+  var g=groupsOf().filter(function(x){return x.ref===ref})[0];if(!g)return;
+  var st=groupState(g.states);var who=Object.keys(g.from).concat(Object.keys(g.to)).filter(function(v,i,a){return a.indexOf(v)===i}).join(' / ');
+  var body='<div class="groups"><div class="group"><h4>任务</h4><div class="section"><div class="kv2"><span class="k">taskRef</span><span class="v">'+ltText(g.label)+'</span><span class="k">状态</span><span><span class="badge '+stateClass(st)+'">'+stateText(st)+'</span></span><span class="k">参与</span><span>'+ltText(who)+'</span><span class="k">消息</span><span>'+g.messages.length+' 条</span><span class="k">最近</span><span>'+fmtTime(g.latestAt)+'</span></div></div></div>';
+  body+='<div class="group"><h4>消息时间线</h4>';
+  g.messages.slice().sort(function(a,b){return Number(a.createdAt)-Number(b.createdAt)}).forEach(function(m){body+='<div class="section"><div><b>'+ltText(m.from)+'</b> → <b>'+ltText(m.to)+'</b> <span class="badge">'+ltText(m.state||'')+'</span> <span class="muted">'+fmtTime(Number(m.createdAt))+'</span></div><div style="margin-top:6px">'+ltText(String(m.summary||''))+'</div></div>'});
+  body+='</div><div class="group"><h4>说明</h4><div class="section"><div class="muted">线任务来自 line_send(kind="task") / taskRef 消息，只读聚合；不是官方 Agent Teams 任务 DAG。</div></div></div></div>';
+  renderDrawer('线任务 · '+g.label,body);
  }
  function applyMode(){
   var list=document.getElementById('line-tasks-list');var missions=document.getElementById('missions');
   var lineBtn=document.getElementById('tab-line-tasks');var active=document.getElementById('tab-active');var hist=document.getElementById('tab-history');
   if(!list||!missions)return;
-  if(lineMode){if(missions)missions.classList.add('hidden');list.classList.remove('hidden');if(lineBtn)lineBtn.setAttribute('aria-selected','true');if(active)active.setAttribute('aria-selected','false');if(hist)hist.setAttribute('aria-selected','false');renderLineTasks()}
-  else{if(missions)missions.classList.remove('hidden');list.classList.add('hidden');if(lineBtn)lineBtn.setAttribute('aria-selected','false')}
+  if(lineMode){missions.classList.add('hidden');list.classList.remove('hidden');if(lineBtn)lineBtn.setAttribute('aria-selected','true');if(active)active.setAttribute('aria-selected','false');if(hist)hist.setAttribute('aria-selected','false');renderLineTasks()}
+  else{missions.classList.remove('hidden');list.classList.add('hidden');if(lineBtn)lineBtn.setAttribute('aria-selected','false')}
  }
  function install(){
-  var hist=document.getElementById('tab-history');if(!hist||document.getElementById('tab-line-tasks'))return;
-  var active=document.getElementById('tab-active');
+  if(document.getElementById('tab-line-tasks'))return;
+  var active=document.getElementById('tab-active');var hist=document.getElementById('tab-history');if(!active||!hist)return;
   var btn=document.createElement('button');btn.className='tab';btn.id='tab-line-tasks';btn.setAttribute('role','tab');btn.setAttribute('aria-selected','true');btn.title='默认视图：以 line_send(task) / taskRef 聚合的任务消息';btn.textContent='线层任务';active.parentNode.insertBefore(btn,active);
   var list=document.createElement('div');list.id='line-tasks-list';list.className='hidden';var missions=document.getElementById('missions');missions.parentNode.insertBefore(list,missions.nextSibling);
   btn.onclick=function(){lineMode=true;applyMode()};
-  document.getElementById('tab-active').addEventListener('click',function(){lineMode=false;applyMode()});
+  active.addEventListener('click',function(){lineMode=false;applyMode()});
   hist.addEventListener('click',function(){lineMode=false;applyMode()});
   setInterval(function(){if(lineMode)renderLineTasks()},2000);
   applyMode();

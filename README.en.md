@@ -199,7 +199,7 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 - Adds `line_handover_manager`: a manager hands the role to an existing live root Session; it does not create a root Session.
 - `line_claim_manager` / manager handover now tags the old manager Session with `【退役YYMMDD】` when it is live; the handover is written to line_events.
-- Board tasks default to line-layer tasks (official tasks remain a secondary tab).
+- Board tasks default to line-layer tasks: taskRef cards, status filters, and a message-timeline detail drawer; official tasks remain a secondary tab.
 - Tool count 26 → 27; no schema or protocol changes; schema v15 and protocolVersion 0.4 unchanged.
 - An already-offline Session cannot be renamed through the plugin (DSH public API limit); finish it during handover.
 

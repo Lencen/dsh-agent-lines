@@ -200,7 +200,7 @@ L1 管理线会话（用户只说目标）
 
 - 新增 `line_handover_manager`：manager 把负责人角色交给一个已存在的 live 根 Session；不创建新 root。
 - `line_claim_manager` / 负责人交接在旧 manager 在线时自动给旧 Session 加 `【退役YYMMDD】` 标题；交接事件写入 line_events。
-- 看板任务页默认显示线层任务（官方任务保留为次级页签）。
+- 看板任务页默认显示线层任务：按 taskRef 聚合卡片，支持筛选和点击看消息时间线；官方任务保留为次级页签。
 - 工具数 26 → 27；无 schema / protocol 变更；schema v15、protocolVersion 0.4 不变。
 - 已下线 Session 不能靠插件补 rename（DSH 公开 API 限制）；必须在交接时完成。
 
