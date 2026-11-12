@@ -8,7 +8,7 @@ English | [中文](CHANGELOG.md)
 
 - **Manager handover tool**: adds line_handover_manager (manager-only, confirm: "handover-manager") to hand the manager role to an existing live root Session; it does not create a root Session.
 - **Automatic old-manager retirement**: line_claim_manager and line_handover_manager tag the old manager Session with 【退役YYMMDD】 when it is live; the handover is written to line_events (rebind).
-- **Board tasks default to line-layer tasks**: the primary tab groups line_send(task)/taskRef messages into task cards with status filters and a message-timeline detail drawer; official tasks remain a secondary tab.
+- **Board tasks default to line-layer tasks**: the primary tab groups line_send(task)/taskRef messages into task cards with status filters and a message-timeline detail drawer; the org view shows L2 line tasks and L3 split tasks; official tasks remain a secondary tab.
 - **Tool count 26 → 27**; no schema or protocol changes; schema v15 and protocolVersion 0.4 unchanged.
 - **Boundary**: an already-offline Session cannot be renamed through the plugin (DSH public API limit); finish it during handover.
 
