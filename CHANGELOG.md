@@ -8,6 +8,7 @@
 
 - **负责人交接工具**：新增 line_handover_manager（manager-only，confirm: "handover-manager"），把负责人角色交给已存在的 live 根 Session；不创建 root Session。
 - **旧负责人自动退役**：line_claim_manager 与 line_handover_manager 在旧 manager 在线时自动给旧 Session 标题加 【退役YYMMDD】；交接写入 line_events（rebind）。
+- **看板任务页默认显示线层任务**：线层任务为主页签，官方任务保留为次级页签；line_send(task)/taskRef 团队打开即可看到任务。
 - **工具数 26 → 27**；无 schema / protocol 变更；schema v15、protocolVersion 0.4 不变。
 - **边界**：已下线 Session 不能靠插件补 rename（DSH 公开 API 限制）；必须在交接时完成。
 

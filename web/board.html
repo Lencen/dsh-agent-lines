@@ -603,7 +603,7 @@ setInterval(function(){if(document.visibilityState==='visible')load(false)},6000
 })();
 </script><script>
 (function(){
- var lineMode=false;
+ var lineMode=true;
  function ltText(s){return esc(String(s==null?'':s))}
  function renderLineTasks(){
   var box=document.getElementById('line-tasks-list');if(!box)return;
@@ -629,7 +629,8 @@ setInterval(function(){if(document.visibilityState==='visible')load(false)},6000
  }
  function install(){
   var hist=document.getElementById('tab-history');if(!hist||document.getElementById('tab-line-tasks'))return;
-  var btn=document.createElement('button');btn.className='tab';btn.id='tab-line-tasks';btn.setAttribute('role','tab');btn.setAttribute('aria-selected','false');btn.textContent='线层任务';hist.parentNode.insertBefore(btn,hist.nextSibling);
+  var active=document.getElementById('tab-active');
+  var btn=document.createElement('button');btn.className='tab';btn.id='tab-line-tasks';btn.setAttribute('role','tab');btn.setAttribute('aria-selected','true');btn.title='默认视图：以 line_send(task) / taskRef 聚合的任务消息';btn.textContent='线层任务';active.parentNode.insertBefore(btn,active);
   var list=document.createElement('div');list.id='line-tasks-list';list.className='hidden';var missions=document.getElementById('missions');missions.parentNode.insertBefore(list,missions.nextSibling);
   btn.onclick=function(){lineMode=true;applyMode()};
   document.getElementById('tab-active').addEventListener('click',function(){lineMode=false;applyMode()});
