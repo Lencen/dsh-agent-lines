@@ -75,3 +75,8 @@ For failed messages (until G1 is fixed): `dsh-agent-lines --json tail --line <li
 
 - DSH sidebar titles can be renamed manually and may drift from the DB title / charter header; the plugin cannot read sidebar titles today, so this is a **documented convention only**; the read-only titleCheck API lands in 0.13.
 - The board reads only the DB and charters: it can show registry-vs-title mismatches but not sidebar drift.
+
+## 7. 0.13 backlog: five-block overview redesign
+
+- The 0.12.0 board integration covers the L1.5 list in the tasks view, standalone work-item/member pages and four metrics; it does **not** include the five-block overview redesign (goal / plan / workflow / rhythm / L1.5).
+- That redesign is planned for 0.13; the overview stays as-is until then.

@@ -195,9 +195,10 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.12.0: Board 2.0 redesign + line-task layering (current release)
+### 0.12.0: Board enhancements (L1.5 list / standalone detail / member page / 4 metrics) + line-task layering (current release)
 
-- **Board 2.0**: five overview blocks (goal / plan / workflow / rhythm / L1.5 work items); work-item list + standalone detail page with gantt (timeline / table) and four metrics (L2/L3 counts, agent runs, token usage); standalone member page with shared avatars.
+- **Board enhancements**: a full L1.5 work-item list at the top of the tasks view (four metrics: L2/L3 counts, agent runs, token usage); a standalone work-item detail page (gantt with timeline / table views); a standalone member page with shared avatars; the old detail drawer is kept as a fallback.
+- **Not in this release**: the five-block overview redesign (goal / plan / workflow / rhythm / L1.5), planned for 0.13 (see KNOWN_ISSUES).
 - **Data semantics (important)**: L2 timings are real; **planned timings are not collected**; agent runs and token usage are **line-sampled estimates**, not billing; **tokens are not additive across work items**.
 - **Handover / line tasks / layering**: create:true root creation, old-manager retirement, board task view defaults to line tasks grouped by taskRef (0.11.6 content folded in).
 - Doc gates C14 / C14b / D1; 46/46 error codes; 27 tools; schema v15 / protocolVersion 0.4 unchanged.
