@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current release: v0.11.5 (2026-11-11) — articles and bilingual docs. 0.11.6 content (manager handover, retired tagging, board line-task view) is folded into 0.12.0 and not released yet.
+> Current release: v0.12.0 (2026-11-26) — Board 2.0 redesign, line-task layering, manager handover automation.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -195,6 +195,13 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.12.0: Board 2.0 redesign + line-task layering (current release)
+
+- **Board 2.0**: five overview blocks (goal / plan / workflow / rhythm / L1.5 work items); work-item list + standalone detail page with gantt (timeline / table) and four metrics (L2/L3 counts, agent runs, token usage); standalone member page with shared avatars.
+- **Data semantics (important)**: L2 timings are real; **planned timings are not collected**; agent runs and token usage are **line-sampled estimates**, not billing; **tokens are not additive across work items**.
+- **Handover / line tasks / layering**: create:true root creation, old-manager retirement, board task view defaults to line tasks grouped by taskRef (0.11.6 content folded in).
+- Doc gates C14 / C14b / D1; 46/46 error codes; 27 tools; schema v15 / protocolVersion 0.4 unchanged.
+
 ### 0.11.6: Manager handover + old manager retirement (not released on its own; folded into 0.12.0)
 
 - Adds `line_handover_manager`: a manager hands the role to a live root Session; from 0.12.0, create:true can create a new root automatically.
@@ -203,7 +210,7 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 - Tool count 26 → 27; no schema or protocol changes; schema v15 and protocolVersion 0.4 unchanged.
 - An already-offline Session cannot be renamed through the plugin (DSH public API limit); finish it during handover.
 
-### 0.11.5: Articles and bilingual docs (current release)
+### 0.11.5: Articles and bilingual docs
 
 - Added the short article "Reflections on AI Organizations" and the paper "From Workflow to Position: Organizational Design for Long-Lived AI Teams," each in Chinese and English; Chinese files use Chinese names and English files use English names.
 - README links the articles; the docs-consistency gate covers the zh/en article pairs.
@@ -365,7 +372,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.11.5.tgz
+    bash install.sh ./dsh-agent-lines-0.12.0.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -658,7 +665,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current release `0.11.5` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current release `0.12.0` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 
@@ -674,3 +681,10 @@ See [CONTRIBUTING.en.md](CONTRIBUTING.en.md); code of conduct [CODE_OF_CONDUCT.e
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
+## Team creation naming convention (0.12.0+)
+
+- **label**: lowercase kebab (e.g. dev, qa, release), unique within a team, ideally equal to the role; the existing pattern still applies (no uppercase or CJK).
+- **title**: give the Chinese display name explicitly on create (do not rely on role/label defaults; title should not equal label).
+- **Sidebar title**: prefer "<role name> (<label>)"; when the team name is known, "<team> · <role name> (<label>)".
+- **Keep three names in sync**: DB title / DSH sidebar title / charter header "# <role name> (<label>) charter"; a mismatch means the sidebar shows something different from the board and the manager.
+- **No forced rename for existing teams**: self-check with line_list and fix via line_rename; the read-only titleCheck API lands in 0.13.

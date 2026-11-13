@@ -2,6 +2,18 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.12.0 (2026-11-26)
+
+### Board 2.0 redesign + line-task layering
+
+- **Board 2.0**: overview with five independent blocks (goal / plan / workflow / rhythm / L1.5 work items); L1.5 work-item list, standalone detail page with gantt (timeline / table views) and four metrics (L2/L3 counts, agent runs, token usage); standalone member detail page with a shared avatar component.
+- **Data semantics (important)**: L2 timings come from real messages (firstAt/latestAt); **planned timings are not collected**; agent runs and token usage are **line-sampled estimates**, not billing; **tokens are not additive across work items** (sampling windows / lines may overlap).
+- **Manager handover**: line_handover_manager supports create:true to create a new manager root; old manager auto-retirement (0.11.6 content folded in).
+- **Line tasks and layering**: board task view defaults to line tasks grouped by taskRef, L2/L3 layering, detail drawer; lineTasks exposes parentTaskRef and byTaskRef no longer overrides snapshots (PARENT-REF v0.4).
+- **Doc gates**: C14 / C14b / D1; docs consistency 15 -> 18; PROTOCOL covers all 46 error codes.
+- 27 tools; schema v15 and protocolVersion 0.4 unchanged; no DB migration.
+- **0.11.6 was never released on its own; its content is folded into this version.**
+
 ## 0.11.6 (2026-11-11, unreleased; folded into 0.12.0)
 
 ### Manager handover + old manager retirement

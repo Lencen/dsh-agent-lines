@@ -70,3 +70,8 @@ For failed messages (until G1 is fixed): `dsh-agent-lines --json tail --line <li
 | [DEPLOY](DEPLOY.en.md) | deployment, writer conflicts, operations |
 | [PROTOCOL](PROTOCOL.en.md) | message state machine and error codes |
 | [SECURITY](SECURITY.en.md) | trust model and "what we do not do" |
+
+## 6. Naming drift (known boundary since 0.12.0)
+
+- DSH sidebar titles can be renamed manually and may drift from the DB title / charter header; the plugin cannot read sidebar titles today, so this is a **documented convention only**; the read-only titleCheck API lands in 0.13.
+- The board reads only the DB and charters: it can show registry-vs-title mismatches but not sidebar drift.

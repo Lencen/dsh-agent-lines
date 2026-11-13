@@ -131,3 +131,10 @@ Optional: team-level info (goals / collaboration flow) comes from two optional s
 - Existing 104 line-center charter bodies (positioning / responsibilities / outputs / boundaries / quality / collaboration / dispatch) are **content-sufficient**;
 - This convention adds only three small things: header `label` + `Updated`, fixed section titles, and the registry `charter` path;
 - Old charters keep working without changes: the board maps via registry + title matching and marks `not collected` for gaps, with no migration.
+
+## Naming and consistency (0.12.0+)
+
+- Charter header: "# <role name> (<label>) charter"; the header also carries label / manager / team / version.
+- label: lowercase kebab, unique within the team, ideally equal to the role; title: the Chinese display name, given explicitly on create.
+- Keep three names in sync (DB title / DSH sidebar title / charter header); the board can only read DB and charter, so sidebar drift needs a tool-layer check.
+- Self-check for existing teams: list label/title via line_list, compare with the sidebar, fix via line_rename, and sync the charter header and registry.json name.

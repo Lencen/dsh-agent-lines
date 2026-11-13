@@ -70,3 +70,8 @@
 | [DEPLOY](DEPLOY.md) | 部署、writer 冲突、运维 |
 | [PROTOCOL](PROTOCOL.md) | 消息状态机与错误码 |
 | [SECURITY](SECURITY.md) | 信任模型与"没做什么" |
+
+## 六、命名漂移（0.12.0 起的已知边界）
+
+- DSH 侧栏标题可被用户手动修改，与 DB title / 章程头部可能不一致；插件当前无法读侧栏标题，因此**只做文档约定**，只读检测接口（titleCheck）在 0.13 提供。
+- 看板只读 DB 与章程，能看到 registry vs title 的不一致，但看不到侧栏漂移。

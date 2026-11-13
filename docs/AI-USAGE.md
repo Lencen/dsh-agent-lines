@@ -123,3 +123,10 @@ line_handoff({ line: "writer", sections: {
 | [AGENT-TEAMS.md](AGENT-TEAMS.md) | DSH 官方智能体团队插件（DSH内置） 只读融合 |
 | [DEPLOY.md](DEPLOY.md) | 部署、配置、writer 冲突 |
 | [PHILOSOPHY.md](PHILOSOPHY.md) | 设计思想与不变量 I1–I7 |
+
+## 9. 建团队命名规范（0.12.0 起）
+
+- 建线时必须同时给 **label（小写 kebab）** 与 **title（中文角色名）**；不要依赖默认 title。
+- 侧栏标题按「<角色名>（<label>）」生成；团队名可得时加团队前缀。
+- 建完后用 line_list 核对：label / title / 侧栏标题 / 章程头部四处是否一致；不一致用 line_rename 修正。
+- 存量团队不强制改名，但新团队必须遵守。

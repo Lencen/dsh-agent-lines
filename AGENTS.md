@@ -143,3 +143,4 @@ npm run test:board-e2e -- --require-chrome  # release gate: headless board rende
 4. Assuming a missing ack should be retried automatically → never; report and decide.
 5. Assuming the official task board can be written to → read-only fusion.
 6. Assuming cross-machine/multi-active → local only.
+7. Assuming a line display name stays in sync with its label/charter → DSH sidebar titles can be renamed externally; verify with `line_list` and fix via `line_rename` (see README naming convention).
