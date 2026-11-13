@@ -32,7 +32,7 @@ dsh-agent-lines 是 DSH Host 插件，运行在 DSH 进程内，拥有该进程�
 ## 身份与伪造
 
 - 发送方身份来自本地 DB 注册的线，不是模型自己填的字段。
-- 工具层会拒绝当前进程不服务的 Session 调用（LINE_WRONG_SESSION）。
+- 工具层会拒绝当前进程不服务的 Session 调用（LINE_NOT_BOUND）。
 - 0.3.x 的 DB 是本地且受信任的；没有密码学发送方签名。能写 DB 的本地用户可以伪造消息。
 
 ## 建线

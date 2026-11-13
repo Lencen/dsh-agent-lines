@@ -153,12 +153,12 @@ line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作
 | LINE_NOT_DELIVERED | 投递前 ack |
 | LINE_MESSAGE_TOO_LARGE | 正文超过 maxMessageBytes |
 | LINE_NETWORK_FILESYSTEM | DB 位于 NFS/CIFS/SMB/FUSE |
-| LINE_WRONG_SESSION / LINE_NOT_BOUND | 从当前进程不服务的 Session 调用工具 |
+| LINE_NOT_BOUND | 从当前进程不服务的 Session 调用工具 |
 | LINE_LIMIT | line_create 会超过 maxLines |
 | LINE_CREATE_DISABLED | 该 profile 未启用 allowCreate |
 | LINE_CREATE_FORBIDDEN | 调用方不是配置的 createFrom manager |
 | LINE_SESSION_BOUND | claim 目标已绑定到另一条线 |
-| SESSION_NOT_LIVE / NOT_ROOT | claim 目标不是 live 根 Session |
+| NOT_MANAGER_LINE / SESSION_NOT_LIVE / NOT_ROOT | claim 拒绝原因（非 LineError，写入 claims 表） |
 | LINE_INVALID_ARGUMENT | 工具参数非法，例如 limit |
 | LINE_PROTOCOL_MISMATCH | 信封 `protocolVersion` major 与本实现不同；消息不投递，落 failed |
 | LINE_HIBERNATING | 目标线处于休眠（0.10.0+）；先 `line_wake` 再发送 |
@@ -172,4 +172,21 @@ line_move_workspace({ line, workspace }) 把已有线 Session 挂到已有工作
 | LINE_NO_REPLY | 回复 noReply 消息 |
 | LINE_REPLY_DEPTH_EXCEEDED | 回复链超过 maxReplyDepth |
 | LINE_REPLY_TARGET_NOT_FOUND | replyTo 指向未知消息 |
+| LINE_AGENT_REQUIRED | 工具调用缺少调用方 agent |
+| LINE_BACKLOG_NOT_EMPTY | migrate=none 但仍有排队/未确认消息 |
+| LINE_CLOSED | 插件正在关闭，拒绝新建线 |
+| LINE_DELIVERY_STATE | 消息当前状态不允许该操作 |
+| LINE_EMPTY_MESSAGE | 正文为空或只有空白 |
+| LINE_INVALID_KIND | kind 不是 info/request/task/alert |
+| LINE_MANAGER_HANDOVER_CONFIRM_REQUIRED | confirm 不是 "handover-manager" |
+| LINE_MANAGER_REBIND_UNSUPPORTED | manager 线不可 rebind，请用 line_claim_manager |
+| LINE_MANAGER_RETIRE_UNSUPPORTED | manager 线不可退役 |
+| LINE_NOT_PENDING_APPROVAL | 消息不在待审批状态 |
+| LINE_REBIND_BUSY | 该线正在 rebind，稍后重试 |
+| LINE_REBINDING | 目标线正在 rebind，暂不可发送 |
+| LINE_REPLACE_ACTIVE | replace 活跃线需要 force:true |
+| LINE_RETIRED | 线已退役：不可发送 / 休眠 / 唤醒 |
+| LINE_SESSION_NOT_FOUND | 目标 Session 不存在（既不 live 也无存档） |
+| LINE_TEAM_NAME_REQUIRED | 未提供 teamRoot 或 teamName |
+| LINE_TEAM_ROOT_REQUIRED | 未配置 teamRoot 且 manager 无 cwd |
 | session/writer-held (DSH) | 另一个 DSH 进程持有目标 Session 的 writer 锁；关闭另一个视图或使用专用 Session |

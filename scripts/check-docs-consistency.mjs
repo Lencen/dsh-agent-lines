@@ -9,6 +9,7 @@
  * 接入：package.json 的 npm test 末尾调用本脚本。
  */
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
 import { dirname, resolve, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -293,6 +294,69 @@ const PAIRS = [
   }
   if (bad.length === 0) ok('C13 AGENTS.md matches code (tools/schema/engines/config keys/links)')
   else fail('C13 AGENTS.md matches code', bad.join('; '))
+}
+
+// ---------- C14 发布声明内部一致（防"包 0.12.0、站点 0.11.6"） ----------
+{
+  const noteZh = read('docs/index.html').match(/最新版本：<b>v(\d+\.\d+\.\d+)<\/b>/)
+  const noteEn = read('docs/en/index.html').match(/Latest version: <b>v(\d+\.\d+\.\d+)<\/b>/)
+  const miz = JSON.parse(read('docs/market-index.json')).plugins?.[0] ?? {}
+  const mie = JSON.parse(read('examples/market-index.json')).plugins?.[0] ?? {}
+  const vals = {
+    'docs/index.html': noteZh === null ? null : noteZh[1],
+    'docs/en/index.html': noteEn === null ? null : noteEn[1],
+    'docs/market-index.json#dist-tags.latest': miz['dist-tags']?.latest ?? null,
+    'docs/market-index.json#versions[0]': miz.versions?.[0]?.version ?? null,
+    'examples/market-index.json#dist-tags.latest': mie['dist-tags']?.latest ?? null,
+    'examples/market-index.json#versions[0]': mie.versions?.[0]?.version ?? null,
+  }
+  const missing = Object.entries(vals).filter(([, v]) => v === null || v === undefined).map(([k]) => k)
+  const values = [...new Set(Object.values(vals).filter(v => v !== null && v !== undefined))]
+  if (missing.length) fail('C14 release claims present', 'missing: ' + missing.join(','))
+  else if (values.length !== 1) fail('C14 release claims consistent', JSON.stringify(vals))
+  else ok('C14 release claims consistent (' + values[0] + ')')
+}
+
+// ---------- C14b 发布声明 == 最高 git tag（防"未发布却说已发布"） ----------
+{
+  const released = (read('docs/index.html').match(/最新版本：<b>v(\d+\.\d+\.\d+)<\/b>/) || [])[1] ?? null
+  let tags = []
+  try {
+    tags = execFileSync('git', ['tag', '--sort=-v:refname'], { cwd: ROOT, encoding: 'utf8', timeout: 5000 })
+      .split('\n').map(t => t.trim()).filter(Boolean).map(t => t.replace(/^v/, ''))
+  } catch { tags = [] }
+  if (tags.length === 0) {
+    checks.push({ name: 'C14b release claims match tag', pass: true, detail: 'SKIP (no git tag available)' })
+    console.log('SKIP C14b release claims match tag (no git tag available)')
+  } else if (released === null) {
+    fail('C14b release claims match tag', 'no released version parsed from docs/index.html')
+  } else if (released !== tags[0]) {
+    fail('C14b release claims match tag', 'released=' + released + ' tag=' + tags[0] + '（按发布序列：commit→打 tag→复跑门禁→publish）')
+  } else {
+    ok('C14b release claims match tag (' + released + ')')
+  }
+}
+
+// ---------- D1 错误码表覆盖（代码 ↔ 中英表三向一致） ----------
+{
+  const codeSrc = read('lib/tools.js') + read('lib/store.js') + read('lib/index.js') + read('lib/protocol.js') + read('lib/delivery.js') + read('lib/team-workspace.js') + read('lib/capabilities.js') + read('bin/dsh-agent-lines.js')
+  const codeSet = new Set([...codeSrc.matchAll(/LINE_[A-Z0-9_]+/g)].map(m => m[0]).filter(c => c !== 'LINE_RE'))
+  const tableSet = (p) => new Set(read(p).split('\n').filter(l => l.startsWith('|')).flatMap(l => [...l.matchAll(/LINE_[A-Z0-9_]+/g)].map(m => m[0])))
+  const zh = tableSet('docs/PROTOCOL.md')
+  const en = tableSet('docs/PROTOCOL.en.md')
+  const missingZh = [...codeSet].filter(c => !zh.has(c)).sort()
+  const ghostZh = [...zh].filter(c => !codeSet.has(c)).sort()
+  const missingEn = [...codeSet].filter(c => !en.has(c)).sort()
+  const ghostEn = [...en].filter(c => !codeSet.has(c)).sort()
+  const zhEnDiff = [...new Set([...[...zh].filter(c => !en.has(c)).map(c => 'zh-only:' + c), ...[...en].filter(c => !zh.has(c)).map(c => 'en-only:' + c)])].sort()
+  const bad = []
+  if (missingZh.length) bad.push('missing in zh: ' + missingZh.join(','))
+  if (ghostZh.length) bad.push('ghost in zh: ' + ghostZh.join(','))
+  if (missingEn.length) bad.push('missing in en: ' + missingEn.join(','))
+  if (ghostEn.length) bad.push('ghost in en: ' + ghostEn.join(','))
+  if (zhEnDiff.length) bad.push('zh/en differ: ' + zhEnDiff.join(','))
+  if (bad.length === 0) ok('D1 error-code table covers code (' + codeSet.size + ')')
+  else fail('D1 error-code table covers code', bad.join('; '))
 }
 
 // ---------- 输出 ----------

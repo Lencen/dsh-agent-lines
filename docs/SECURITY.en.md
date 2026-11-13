@@ -32,7 +32,7 @@ The model is told to evaluate peer messages before acting. This is a prompt-leve
 ## Identity and spoofing
 
 - The sender identity is the line registered in the local DB, not a field supplied by the model.
-- The tool layer rejects calls from a Session this process does not serve (`LINE_WRONG_SESSION`).
+- The tool layer rejects calls from a Session this process does not serve (`LINE_NOT_BOUND`).
 - In 0.3.x the DB is local and trusted; there is no cryptographic sender signature. A local user who can write the DB can forge messages.
 
 ## Line creation

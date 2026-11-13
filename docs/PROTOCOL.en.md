@@ -161,12 +161,12 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
 | `LINE_NOT_DELIVERED` | Ack before delivery |
 | `LINE_MESSAGE_TOO_LARGE` | Body exceeds `maxMessageBytes` |
 | `LINE_NETWORK_FILESYSTEM` | DB is on NFS/CIFS/SMB/FUSE |
-| `LINE_WRONG_SESSION` / `LINE_NOT_BOUND` | Tool called from a Session this process does not serve |
+| `LINE_NOT_BOUND` | Tool called from a Session this process does not serve |
 | `LINE_LIMIT` | `line_create` would exceed `maxLines` |
 | `LINE_CREATE_DISABLED` | This profile did not enable `allowCreate` |
 | `LINE_CREATE_FORBIDDEN` | Caller is not the configured `createFrom` manager |
 | `LINE_SESSION_BOUND` | Claim target is already bound to a different line |
-| `SESSION_NOT_LIVE` / `NOT_ROOT` | Claim target is not a live root Session |
+| `NOT_MANAGER_LINE` / `SESSION_NOT_LIVE` / `NOT_ROOT` | Claim rejection reasons (not LineError; written to the claims table) |
 | `LINE_INVALID_ARGUMENT` | Invalid tool argument, e.g. limit |
 | `LINE_PROTOCOL_MISMATCH` | Envelope `protocolVersion` major differs from this implementation; the message is not delivered and is marked failed |
 | `LINE_HIBERNATING` | The target line is hibernating (0.10.0+); call `line_wake` before sending |
@@ -180,4 +180,21 @@ The new line is an ordinary DSH Session in the same DSH process; no OS process, 
 | `LINE_NO_REPLY` | Reply to a noReply message |
 | `LINE_REPLY_DEPTH_EXCEEDED` | Reply chain exceeds maxReplyDepth |
 | `LINE_REPLY_TARGET_NOT_FOUND` | replyTo names an unknown message |
+| `LINE_AGENT_REQUIRED` | Tool called without a calling agent |
+| `LINE_BACKLOG_NOT_EMPTY` | migrate=none but queued/claimed messages remain |
+| `LINE_CLOSED` | Plugin is shutting down; line_create refused |
+| `LINE_DELIVERY_STATE` | Message state does not allow this operation |
+| `LINE_EMPTY_MESSAGE` | Empty or whitespace-only message text |
+| `LINE_INVALID_KIND` | kind is not info/request/task/alert |
+| `LINE_MANAGER_HANDOVER_CONFIRM_REQUIRED` | confirm is not "handover-manager" |
+| `LINE_MANAGER_REBIND_UNSUPPORTED` | Manager line cannot be rebound; use line_claim_manager |
+| `LINE_MANAGER_RETIRE_UNSUPPORTED` | The manager line cannot be retired |
+| `LINE_NOT_PENDING_APPROVAL` | Message is not pending approval |
+| `LINE_REBIND_BUSY` | Line is already rebinding |
+| `LINE_REBINDING` | Target line is rebinding; retry later |
+| `LINE_REPLACE_ACTIVE` | Replacing an active line requires force:true |
+| `LINE_RETIRED` | Line is retired; cannot send, hibernate or wake |
+| `LINE_SESSION_NOT_FOUND` | Target Session is neither live nor persisted |
+| `LINE_TEAM_NAME_REQUIRED` | teamRoot or teamName is required |
+| `LINE_TEAM_ROOT_REQUIRED` | teamRoot unset and manager Session has no cwd |
 | `session/writer-held` (DSH) | Another DSH process holds the target Session's writer lock; close the other view or use a dedicated Session |
