@@ -2,7 +2,7 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.11.6 (2026-11-13)
+## 0.11.6 (2026-11-11, unreleased; folded into 0.12.0)
 
 ### Manager handover + old manager retirement
 
@@ -12,7 +12,7 @@ English | [中文](CHANGELOG.md)
 - **Tool count 26 → 27**; no schema or protocol changes; schema v15 and protocolVersion 0.4 unchanged.
 - **Boundary**: an already-offline Session cannot be renamed through the plugin (DSH public API limit); finish it during handover.
 
-**0.11.6 is authoritative; 0.11.5 is the fallback.**
+**0.11.6 is not released on its own; the current release is 0.11.5, and the 0.11.6 content is folded into 0.12.0.**
 
 ## 0.11.5 (2026-11-11)
 

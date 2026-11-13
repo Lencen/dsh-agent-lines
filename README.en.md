@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current release: v0.11.6 (2026-11-13) — manager handover automation, automatic retired tagging of the old manager, board line-task view and L2/L3 layering.
+> Current release: v0.11.5 (2026-11-11) — articles and bilingual docs. 0.11.6 content (manager handover, retired tagging, board line-task view) is folded into 0.12.0 and not released yet.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -195,7 +195,7 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.11.6: Manager handover + old manager retirement (current release)
+### 0.11.6: Manager handover + old manager retirement (not released on its own; folded into 0.12.0)
 
 - Adds `line_handover_manager`: a manager hands the role to a live root Session; from 0.12.0, create:true can create a new root automatically.
 - `line_claim_manager` / manager handover now tags the old manager Session with `【退役YYMMDD】` when it is live; the handover is written to line_events.
@@ -203,7 +203,7 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 - Tool count 26 → 27; no schema or protocol changes; schema v15 and protocolVersion 0.4 unchanged.
 - An already-offline Session cannot be renamed through the plugin (DSH public API limit); finish it during handover.
 
-### 0.11.5: Articles and bilingual docs
+### 0.11.5: Articles and bilingual docs (current release)
 
 - Added the short article "Reflections on AI Organizations" and the paper "From Workflow to Position: Organizational Design for Long-Lived AI Teams," each in Chinese and English; Chinese files use Chinese names and English files use English names.
 - README links the articles; the docs-consistency gate covers the zh/en article pairs.
@@ -365,7 +365,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.11.6.tgz
+    bash install.sh ./dsh-agent-lines-0.11.5.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -658,7 +658,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current release `0.11.6` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current release `0.11.5` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 
