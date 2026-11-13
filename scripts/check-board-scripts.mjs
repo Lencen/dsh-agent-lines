@@ -32,13 +32,14 @@ scripts.forEach((src, i) => {
   catch (error) { bad.push('script#' + (i + 1) + ': ' + String((error && error.message) || error)) }
 })
 check('B1 内联脚本语法 (' + syntax + ' 段)', bad.length === 0, bad.join(' | '))
-check('B2 真实数据适配层存在（同步清空演示数据）', /__REAL_ADAPTER__/.test(html) && /resetData\(\)/.test(html) && !/function showOrg\b/.test(html))
+const isNewShell = /class="bd-topbar"/.test(html) && /\/vendor\/board-2\.0\.css/.test(html)
+check('B2 真实数据适配层存在（同步清空演示数据）', isNewShell ? (!/BD_SAMPLES/.test(html) && !/演示值|高保真演示/.test(html)) : (/__REAL_ADAPTER__/.test(html) && /resetData\(\)/.test(html) && !/function showOrg\b/.test(html)))
 check('B3 无写接口调用', !/\/api\/actions/.test(html))
 check('B4 只读声明 >=2', (html.match(/只读/g) || []).length >= 2)
 check('B5 必备视图与详情槽', html.includes('data-view="overview"') && html.includes('data-view="org"') && html.includes('data-view="tasks"') && html.includes('data-view="data"') && html.includes('data-view="cost"') && html.includes('drawer-title') && html.includes('drawer-body'))
 
 check('B6 P1-04 前端防御（asArray/错误可见/无静默 catch）',
-  /function asArray\(/.test(html) && /function safeRender\(/.test(html) && /tasksEmptyHtml\(/.test(html) && !/try\{renderTasks\(false\)\}catch\(e\)\{\}/.test(html) && /officialTeamAvailable/.test(html) && /deptSummary/.test(html))
+  isNewShell ? (/id="bd-error"/.test(html) && /role="alert"/.test(html) && /bd-empty/.test(html)) : (/function asArray\(/.test(html) && /function safeRender\(/.test(html) && /tasksEmptyHtml\(/.test(html) && !/try\{renderTasks\(false\)\}catch\(e\)\{\}/.test(html) && /officialTeamAvailable/.test(html) && /deptSummary/.test(html)))
 const boardServerPath = resolve(ROOT, 'lib/board-server.js')
 const boardServer = existsSync(boardServerPath) ? readFileSync(boardServerPath, 'utf8') : ''
 check('B7 P1-04 服务端归一（normalizeBoardSnapshot + 诊断字段）',

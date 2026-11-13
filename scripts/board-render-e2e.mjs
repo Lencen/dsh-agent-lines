@@ -40,7 +40,8 @@ const boardPath = join(dir, 'team-board.json')
 const setBoard = (value) => writeFileSync(boardPath, JSON.stringify(value))
 setBoard(board)
 
-const { server, url } = await startBoardServer({ dir, dbPath, teamRoot, host: '127.0.0.1', port: 0 })
+// 0.12.0 legacy 回归：显式 board2:false（新壳断言在 0.13 S11 单独加）
+const { server, url } = await startBoardServer({ dir, dbPath, teamRoot, host: '127.0.0.1', port: 0, board2: false })
 const port = 9300 + Math.floor(Math.random() * 500)
 const userData = join(dir, 'chrome-profile')
 const chromeProc = spawn(chrome, ['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--hide-scrollbars','--window-size=1440,1000','--remote-debugging-port=' + String(port),'--user-data-dir=' + userData, 'about:blank'], { stdio: 'ignore' })

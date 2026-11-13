@@ -23,6 +23,28 @@ const count = (re) => (html.match(re) || []).length
 const checks = []
 const check = (name, pass, detail) => checks.push({ name, pass, detail: detail ?? '' })
 
+const isNewShell = /class="bd-topbar"/.test(html) && /\/vendor\/board-2\.0\.css/.test(html)
+if (isNewShell) {
+  const cssPath = resolve(ROOT, 'web/vendor/board-2.0.css')
+  const css = existsSync(cssPath) ? readFileSync(cssPath, 'utf8') : ''
+  check('B1 五视图 (overview/org/tasks/data/cost)', count(/data-view="/g) >= 5, 'views=' + count(/data-view="/g))
+  check('B2 Board 2.0 tokens CSS 引入', /\/vendor\/board-2\.0\.css/.test(html) && css.length > 1000)
+  check('B3 五视图容器 (.bd-view)', count(/class="bd-view"/g) >= 5, 'views=' + count(/class="bd-view"/g))
+  check('B4 详情 fallback 槽 (drawer-title/body)', html.includes('drawer-title') && html.includes('drawer-body'))
+  check('B5 五区块锚点存在', ['bd-ov-goal','bd-ov-plan','bd-ov-workflow','bd-ov-rhythm','bd-ov-l15'].every(id => html.includes(id)))
+  check('B6 窄屏响应式 (viewport + media query)', /name="viewport"/.test(html) && /@media/.test(css))
+  check('B7 空态/未采集占位', /bd-empty|未采集/.test(html))
+  check('B8 只读边界显式标注', count(/只读/g) >= 2, 'count=' + count(/只读/g))
+  check('B9 无写操作控件', !/api\/actions/.test(html) && !/<input[^>]+type="text"/i.test(html))
+  // legacy 冻结回归（0.12.0 旧视图仍满足旧 9 条）
+  const legacyPath = resolve(ROOT, 'web/board-legacy.html')
+  if (existsSync(legacyPath)) {
+    const lh = readFileSync(legacyPath, 'utf8')
+    check('L1 legacy 五视图保留', (lh.match(/data-view="/g) || []).length >= 5)
+    check('L2 legacy 详情停靠保留', /aside\.drawer\{[^}]*position:fixed/.test(lh) && /#drawer-body\{[^}]*overflow-y:auto/.test(lh))
+    check('L3 legacy 只读标注保留', (lh.match(/只读/g) || []).length >= 2)
+  }
+} else {
 check('B1 五视图 (overview/org/tasks/data/cost)', count(/data-view="/g) >= 5, 'views=' + count(/data-view="/g))
 check('B2 内容+详情双列 grid', /grid-template-columns:\s*minmax\(0,\s*1fr\)\s+420px/.test(html))
 check('B3 详情停靠 (fixed + 内部滚动)', /aside\.drawer\{[^}]*position:fixed/.test(html) && /#drawer-body\{[^}]*overflow-y:auto/.test(html))
@@ -33,6 +55,7 @@ check('B7 空态/不可得占位', /暂无|不可得|未采集/.test(html))
 check('B8 只读边界显式标注', count(/只读/g) >= 2, 'count=' + count(/只读/g))
 check('B9 无写操作控件 (允许刷新 checkbox)', !/api\/actions/.test(html) && !/<input[^>]+type="text"/i.test(html))
 
+}
 const failures = checks.filter(c => !c.pass)
 if (json) console.log(JSON.stringify({ ok: failures.length === 0, file: target, checks }, null, 1))
 else {
