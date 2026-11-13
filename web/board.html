@@ -725,7 +725,8 @@ setInterval(function(){if(document.visibilityState==='visible')load(false)},6000
     var hidden = items.length - visible.length
     var head = '<div class="bd-l15-head"><b>L1.5 大任务</b><span class="muted">只读 · 示例 · 待 0.13 契约</span>' +
       (hidden > 0 ? '<span class="muted">已隐藏 ' + hidden + ' 个（已完成/已取消）</span>' : '') + '</div>'
-    host.innerHTML = head + visible.map(rowOf).join('') +
+    var body = visible.length ? visible.map(rowOf).join("") : '<p class="bd-l15-empty">暂无 L1.5 大任务（示例 · 待 0.13 契约）</p>'
+    host.innerHTML = head + body +
       '<p class="bd-l15-note">L2 时间来自真实消息；计划时间未采集；agent/token 为示例估计，各 workItem 的 token 不可横向加总。</p>'
   }
   function install() {
@@ -740,6 +741,8 @@ setInterval(function(){if(document.visibilityState==='visible')load(false)},6000
           '.bd-wi-metric{display:inline-flex;gap:4px;align-items:baseline;font-size:12px;white-space:nowrap}' +
           '.bd-wi-metric i{font-style:normal;color:var(--muted)}.bd-wi-metric em{font-style:normal;color:var(--muted);font-size:11px}' +
           '.bd-l15-note{color:var(--muted);font-size:12px;margin:8px 0 0}' +
+          '.bd-member-link{display:inline-block;margin-top:12px;color:var(--accent);text-decoration:none;font-size:13px}' +
+          '.bd-l15-empty{color:var(--muted);font-size:13px;padding:8px 0}' +
           '@media(max-width:1023px){.bd-wi-row{grid-template-columns:1fr 1fr;gap:6px 12px}}'
         document.head.appendChild(st)
       }
