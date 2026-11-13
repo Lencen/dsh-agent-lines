@@ -56,6 +56,13 @@ for (const [name, rel] of [['workitem', 'web/workitem.html'], ['member', 'web/me
   check('B9 独立页只读声明 ' + name, (h.match(/只读/g) || []).length >= 2)
   check('B10 独立页无写接口 ' + name, !/\/api\/actions/.test(h) && !/method="post"/i.test(h))
 }
+// B11-B12: Board 2.0 新壳/独立页不得残留旧类与旧 CSS（0.13 视觉口径）
+for (const rel of ['web/board.html', 'web/workitem.html', 'web/member.html']) {
+  const p = resolve(ROOT, rel)
+  const h = existsSync(p) ? readFileSync(p, 'utf8') : ''
+  check('B11 无旧类残留 ' + rel, !/(?:class="(?:card|kpis|missions?|tab|chips|view)|id="missions"|line-tasks-list)/.test(h))
+  check('B12 无旧 CSS 引用 ' + rel, !/board-l15\.css/.test(h) && !/<style>[\s\S]*?<\/style>/.test(h))
+}
 const failures = checks.filter(c => !c.pass)
 if (json) console.log(JSON.stringify({ ok: failures.length === 0, file: target, checks }, null, 1))
 else {
