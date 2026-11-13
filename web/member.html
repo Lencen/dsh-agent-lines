@@ -5,18 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>团队成员 · dsh-agent-lines</title>
 <style>
-:root{--bg:#f7f7f5;--surface:#fff;--border:#e4e2dc;--text:#1f2023;--muted:#6b6f76;--accent:#3f5d8c}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/22px system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans SC",sans-serif}
+:root{--bg:#f7f7f5;--surface:#fff;--border:#e4e2dc;--text:#1f2023;--muted:#6b6f76;--accent:#3f5d8c;--ok:#2f7d4f;--warn:#a86b00}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/22px system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans SC",sans-serif}
 .top{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
 .top a{color:var(--accent);text-decoration:none}.crumb{color:var(--muted);font-size:13px}.ro{margin-left:auto;color:var(--muted);font-size:12px}
 main{max-width:1200px;margin:0 auto;padding:20px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
-.avatar{width:48px;height:48px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:19px}
+.avatar{width:48px;height:48px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:19px;flex:0 0 auto}
 .head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-h1{font-size:20px;margin:0}
-.muted{color:var(--muted)}.row{display:flex;gap:12px;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--border);flex-wrap:wrap}
-.kv{display:grid;grid-template-columns:120px 1fr;gap:8px;font-size:13px}
-h2{font-size:15px;margin:0 0 8px}.note{color:var(--muted);font-size:12px}
+h1{font-size:20px;margin:0}h2{font-size:15px;margin:0 0 8px}
+.badge{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid var(--border);font-size:12px;color:var(--muted)}
+.badge.active{color:var(--ok);border-color:var(--ok)}.badge.paused{color:var(--warn);border-color:var(--warn)}
+.muted{color:var(--muted)}.note{color:var(--muted);font-size:12px}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:8px;font-size:13px;margin-top:12px}
+.kv .k{color:var(--muted)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:1023px){.grid3{grid-template-columns:1fr}}
+.block{border:1px solid var(--border);border-radius:8px;padding:12px}
+.block h3{font-size:13px;margin:0 0 6px;color:var(--muted);font-weight:600}
+.anchor{font-size:12px;color:var(--muted);margin-top:6px}
+.rows{display:grid;gap:6px}
+.row{display:flex;gap:12px;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);flex-wrap:wrap;font-size:13px}
+.grp{margin-top:10px}.grp b{display:block;margin-bottom:4px}
+.grp .item{padding:4px 0 4px 16px;font-size:13px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -26,28 +37,48 @@ h2{font-size:15px;margin:0 0 8px}.note{color:var(--muted);font-size:12px}
   <span class="ro">只读 · 无写操作</span>
 </header>
 <main>
-  <section class="card">
-    <div class="head"><span class="avatar" id="m-avatar" aria-hidden="true">?</span>
-      <h1 id="m-name">加载中…</h1><span class="muted" id="m-role"></span>
+  <section class="card" id="m-sec-identity">
+    <div class="head">
+      <span class="avatar" id="m-avatar" aria-hidden="true">?</span>
+      <div><h1 id="m-name">加载中…</h1><div class="muted" id="m-role"></div></div>
+      <span class="badge" id="m-kind">—</span>
+      <span class="badge" id="m-life">—</span>
     </div>
-    <div class="kv" style="margin-top:12px">
-      <span class="muted">line label</span><span id="m-label">未采集</span>
-      <span class="muted">生命周期</span><span id="m-life">未采集</span>
-      <span class="muted">最近活跃</span><span id="m-seen">未采集</span>
-      <span class="muted">DSH session</span><span id="m-sess">未采集（接口未暴露）</span>
+    <div class="kv">
+      <span class="k">line label</span><span id="m-label">未采集</span>
+      <span class="k">最近活跃</span><span id="m-seen">未采集</span>
+      <span class="k">DSH session</span><span>未采集（接口未暴露）</span>
+      <span class="k">上级 / manager</span><span id="m-manager">未采集</span>
+      <span class="k">团队</span><span id="m-team">未采集</span>
     </div>
   </section>
-  <section class="card"><h2>角色定义</h2><p id="m-pos" class="note">未采集（缺 charter）</p></section>
-  <section class="card"><h2>执行规范</h2><p id="m-resp" class="note">未采集（缺 charter）</p></section>
-  <section class="card"><h2>数据卡</h2>
-    <div class="row"><b>入队时间</b><span class="muted">未采集（待 0.13 契约）</span></div>
-    <div class="row"><b>工作时长</b><span class="muted">未采集（待 0.13 契约）</span></div>
-    <div class="row"><b>参与任务</b><span class="muted" id="m-tasks">未采集</span></div>
-    <div class="row"><b>执行次数 / token</b><span class="muted">未采集（成员级无数据源）</span></div>
+  <section class="card" id="m-sec-role"><h2>角色与规范（引用 charter，7 段）</h2>
+    <div class="grid3">
+      <div class="block"><h3>角色定义</h3><div id="m-pos" class="note">未采集（缺 charter）</div><div class="anchor" id="m-pos-ref"></div>
+        <div class="anchor" id="m-resp-ref"></div><div id="m-resp" class="note" style="margin-top:6px"></div></div>
+      <div class="block"><h3>职位要求</h3><div id="m-qual" class="note">未采集（缺 charter）</div><div class="anchor" id="m-out-ref"></div><div class="anchor" id="m-qual-ref"></div></div>
+      <div class="block"><h3>执行规范</h3><div id="m-disp" class="note">未采集（缺 charter）</div><div class="anchor" id="m-col-ref"></div><div class="anchor" id="m-disp-ref"></div><div class="anchor" id="m-bound-ref"></div></div>
+    </div>
+    <p class="note" id="m-charter-src">来源：未采集</p>
   </section>
-  <section class="card"><h2>名下任务</h2><p id="m-owned" class="note">未采集（0.13 契约）</p></section>
-<p class="note">只读视图 · 数据来自 lines.db 与团队工作区；缺失字段显示未采集，不推断。</p>
+  <section class="card" id="m-sec-data"><h2>数据卡</h2>
+    <div class="rows">
+      <div class="row"><b>入队时间</b><span class="muted">未采集（待 0.13 契约）</span></div>
+      <div class="row"><b>工作时长</b><span class="muted">未采集（待 0.13 契约）</span></div>
+      <div class="row"><b>参与任务</b><span id="m-tasks" class="muted">未采集</span></div>
+      <div class="row"><b>完成率 / 阻塞</b><span id="m-rate" class="muted">未采集</span></div>
+      <div class="row"><b>当前并行任务</b><span class="muted">未采集（无并行语义）</span></div>
+      <div class="row"><b>执行次数 / token</b><span class="muted">未采集（成员级无数据源）</span></div>
+      <div class="row"><b>最近交接</b><span id="m-handoff" class="muted">未采集</span></div>
+    </div>
+  </section>
+  <section class="card" id="m-sec-owned"><h2>名下任务</h2>
+    <div class="grp"><b>L1.5 大任务</b><div id="m-l15" class="item">未采集（0.13 契约）</div></div>
+    <div class="grp"><b>L2 线任务</b><div id="m-l2" class="item">未采集</div></div>
+    <div class="grp"><b>L3 拆分任务</b><div id="m-l3" class="item">未采集（官方任务 0 条）</div></div>
+  </section>
 </main>
+<p class="note" style="max-width:1200px;margin:0 auto 24px;padding:0 20px">只读视图 · 数据来自 lines.db 与团队工作区；缺失字段显示未采集，不推断。</p>
 <script>
 (function(){
   'use strict'
@@ -57,29 +88,45 @@ h2{font-size:15px;margin:0 0 8px}.note{color:var(--muted);font-size:12px}
   function q(n){var m=location.search.match(new RegExp('[?&]'+n+'=([^&]*)'));return m?decodeURIComponent(m[1]):''}
   function initial(s){s=String(s||'').trim();if(!s)return '?';var c=s.charAt(0);if(/[a-z]/.test(c))return c.toUpperCase();return c}
   function set(k,v){var el=document.getElementById(k);if(el)el.textContent=v}
+  function ref(id,label,src){var el=document.getElementById(id);if(el&&src)el.textContent='引用：'+src+'#'+label}
   function install(){
     fetch('/api/board-config',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(cfg){
       if(!cfg||!cfg.board2){set('m-name','功能未启用');return}
-      var key=q('id')
-      if(!key){set('m-name','未指定成员');return}
+      var key=q('id');if(!key){set('m-name','未指定成员');set('m-crumb','—');return}
       fetch('/api/live',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(live){
         var lines=(live&&live.lines)||[]
         var ws=((live&&live.teamWorkspace)||{}).lines||[]
         var line=lines.filter(function(l){return l.label===key})[0]
         var w=ws.filter(function(x){return x.label===key})[0]
-        var name=(w&&w.name)||(line&&(line.title&&line.title.indexOf(key)>=0?null:null))||(line&&(line.registryName||line.title||line.role))||key
-        set('m-name',name);set('m-crumb',name);set('m-label',key)
-        set('m-role',(line&&line.role)||'')
-        set('m-life',(line&&line.lifecycle)||'未采集')
+        var name=(w&&w.name)||(line&&(line.registryName||line.title||line.role))||key
+        set('m-name',name);set('m-crumb',name);set('m-label',key);set('m-role',(line&&line.role)||'')
+        set('m-kind','kind: line（角色线）')
+        var lf=document.getElementById('m-life');lf.textContent=(line&&line.lifecycle)||'未采集';lf.className='badge '+((line&&line.lifecycle)==='active'?'active':(line&&line.lifecycle)==='hibernating'?'paused':'')
         set('m-seen',line&&line.lastSeen?new Date(line.lastSeen).toLocaleString():'未采集')
+        set('m-team',(live&&live.teamName)||'未采集')
+        set('m-manager',(live&&live.managerLine&&live.managerLine.label)||'未采集')
         var av=document.getElementById('m-avatar');av.textContent=initial(name);av.style.background=PAL[fnv1a(key)%8]
         var sec=(w&&w.sections)||{}
-        if(sec.positioning)set('m-pos',sec.positioning)
-        var resp=[sec.responsibilities,sec.collaboration,sec.dispatch,sec.outputs].filter(Boolean).join(' / ')
-        if(resp)set('m-resp',resp)
+        set('m-pos',sec.positioning||'未采集（缺 charter）')
+        set('m-resp',sec.responsibilities||'')
+        var qual=[sec.quality,sec.boundaries].filter(Boolean).join(' / ');set('m-qual',qual||'未采集（缺 charter）')
+        var disp=[sec.collaboration,sec.dispatch,sec.outputs].filter(Boolean).join(' / ');set('m-disp',disp||'未采集（缺 charter）')
+        var src=(w&&w.source)||''
+        if(src){ref('m-pos-ref','定位',src);ref('m-resp-ref','职责',src);ref('m-out-ref','产出',src);ref('m-qual-ref','质量',src);ref('m-col-ref','协作',src);ref('m-disp-ref','调度',src);ref('m-bound-ref','边界',src)}
+        set('m-charter-src','来源：'+(src||'未采集')+'；missing：'+(((w&&w.missingSections)||[]).join(',')||'无'))
         var by=(live&&live.lineTasks&&live.lineTasks.byLine)||[]
         var hit=by.filter(function(x){return x.line===key})[0]
-        set('m-tasks',hit?('共 '+hit.total+' 条消息 / '+hit.taskCount+' 个 taskRef（按消息状态归并，近似）'):'未采集')
+        set('m-tasks',hit?('消息 '+hit.total+' 条 / taskRef '+hit.taskCount+' 个（按消息状态归并，近似）'):'未采集')
+        if(hit){var done=hit.acked||0,tot=hit.taskCount||0;set('m-rate',tot?('完成 '+Math.round(done/tot*100)+'% / 阻塞 '+(hit.failed||0)):'未采集')}
+        fetch('/api/work-items',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){
+          var items=(j&&j.available&&j.items)||[]
+          if(items.length){
+            var refs=((line&&line.taskRefs)||[])
+            var mine=items.filter(function(it){var l=it.linkedL2TaskRefs||[];return refs.some(function(r){return l.indexOf(r)>=0})})
+            set('m-l15',mine.length?mine.map(function(x){return x.title}).join(' / '):'未采集（无显式关联）')
+          }
+          if(hit&&hit.taskRefs&&hit.taskRefs.length)set('m-l2',hit.taskRefs.join(' / '))
+        }).catch(function(){})
       }).catch(function(){set('m-name','数据不可得')})
     }).catch(function(){set('m-name','服务不可用')})
   }
