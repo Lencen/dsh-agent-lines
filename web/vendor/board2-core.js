@@ -52,7 +52,7 @@
       var el = document.getElementById(id)
       if (el) el.innerHTML = '<p class="bd-empty">' + esc(map[id]) + '（' + esc(reason) + '）</p>'
     })
-    ['bd-org-kpi-roles', 'bd-org-kpi-agents', 'bd-org-kpi-online', 'bd-tasks-kpi-total', 'bd-tasks-kpi-doing', 'bd-tasks-kpi-blocked', 'bd-tasks-kpi-latest'].forEach(function (id) {
+    ;['bd-org-kpi-roles', 'bd-org-kpi-agents', 'bd-org-kpi-online', 'bd-tasks-kpi-total', 'bd-tasks-kpi-doing', 'bd-tasks-kpi-blocked', 'bd-tasks-kpi-latest'].forEach(function (id) {
       var el = document.getElementById(id); if (el) el.textContent = '未采集'
     })
     var t = document.getElementById('bd-data-time'); if (t) t.textContent = '未采集'

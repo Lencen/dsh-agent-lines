@@ -517,8 +517,22 @@
     var idx = -1; items.forEach(function (x, i) { if (x.id === id) idx = i })
     var prev = idx > 0 ? items[idx - 1] : null, next = idx >= 0 && idx < items.length - 1 ? items[idx + 1] : null
     var links = $$('.bd-wi-sec-nav .bd-wi-navlink')
-    if (links[0]) { if (prev) { links[0].href = '/workitem?id=' + encodeURIComponent(prev.id); links[0].textContent = '← ' + prev.title } else { links[0].textContent = '已是第一个'; links[0].removeAttribute('href') } }
-    if (links[1]) { if (next) { links[1].href = '/workitem?id=' + encodeURIComponent(next.id); links[1].textContent = '下一个：' + next.title + ' →' } else { links[1].textContent = '已是最后一个'; links[1].removeAttribute('href') } }
+    function setLink(a, item, label, emptyText) {
+      if (!a) return
+      if (item) {
+        a.href = '/workitem?id=' + encodeURIComponent(item.id)
+        a.textContent = label(item)
+        a.removeAttribute('aria-disabled')
+        a.classList.remove('bd-wi-empty')
+      } else {
+        a.textContent = emptyText
+        a.removeAttribute('href')
+        a.setAttribute('aria-disabled', 'true')
+        a.classList.add('bd-wi-empty')
+      }
+    }
+    setLink(links[0], prev, function (x) { return '← ' + x.title }, '已是第一个')
+    setLink(links[1], next, function (x) { return '下一个：' + x.title + ' →' }, '已是最后一个')
   }
   function emptyAll(msg) {
     $$('.bd-wi-page-title').forEach(function (h) { h.textContent = msg })
