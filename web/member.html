@@ -321,7 +321,7 @@
           '<span class="bd-member-taskname">' + (hit ? 'L2 线任务 · 消息 ' + (hit.messageCount || 0) + ' 条' : 'L2 线任务') + '</span>' +
           '<span class="bd-member-taskat">' + (hit ? new Date(hit.latestAt).toLocaleString('zh-CN', { hour12: false }) : '未采集') + '</span>' +
           '<span class="bd-member-taskn">' + l3 + '</span></summary>' +
-          '<div class="bd-member-l3row"><span class="mono">' + esc(ref) + '#L3</span> <span class="bd-badge bd-badge-warn">示例</span><span>L3 拆分任务未采集（0.13 契约）</span><span class="bd-member-taskat">—</span></div></details>'
+          '<div class="bd-member-l3group"><b class="bd-member-l3title">L3 拆分任务 · 1（示例/未采集）</b><div class="bd-member-l3row"><span class="mono">' + esc(ref) + '#L3</span> <span class="bd-badge bd-badge-warn">示例</span><span>L3 拆分任务未采集（0.13 契约）</span><span class="bd-member-taskat">—</span></div></div></details>'
       }).join('')
       var badge = g.title ? '<span class="bd-badge bd-badge-l15">L1.5</span>' : '<span class="bd-badge bd-badge-muted">未关联 L1.5</span>'
       var title = g.title ? '<a class="bd-member-taskname" href="/workitem?id=' + encodeURIComponent(g.id) + '">' + esc(g.title) + '</a>' : ''
