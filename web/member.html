@@ -127,8 +127,8 @@ h1{font-size:20px;margin:0}h2{font-size:15px;margin:0 0 8px}
           }
           if(hit&&hit.taskRefs&&hit.taskRefs.length)set('m-l2',hit.taskRefs.join(' / '))
         }).catch(function(){})
-      }).catch(function(){set('m-name','数据不可得')})
-    }).catch(function(){set('m-name','服务不可用')})
+      }).catch(function(){set('m-name','未采集（数据源不可得）')})
+    }).catch(function(){set('m-name','未采集（服务不可得）')})
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install()
 })()

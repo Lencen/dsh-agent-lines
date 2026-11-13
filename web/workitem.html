@@ -63,7 +63,7 @@ h1{font-size:20px;margin:0 0 8px}h2{font-size:15px;margin:0 0 10px}
 <script>
 (function(){
   'use strict'
-  var STATUS={proposed:'拟议',confirmed:'已确认',decomposing:'拆解中',active:'进行中',paused:'暂停',done:'已完成',cancelled:'已取消'}
+  var STATUS={proposed:'待确认',confirmed:'未拆解',decomposing:'拆解中',active:'进行中',paused:'暂停',done:'完成',cancelled:'已取消'}
   var ORIGIN={goal:'目标内',plan:'计划内',rhythm:'节奏内','ad-hoc':'目标外临时'}
   var EXAMPLE={
     'wi-demo-1':{id:'wi-demo-1',title:'0.12.0 发布准备',status:'active',priority:'P0',origin:'goal',l2:2,l3:4,done:0,agentRuns:12,tokenTotal:48200,linked:['V60-T6d','V60-T7c'],updatedAt:1763000000000,synthetic:true},
@@ -83,7 +83,7 @@ h1{font-size:20px;margin:0 0 8px}h2{font-size:15px;margin:0 0 10px}
     document.getElementById('wi-origin').textContent=ORIGIN[it.origin]||'来源未采集'
     document.getElementById('wi-updated').textContent=it.updatedAt?('更新 '+t(it.updatedAt)):'更新未采集'
     document.getElementById('wi-metrics').innerHTML=
-      metric('关联 L2',it.l2==null?'未采集':String(it.l2),'真实')+
+      metric('关联 L2',it.l2==null?'未采集':String(it.l2),it.synthetic?'示例':'真实')+
       metric('关联 L3',it.l3==null?'未采集':String(it.l3),'示例')+
       metric('已完成',it.done==null?'未采集':String(it.done),'按消息状态')+
       metric('agent 执行',it.agentRuns==null?'未采集':String(it.agentRuns),it.agentRuns==null?'未采集':'示例')+
@@ -131,8 +131,8 @@ h1{font-size:20px;margin:0 0 8px}h2{font-size:15px;margin:0 0 10px}
   function renderNav(items,id){
     var idx=-1;items.forEach(function(x,i){if(x.id===id)idx=i})
     var prev=idx>0?items[idx-1]:null,next=idx>=0&&idx<items.length-1?items[idx+1]:null
-    if(prev){var a=document.getElementById('nav-prev');a.href='/workitem.html?id='+encodeURIComponent(prev.id);a.textContent='← '+prev.title}
-    if(next){var b=document.getElementById('nav-next');b.href='/workitem.html?id='+encodeURIComponent(next.id);b.textContent=next.title+' →'}
+    if(prev){var a=document.getElementById('nav-prev');a.href='/workitem?id='+encodeURIComponent(prev.id);a.textContent='← '+prev.title}
+    if(next){var b=document.getElementById('nav-next');b.href='/workitem?id='+encodeURIComponent(next.id);b.textContent=next.title+' →'}
   }
   function install(){
     fetch('/api/board-config',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(cfg){
@@ -142,7 +142,7 @@ h1{font-size:20px;margin:0 0 8px}h2{font-size:15px;margin:0 0 10px}
       fetch('/api/work-items',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){
         var items=(j&&j.available&&Array.isArray(j.items)&&j.items.length)?j.items:Object.keys(EXAMPLE).map(function(k){return EXAMPLE[k]})
         var it=items.filter(function(x){return x.id===id})[0]||EXAMPLE[id]||null
-        if(!it){document.getElementById('wi-title').textContent='未找到该大任务或数据不可得';return}
+        if(!it){document.getElementById('wi-title').textContent='未找到该大任务（空态）';return}
         renderHead(it);renderNav(items,id);renderBreakdown(it,[]);renderTable({title:it.title,status:it.status,start:Date.now()-3600e3,end:Date.now(),rows:[]})
         fetch('/api/live',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(live){
           var by=(live&&live.lineTasks&&live.lineTasks.byTaskRef)||[]
@@ -160,8 +160,8 @@ h1{font-size:20px;margin:0 0 8px}h2{font-size:15px;margin:0 0 10px}
           var model={title:it.title,status:it.status,start:start,end:end,rows:rows}
           renderTable(model);renderGantt(model)
         }).catch(function(){})
-      }).catch(function(){var it=EXAMPLE[id];if(it)renderHead(it)})
-    }).catch(function(){document.getElementById('wi-title').textContent='服务不可用'})
+      }).catch(function(){var it=EXAMPLE[id];if(it){renderHead(it)}else{document.getElementById('wi-title').textContent='数据未采集（空态）'}})
+    }).catch(function(){document.getElementById('wi-title').textContent='数据未采集（服务不可得，只读空态）'})
     var b1=document.getElementById('vi-timeline'),b2=document.getElementById('vi-table'),g=document.getElementById('gantt'),tb=document.getElementById('witable')
     b1.onclick=function(){b1.setAttribute('aria-selected','true');b2.setAttribute('aria-selected','false');g.classList.remove('hidden');tb.classList.add('hidden')}
     b2.onclick=function(){b2.setAttribute('aria-selected','true');b1.setAttribute('aria-selected','false');tb.classList.remove('hidden');g.classList.add('hidden')}
