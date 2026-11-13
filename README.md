@@ -6,7 +6,7 @@
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> 当前发布：v0.11.5（2026-11-11）——文章与双语文档。0.11.6 内容（负责人交接、旧负责人退役、看板线层任务）并入 0.12.0，尚未发布。
+> 当前发布：v0.11.6（2026-11-13）——负责人交接自动化、旧负责人自动退役标题、看板线层任务与 L2/L3 分层。
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
@@ -196,7 +196,7 @@ L1 管理线会话（用户只说目标）
 
 ## 版本能力与业务场景
 
-### 0.11.6：负责人交接 + 旧负责人退役（未单独发布，内容并入 0.12.0）
+### 0.11.6：负责人交接 + 旧负责人退役（当前发布）
 
 - 新增 `line_handover_manager`：manager 把负责人角色交给 live 根 Session，0.12.0 起支持 create:true 自动创建新 root。
 - `line_claim_manager` / 负责人交接在旧 manager 在线时自动给旧 Session 加 `【退役YYMMDD】` 标题；交接事件写入 line_events。
@@ -204,7 +204,7 @@ L1 管理线会话（用户只说目标）
 - 工具数 26 → 27；无 schema / protocol 变更；schema v15、protocolVersion 0.4 不变。
 - 已下线 Session 不能靠插件补 rename（DSH 公开 API 限制）；必须在交接时完成。
 
-### 0.11.5：文章与双语文档（当前发布）
+### 0.11.5：文章与双语文档
 
 - 新增短版《关于AI组织的思考与探索》与论文版《从流程到岗位：长期 AI 团队的组织设计》，中英各一份；中文文件用中文名，英文文件用英文名。
 - README 增加文章入口；文档一致性门禁覆盖中英文章配对。
@@ -382,7 +382,7 @@ L1 管理线会话（用户只说目标）
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.11.5.tgz
+    bash install.sh ./dsh-agent-lines-0.11.6.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -668,7 +668,7 @@ claim 不会对每个新会话自动执行：需要用户明确要求，或运�
 
 ## 状态
 
-当前发布 `0.11.5`（快速迭代期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
+当前发布 `0.11.6`（快速迭代期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
 
 ## 致谢
 
