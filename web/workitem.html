@@ -360,7 +360,7 @@
     var head = $('.bd-wi-page-head'); var badges = $$('.bd-badge', head || document)
     if (badges[0]) badge(badges[0], STATUS[it.status] || '未采集', it.status === 'active' ? 'bd-badge-info' : it.status === 'paused' ? 'bd-badge-warn' : 'bd-badge-l2')
     if (badges[1]) badge(badges[1], it.priority || '优先级未采集', 'bd-badge-priority')
-    $('.bd-wi-page-meta').textContent = 'owner 未采集 · 更新 ' + tfull(it.updatedAt)
+    $('.bd-wi-page-meta').textContent = 'owner ' + (it.owner || '未采集') + ' · 更新 ' + tfull(it.updatedAt)
     var src = $('.bd-wi-source'); if (src) src.textContent = '来源：示例 · 待 0.13 契约 · sourceMessageId 未采集 · 目标归属：' + (ORIGIN[it.origin] || '未采集')
   }
   function renderMetrics(it) {

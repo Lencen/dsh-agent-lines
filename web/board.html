@@ -63,7 +63,7 @@
     </section>
     <section class="bd-ov-blocks" id="bd-ov-rest" aria-label="工作流 / 节奏 / L1.5">
       <section class="bd-card bd-ov-block bd-ov-wf" id="bd-ov-workflow" aria-labelledby="bd-ov-workflow-h">
-        <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-workflow-h">工作流</h3><span class="bd-card-sub">7 阶段</span></div>
+        <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-workflow-h">工作流</h3><span class="bd-card-sub" id="bd-ov-workflow-sub">teamGoal.workflow · 7 阶段</span></div>
         <div class="bd-ov-workflow-body" id="bd-ov-workflow-body"><p class="bd-empty">加载中…</p></div>
       </section>
       <section class="bd-card bd-ov-block bd-ov-rhythm" id="bd-ov-rhythm" aria-labelledby="bd-ov-rhythm-h">
@@ -71,7 +71,7 @@
         <div class="bd-ov-rhythm-body" id="bd-ov-rhythm-body"><p class="bd-empty">加载中…</p></div>
       </section>
       <section class="bd-card bd-ov-block bd-ov-l15" id="bd-ov-l15" aria-labelledby="bd-ov-l15-h">
-        <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-l15-h">L1.5 大任务</h3><span class="bd-card-sub">当前 active + paused</span></div>
+        <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-l15-h">L1.5 大任务</h3><span class="bd-card-sub">用户意图 · 示例 · 待 0.13 契约</span><span class="bd-badge bd-badge-warn" id="bd-ov-l15-badge">示例 · 待 0.13 契约</span></div>
         <div class="bd-ov-l15-body" id="bd-ov-l15-body"><p class="bd-empty">加载中…</p></div>
       </section>
     </section>
@@ -116,13 +116,24 @@
         <div class="bd-tasks-kpi-card"><span class="bd-tasks-kpi-label">阻塞</span><span class="bd-tasks-kpi-value num" id="bd-tasks-kpi-blocked">—</span><span class="bd-tasks-kpi-hint">byState 归并</span></div>
         <div class="bd-tasks-kpi-card"><span class="bd-tasks-kpi-label">最近更新</span><span class="bd-tasks-kpi-value num" id="bd-tasks-kpi-latest">—</span><span class="bd-tasks-kpi-hint">最近消息时刻</span></div>
       </section>
+      <div class="bd-tasks-tabs" role="tablist" aria-label="任务页签">
+        <button type="button" class="bd-tasks-tab" role="tab" data-pane="line" aria-selected="true">线任务</button>
+        <button type="button" class="bd-tasks-tab" role="tab" data-pane="history" aria-selected="false">历史任务</button>
+        <button type="button" class="bd-tasks-tab" role="tab" data-pane="official" aria-selected="false">官方·L3 任务</button>
+      </div>
       <div class="bd-tasks-filters" role="group" aria-label="任务筛选">
         <div class="bd-chips" id="bd-tasks-status" role="group" aria-label="按状态筛选">
           <button type="button" class="bd-chip" data-status="all" aria-pressed="true">全部</button>
           <button type="button" class="bd-chip" data-status="doing" aria-pressed="false">进行中</button>
+          <button type="button" class="bd-chip" data-status="blocked" aria-pressed="false">阻塞</button>
           <button type="button" class="bd-chip" data-status="unlinked" aria-pressed="false">未关联</button>
         </div>
-        <span class="bd-tasks-filter-label" id="bd-tasks-filter-note">线层任务 · 只读</span>
+        <label class="bd-tasks-filter-label" for="bd-tasks-wi-select">大任务</label>
+        <select class="bd-select bd-tasks-wi-select" id="bd-tasks-wi-select"><option value="">全部大任务</option></select>
+        <label class="bd-tasks-filter-label" for="bd-tasks-line-select">线</label>
+        <select class="bd-select bd-tasks-line-select" id="bd-tasks-line-select"><option value="">全部线</option></select>
+        <label class="bd-checkbox"><input type="checkbox" id="bd-tasks-hasl3"> 只看有 L3 拆分</label>
+        <button type="button" class="bd-btn bd-tasks-reset" id="bd-tasks-reset">重置</button>
       </div>
       <p class="bd-tasks-summary" id="bd-tasks-summary">加载中…</p>
       <div class="bd-tasks-list" id="bd-tasks-list"><p class="bd-empty">加载中…</p></div>
