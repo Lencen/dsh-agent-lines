@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>团队成员 · dsh-agent-lines</title>
-<link rel="stylesheet" href="/vendor/board-l15.css">
+<link rel="stylesheet" href="/vendor/board-2.0.css">
 <style>
 body{margin:0;background:var(--bd-bg,#f7f7f5);color:var(--bd-text,#1f2023);font:14px/22px system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans SC",sans-serif}
 .bd-member-page{max-width:1200px;margin:0 auto;padding:12px 20px 32px}
@@ -287,7 +287,13 @@ body{margin:0;background:var(--bd-bg,#f7f7f5);color:var(--bd-text,#1f2023);font:
 <script>
 (function () {
   'use strict'
-  var PAL = ['bd-av-c0', 'bd-av-c1', 'bd-av-c2', 'bd-av-c3', 'bd-av-c4', 'bd-av-c5', 'bd-av-c6', 'bd-av-c7']
+  var PAL = ['bd-av-c0', 'bd-av-c1', 'bd-av-c2', 'bd-av-c3', 'bd-av-c4', 'bd-av-c5', 'bd-av-c6', 'bd-av-c7', 'bd-av-c8']
+  var EXAMPLE_WI = [
+    { id: 'wi-demo-1', title: '0.12.0 发布准备', linked: ['V60-T6d', 'V60-T7c'] },
+    { id: 'wi-demo-2', title: '官网文案改版', linked: [] },
+    { id: 'wi-demo-3', title: '视频 v2 收尾', linked: ['V60-T9b'] }
+  ]
+  var STATUS = { active: '进行中', paused: '暂停', done: '完成', cancelled: '已取消' }
   function fnv1a(s) { var h = 0x811c9dc5; s = String(s || ''); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) } return h >>> 0 }
   function q(n) { var m = location.search.match(new RegExp('[?&]' + n + '=([^&]*)')); return m ? decodeURIComponent(m[1]) : '' }
   function $(s, r) { return (r || document).querySelector(s) }
@@ -295,6 +301,37 @@ body{margin:0;background:var(--bd-bg,#f7f7f5);color:var(--bd-text,#1f2023);font:
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] }) }
   function initial(s) { s = String(s || '').trim(); if (!s) return '?'; var c = s.charAt(0); return /[a-z]/.test(c) ? c.toUpperCase() : c }
   function unavailable() { return '<span class="bd-unavailable">未采集（待 0.13 契约）</span>' }
+  function setCol(i, heading, paras, refs, srcPath) {
+    var cols = $$('.bd-member-charter-col'); var col = cols[i]; if (!col) return
+    var real = paras.filter(function (p) { return p })
+    var body = real.length ? real.map(function (p) { return '<p>' + esc(p) + '</p>' }).join('') : '<p class="bd-unavailable">未采集（缺 charter）</p>'
+    col.innerHTML = '<h3>' + heading + '</h3>' + body + '<p class="bd-member-src">' + esc(srcPath ? srcPath + '#' + refs.join('；#') : '引用：未采集（缺 charter）') + '</p>'
+  }
+  function renderTasks(tasks, refs, byMap) {
+    if (!refs.length) { tasks.innerHTML = '<p class="bd-wi-empty">未采集（无可归并 taskRef）</p>'; return }
+    var groups = []
+    var used = {}
+    EXAMPLE_WI.forEach(function (w) {
+      var mine = (w.linked || []).filter(function (r) { return refs.indexOf(r) >= 0 })
+      if (mine.length) { groups.push({ title: w.title, id: w.id, refs: mine }); mine.forEach(function (r) { used[r] = true }) }
+    })
+    var rest = refs.filter(function (r) { return !used[r] })
+    if (rest.length) groups.push({ title: null, refs: rest })
+    tasks.innerHTML = groups.map(function (g) {
+      var items = g.refs.map(function (ref) {
+        var hit = byMap[ref]
+        var l3 = hit ? 'L3 未采集' : 'L3 未采集'
+        return '<details class="bd-member-taskitem"><summary><span class="mono">' + esc(ref) + '</span> <span class="bd-badge ' + (hit ? 'bd-badge-info' : 'bd-badge-muted') + '">' + (hit ? '按消息状态' : '未采集') + '</span>' +
+          '<span class="bd-member-taskname">' + (hit ? 'L2 线任务 · 消息 ' + (hit.messageCount || 0) + ' 条' : 'L2 线任务') + '</span>' +
+          '<span class="bd-member-taskat">' + (hit ? new Date(hit.latestAt).toLocaleString('zh-CN', { hour12: false }) : '未采集') + '</span>' +
+          '<span class="bd-member-taskn">' + l3 + '</span></summary>' +
+          '<div class="bd-member-l3row"><span class="mono">' + esc(ref) + '#L3</span> <span class="bd-badge bd-badge-warn">示例</span><span>L3 拆分任务未采集（0.13 契约）</span><span class="bd-member-taskat">—</span></div></details>'
+      }).join('')
+      var badge = g.title ? '<span class="bd-badge bd-badge-l15">L1.5</span>' : '<span class="bd-badge bd-badge-muted">未关联 L1.5</span>'
+      var title = g.title ? '<a class="bd-member-taskname" href="/workitem?id=' + encodeURIComponent(g.id) + '">' + esc(g.title) + '</a>' : ''
+      return '<details class="bd-member-taskgroup" open><summary>' + badge + title + '<span class="bd-member-taskn">L2 ' + g.refs.length + '</span></summary>' + items + '</details>'
+    }).join('')
+  }
   function install() {
     fetch('/api/board-config', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (cfg) {
       if (!cfg || !cfg.board2) { document.body.innerHTML = '<p style="padding:24px;color:#6b6f76">功能未启用（BOARD2 off）· 只读</p>'; return }
@@ -304,6 +341,8 @@ body{margin:0;background:var(--bd-bg,#f7f7f5);color:var(--bd-text,#1f2023);font:
       fetch('/api/live', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (live) {
         var lines = (live && live.lines) || []
         var ws = ((live && live.teamWorkspace) || {}).lines || []
+        var by = (live && live.lineTasks && live.lineTasks.byTaskRef) || []
+        var byMap = {}; by.forEach(function (x) { byMap[x.taskRef] = x })
         var line = lines.filter(function (l) { return l.label === key })[0]
         var w = ws.filter(function (x) { return x.label === key })[0]
         var name = (w && w.name) || (line && (line.registryName || line.title || line.role)) || key
@@ -312,52 +351,30 @@ body{margin:0;background:var(--bd-bg,#f7f7f5);color:var(--bd-text,#1f2023);font:
         var sub = $('.bd-member-sub')
         if (sub) sub.innerHTML = '<span class="bd-badge bd-badge-l2">角色线</span> ' + esc((line && line.role) || '职责未采集') + ' · 上级：' + esc((live && live.managerLine && live.managerLine.label) || '未采集')
         var av = $('.bd-avatar')
-        if (av) {
-          av.textContent = initial(name)
-          av.setAttribute('data-avatar-key', key)
-          av.setAttribute('data-avatar-init', initial(name))
-          av.setAttribute('aria-label', name)
-          var cls = 'bd-avatar bd-avatar-48 ' + PAL[fnv1a(key) % 8]
-          av.className = cls
-        }
+        if (av) { av.textContent = initial(name); av.setAttribute('data-avatar-key', key); av.setAttribute('data-avatar-init', initial(name)); av.setAttribute('aria-label', name); av.className = 'bd-avatar bd-avatar-48 ' + PAL[fnv1a(key) % 9] }
         var state = $('.bd-member-state')
-        if (state) state.innerHTML = '<span class="bd-badge ' + ((line && line.lifecycle) === 'active' ? 'bd-badge-ok' : 'bd-badge-warn') + '">' + esc((line && line.lifecycle) || '未采集') + '</span><span class="bd-member-last">最近活跃 ' + esc(line && line.lastSeen ? new Date(line.lastSeen).toLocaleString() : '未采集') + '</span>'
-        var dl = $$('.bd-kv dd')
-        if (dl[0]) dl[0].textContent = key
-        if (dl[1]) dl[1].innerHTML = unavailable()
-        if (dl[2]) dl[2].innerHTML = unavailable()
-        if (dl[3]) dl[3].textContent = (live && live.teamName) || '未采集'
-        if (dl[4]) dl[4].textContent = '只读视图：不提供发消息/审批/交接控件；不显示 token/密钥原文。'
+        if (state) state.innerHTML = '<span class="bd-badge ' + ((line && line.lifecycle) === 'active' ? 'bd-badge-ok' : 'bd-badge-muted') + '">' + esc((line && line.lifecycle) || '未采集') + '</span><span class="bd-member-last">最近活跃 ' + esc(line && line.lastSeen ? new Date(line.lastSeen).toLocaleString('zh-CN', { hour12: false }) : '未采集') + '</span>'
+        var dd = $$('.bd-kv dd')
+        if (dd[0]) dd[0].textContent = key
+        if (dd[1]) dd[1].innerHTML = unavailable()
+        if (dd[2]) dd[2].innerHTML = unavailable()
+        if (dd[3]) dd[3].textContent = (live && live.teamName) || '未采集'
+        if (dd[4]) dd[4].textContent = '只读视图：不提供发消息/审批/交接控件；不显示 token/密钥原文。'
         var sec = (w && w.sections) || {}
-        var cols = $$('.bd-member-charter-col')
-        function setCol(i, heading, paras, refs, srcPath) {
-          var col = cols[i]; if (!col) return
-          var real = paras.filter(function (p) { return p && p !== '未采集（缺 charter）' })
-          var body = real.length ? real.map(function (p) { return '<p>' + esc(p) + '</p>' }).join('') : '<p class="bd-unavailable">未采集（缺 charter）</p>'
-          col.innerHTML = '<h3>' + heading + '</h3>' + body + '<p class="bd-member-src">' + esc(srcPath ? srcPath + '#' + refs.join('；#') : '引用：未采集（缺 charter）') + '</p>'
-        }
         var srcPath = (w && w.source) || ''
-        setCol(0, '角色定义', [sec.positioning || '未采集（缺 charter）', sec.responsibilities || ''].filter(Boolean), ['positioning', 'responsibilities'], srcPath)
-        setCol(1, '职位要求', [sec.quality || '未采集（缺 charter）', sec.boundaries || ''].filter(Boolean), ['quality', 'boundaries'], srcPath)
-        setCol(2, '执行规范', [sec.collaboration || '未采集（缺 charter）', sec.dispatch || '', sec.outputs || ''].filter(Boolean), ['collaboration', 'dispatch', 'outputs'], srcPath)
+        setCol(0, '角色定义', [sec.positioning, sec.responsibilities], ['positioning', 'responsibilities'], srcPath)
+        setCol(1, '职位要求', [sec.quality, sec.boundaries], ['quality', 'boundaries'], srcPath)
+        setCol(2, '执行规范', [sec.collaboration, sec.dispatch, sec.outputs], ['collaboration', 'dispatch', 'outputs'], srcPath)
         var srcLine = $('.bd-member-source')
         if (srcLine) srcLine.textContent = '来源：' + (srcPath || '未采集') + ' · 只读'
         var cards = $$('.bd-member-card .bd-member-cardv')
-        var by = (live && live.lineTasks && live.lineTasks.byLine) || []
-        var hit = by.filter(function (x) { return x.line === key })[0]
+        var byLine = (live && live.lineTasks && live.lineTasks.byLine) || []
+        var hit = byLine.filter(function (x) { return x.line === key })[0]
         if (cards[2]) cards[2].innerHTML = hit ? esc(hit.taskCount + '（近似 · message-states）') : unavailable()
         if (cards[4]) cards[4].innerHTML = hit ? esc(String(hit.failed || 0)) : unavailable()
         var tasks = $('.bd-member-tasks')
-        if (tasks) {
-          var refs = (hit && hit.taskRefs) || []
-          if (!refs.length) { tasks.innerHTML = '<p class="bd-wi-empty">未采集（无可归并 taskRef）</p>' }
-          else {
-            var rows = refs.map(function (ref) {
-              return '<details class="bd-member-taskitem"><summary><span class="mono">' + esc(ref) + '</span> <span class="bd-badge bd-badge-info">按消息状态</span><span class="bd-member-taskname">L2 线任务</span><span class="bd-member-taskat">近似归并</span><span class="bd-member-taskn">L3 未采集</span></summary><div class="bd-member-l3row"><span class="mono">' + esc(ref) + '#L3</span> <span class="bd-badge bd-badge-warn">示例</span><span>L3 拆分任务未采集（0.13 契约）</span><span class="bd-member-taskat">—</span></div></details>'
-            }).join('')
-            tasks.innerHTML = '<details class="bd-member-taskgroup" open><summary><span class="bd-badge bd-badge-muted">未关联 L1.5</span><span class="bd-member-taskn">L2 ' + refs.length + '</span></summary>' + rows + '</details>'
-          }
-        }
+        var myRefs = by.filter(function (x) { return (x.byLine || []).some(function (b) { return b.line === key }) }).map(function (x) { return x.taskRef })
+        if (tasks) renderTasks(tasks, myRefs, byMap)
       }).catch(function () { var n = $('.bd-member-name'); if (n) n.textContent = '未采集（数据源不可得）' })
     }).catch(function () { var n = $('.bd-member-name'); if (n) n.textContent = '未采集（服务不可得）' })
   }
