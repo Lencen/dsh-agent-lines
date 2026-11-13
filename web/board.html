@@ -99,9 +99,34 @@
     </section>
   </section>
   <section class="bd-view" id="bd-view-tasks" data-view="tasks" role="tabpanel" aria-labelledby="bd-tab-tasks" hidden>
-    <div class="bd-card"><div class="bd-card-h">任务（L1.5 → L2）</div><div class="bd-card-b" id="bd-tasks-body"><p class="bd-empty">加载中…</p></div></div>
+    <div class="bd-tasks" id="bd-tasks-view">
+      <div class="bd-view-head">
+        <h1 class="bd-view-title">任务</h1>
+        <p class="bd-view-sub">以 L2 线任务为主，L3 拆分任务在组内展开 · 只读</p>
+        <p class="bd-legend bd-tasks-legend">
+          <span class="bd-legend-item"><span class="bd-legend-swatch bd-l2-swatch" aria-hidden="true"></span>L2 线任务</span>
+          <span class="bd-legend-item"><span class="bd-legend-swatch bd-l3-swatch" aria-hidden="true"></span>L3 拆分（已关联）</span>
+          <span class="bd-legend-item">任务数 = distinct taskRef；消息数 = 消息条数（两口径分列）</span>
+        </p>
+      </div>
+      <section class="bd-tasks-kpi" aria-label="任务关键指标">
+        <div class="bd-tasks-kpi-card"><span class="bd-tasks-kpi-label">任务数</span><span class="bd-tasks-kpi-value num" id="bd-tasks-kpi-total">—</span><span class="bd-tasks-kpi-hint">distinct taskRef</span></div>
+        <div class="bd-tasks-kpi-card"><span class="bd-tasks-kpi-label">进行中</span><span class="bd-tasks-kpi-value num" id="bd-tasks-kpi-doing">—</span><span class="bd-tasks-kpi-hint">示例口径</span></div>
+        <div class="bd-tasks-kpi-card"><span class="bd-tasks-kpi-label">阻塞</span><span class="bd-tasks-kpi-value num" id="bd-tasks-kpi-blocked">—</span><span class="bd-tasks-kpi-hint">byState 归并</span></div>
+        <div class="bd-tasks-kpi-card"><span class="bd-tasks-kpi-label">最近更新</span><span class="bd-tasks-kpi-value num" id="bd-tasks-kpi-latest">—</span><span class="bd-tasks-kpi-hint">最近消息时刻</span></div>
+      </section>
+      <div class="bd-tasks-filters" role="group" aria-label="任务筛选">
+        <div class="bd-chips" id="bd-tasks-status" role="group" aria-label="按状态筛选">
+          <button type="button" class="bd-chip" data-status="all" aria-pressed="true">全部</button>
+          <button type="button" class="bd-chip" data-status="doing" aria-pressed="false">进行中</button>
+          <button type="button" class="bd-chip" data-status="unlinked" aria-pressed="false">未关联</button>
+        </div>
+        <span class="bd-tasks-filter-label" id="bd-tasks-filter-note">线层任务 · 只读</span>
+      </div>
+      <p class="bd-tasks-summary" id="bd-tasks-summary">加载中…</p>
+      <div class="bd-tasks-list" id="bd-tasks-list"><p class="bd-empty">加载中…</p></div>
+    </div>
   </section>
-
   <section class="bd-view" id="bd-view-data" data-view="data" role="tabpanel" aria-labelledby="bd-tab-data" hidden>
     <div class="bd-card"><div class="bd-card-h">数据总览</div><div class="bd-card-b" id="bd-data-body"><p class="bd-empty">加载中…</p></div></div>
   </section>

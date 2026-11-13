@@ -116,9 +116,9 @@
     }).join('') + '</ol>'
   }
   var L15_EXAMPLE = [
-    { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', concurrent: 2, stage: '执行', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200 },
-    { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', concurrent: 0, stage: null, l2: 0, l3: 0, agentRuns: null, tokenTotal: null },
-    { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', concurrent: 0, stage: '交付', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500 }
+    { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', concurrent: 2, stage: '执行', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200, linked: ['V60-T6d', 'V60-T7c'] },
+    { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', concurrent: 0, stage: null, l2: 0, l3: 0, agentRuns: null, tokenTotal: null, linked: [] },
+    { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', concurrent: 0, stage: '交付', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500, linked: ['V60-T9b'] }
   ]
   var L15_STATUS = { active: '进行中', paused: '暂停', done: '完成', cancelled: '已取消' }
   function l15Row(it) {
@@ -235,6 +235,87 @@
     })
   }
 
+  var TASK_STATUS = { done: '完成', active: '进行中', paused: '暂停', cancelled: '已取消' }
+  function taskBadge(status) {
+    var cls = status === 'done' ? 'bd-badge-ok' : status === 'paused' ? 'bd-badge-paused' : status === 'cancelled' ? 'bd-badge-muted' : 'bd-badge-info'
+    return '<span class="bd-badge ' + cls + '">' + esc(TASK_STATUS[status] || '未采集') + '</span>'
+  }
+  function renderTasks(data) {
+    var host = $('#bd-tasks-list'); if (!host) return
+    var by = ((data && data.lineTasks && data.lineTasks.byTaskRef) || [])
+    var byMap = {}; by.forEach(function (x) { byMap[x.taskRef] = x })
+    var refs = by.map(function (x) { return x.taskRef })
+    var total = refs.length
+    var latest = by.reduce(function (a, x) { return Math.max(a, x.latestAt || 0) }, 0)
+    if ($('#bd-tasks-kpi-total')) $('#bd-tasks-kpi-total').textContent = String(total)
+    if ($('#bd-tasks-kpi-doing')) $('#bd-tasks-kpi-doing').textContent = String(L15_EXAMPLE.filter(function (w) { return w.status === 'active' }).length) + '（示例）'
+    if ($('#bd-tasks-kpi-blocked')) $('#bd-tasks-kpi-blocked').textContent = '未采集'
+    if ($('#bd-tasks-kpi-latest')) $('#bd-tasks-kpi-latest').textContent = latest ? new Date(latest).toLocaleTimeString('zh-CN', { hour12: false }).slice(0, 5) : '未采集'
+    if ($('#bd-tasks-summary')) $('#bd-tasks-summary').textContent = '线任务 ' + total + ' 个 · 消息 ' + by.reduce(function (a, x) { return a + (x.messageCount || 0) }, 0) + ' 条（消息口径）· 最近 ' + (latest ? new Date(latest).toLocaleString('zh-CN', { hour12: false }) : '未采集')
+    var linkedRefs = {}
+    var html = L15_EXAMPLE.filter(function (w) { return w.status !== 'cancelled' }).map(function (w) {
+      var mine = (w.linked || []).filter(function (r) { return byMap[r] })
+      var refsAll = (w.linked || [])
+      refsAll.forEach(function (r) { linkedRefs[r] = true })
+      var head = '<div class="bd-tasks-wihead" role="button" tabindex="0" data-act="wi" aria-label="大任务 ' + esc(w.title) + '，打开大任务详情">' +
+        '<span class="bd-pill bd-badge-l15">L1.5 大任务</span><b class="bd-tasks-wi-title">' + esc(w.title) + '</b>' +
+        '<span class="bd-badge bd-badge-warn">示例</span>' +
+        '<span class="bd-meta">来源未采集 · 目标归属未采集 · 示例关联 ' + refsAll.length + ' 个 L2</span>' +
+        '<span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span>' +
+        '<span class="bd-tasks-wi-go">查看大任务甘特 ▸</span></div>'
+      if (!refsAll.length) return head + '<p class="bd-tasks-wi-empty">暂无 L2；点开大任务详情查看甘特。</p>'
+      var rows = refsAll.map(function (ref) {
+        var hit = byMap[ref]
+        if (!hit) return '<div class="bd-task-card bd-tasks-group"><div class="bd-tasks-grow"><div class="bd-tasks-ghead" role="button" tabindex="0" data-ref="' + esc(ref) + '">' +
+          '<span class="bd-pill bd-badge-l2">L2 线</span><span class="bd-pill bd-badge-l15">' + esc(w.title) + '</span>' +
+          '<span class="bd-tasks-ref">' + esc(ref) + '</span><span class="bd-tasks-title">' + esc(ref) + '</span>' +
+          '<span class="bd-badge bd-badge-muted">未采集</span>' +
+          '<span class="bd-tasks-gmeta"><span class="bd-tasks-metric">消息 未采集</span></span>' +
+          '</div><div class="bd-tasks-gacts"><span class="bd-tasks-toggle bd-tasks-toggle-empty" aria-hidden="true">L3 未采集</span></div></div></div>'
+        return '<div class="bd-task-card bd-tasks-group"><div class="bd-tasks-grow"><div class="bd-tasks-ghead" role="button" tabindex="0" data-ref="' + esc(ref) + '">' +
+          '<span class="bd-pill bd-badge-l2">L2 线</span><span class="bd-pill bd-badge-l15">' + esc(w.title) + '</span>' +
+          '<span class="bd-tasks-ref">' + esc(ref) + '</span><span class="bd-tasks-title">' + esc(ref) + ' 线任务</span>' +
+          '<span class="bd-badge bd-badge-info">按消息状态</span>' +
+          '<span class="bd-tasks-gmeta"><span class="bd-tasks-metric">消息 ' + (hit.messageCount || 0) + ' 条</span>' +
+          '<span class="bd-tasks-metric-note bd-tasks-recent-time">最近 ' + new Date(hit.latestAt).toLocaleTimeString('zh-CN', { hour12: false }).slice(0, 5) + '</span></span>' +
+          '</div><div class="bd-tasks-gacts"><a class="bd-btn" href="/workitem?id=' + encodeURIComponent(w.id) + '">详情 ▸</a></div></div></div>'
+      }).join('')
+      return head + rows
+    }).join('')
+    var unlinked = refs.filter(function (r) { return !linkedRefs[r] })
+    if (unlinked.length) {
+      html += '<div class="bd-tasks-wihead" role="button" tabindex="0"><span class="bd-pill bd-badge-l2">未关联 L1.5</span><b class="bd-tasks-wi-title">未关联 L1.5 的 L2</b><span class="bd-meta">' + unlinked.length + ' 个 taskRef</span></div>' +
+        '<div class="bd-tasks-unlinked-list">' + unlinked.map(function (r) {
+          var hit = byMap[r]
+          return '<div class="bd-task-card bd-tasks-group"><div class="bd-tasks-grow"><div class="bd-tasks-ghead" role="button" tabindex="0" data-ref="' + esc(r) + '">' +
+            '<span class="bd-pill bd-badge-l2">L2 线</span><span class="bd-tasks-ref">' + esc(r) + '</span>' +
+            '<span class="bd-tasks-title">' + esc(r) + ' 线任务</span><span class="bd-tasks-metric">消息 ' + (hit.messageCount || 0) + ' 条</span>' +
+            '</div></div></div>'
+        }).join('') + '</div>'
+    }
+    host.innerHTML = html
+    $$('.bd-tasks-ghead', host).forEach(function (row) {
+      row.addEventListener('click', function () {
+        var ref = row.getAttribute('data-ref'); var hit = byMap[ref]
+        openDrawer(ref || '任务', hit
+          ? '<p class="bd-drawer-kv"><b>消息数</b> ' + esc(hit.messageCount || 0) + ' 条（消息口径，只读）</p>' +
+            '<p class="bd-drawer-kv"><b>首末消息</b> ' + esc(new Date(hit.firstAt).toLocaleString('zh-CN', { hour12: false })) + ' → ' + esc(new Date(hit.latestAt).toLocaleString('zh-CN', { hour12: false })) + '</p>' +
+            '<p class="bd-drawer-note">L3 拆分任务见大任务详情页；本抽屉不推断 L3。</p>'
+          : '<p class="bd-drawer-note">该 taskRef 未采集（0.13 契约后提供）。</p>')
+      })
+    })
+    $$('.bd-tasks-wihead', host).forEach(function (h) {
+      h.addEventListener('click', function () { var w = L15_EXAMPLE.filter(function (x) { return x.title === h.querySelector('.bd-tasks-wi-title').textContent })[0]; if (w) location.href = '/workitem?id=' + encodeURIComponent(w.id) })
+    })
+    $$('#bd-tasks-status .bd-chip').forEach(function (c) {
+      c.addEventListener('click', function () {
+        $$('#bd-tasks-status .bd-chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === c)) })
+        var mode = c.getAttribute('data-status')
+        $$('.bd-tasks-ghead', host).forEach(function (row) { row.parentNode.parentNode.style.display = mode === 'unlinked' ? (row.getAttribute('data-ref') && !linkedRefs[row.getAttribute('data-ref')] ? '' : 'none') : '' })
+      })
+    })
+  }
+
   function renderPlaceholders(data) {
     var g = (data && data.teamGoal) || {}
     var goal = $('#bd-ov-goal-body')
@@ -259,8 +340,7 @@
     renderRhythm(data)
     renderL15(data)
     renderOrg(data)
-    var tasks = $('#bd-tasks-body')
-    if (tasks) tasks.innerHTML = '<p class="bd-empty">任务分组：示例（S7 实现）</p>'
+    renderTasks(data)
     var dt = $('#bd-data-body')
     if (dt) dt.innerHTML = '<p class="bd-empty">数据总览：未采集（S11 对齐）</p>'
     var cost = $('#bd-cost-body')
