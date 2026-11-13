@@ -56,10 +56,10 @@
   function renderWorkflow(data) {
     var body = $('#bd-ov-workflow-body'); if (!body) return
     var g = (data && data.teamGoal) || {}
-    var wf = Array.isArray(g.workflow) && g.workflow.length ? g.workflow : null
-    var synthetic = !wf
-    var stages = (wf || DEFAULT_WF.map(function (n, i) { return { name: n, owner: null, output: null, status: 'todo', no: i + 1 } }))
-    var cur = g.currentStage || (wf ? null : null)
+    var stages = parseWorkflow(g.workflow)
+    var synthetic = stages.length === 0
+    if (synthetic) stages = DEFAULT_WF.map(function (n, i) { return { name: n, owner: null, output: null, status: 'todo', no: i + 1 } })
+    var cur = g.currentStage || (stages.filter(function (s) { return s.status === 'doing' })[0] || {}).name || null
     var doneCount = stages.filter(function (s) { return s.status === 'done' }).length
     var pct = stages.length ? Math.round(doneCount / stages.length * 100) : 0
     var head = '<div class="bd-wf-head"><span class="bd-wf-progress-text">阶段 ' + doneCount + '/' + stages.length + '</span>' +
@@ -83,6 +83,81 @@
     body.innerHTML = head + '<div class="bd-wf-strip" role="list" aria-label="工作流 ' + stages.length + ' 阶段">' + strip + '</div>'
   }
 
+
+  // 通用：文本 → 列表项（按行；去掉编号/符号）
+  function parseLines(raw) {
+    var text = String(raw == null ? '' : raw).trim()
+    if (!text) return []
+    return text.split(/\r?\n+/).map(function (l) { return l.trim() }).filter(Boolean).map(function (l) {
+      return l.replace(/^(?:[-*•]\s*|(?:P|步骤|阶段)?\s*\d+[\.\)、:：]\s*)/, '')
+    })
+  }
+  // 工作流：文本行可含 "名称 | owner | 产出 | 状态"（状态：完成/进行中/待开始/按需）
+  function parseWorkflow(raw) {
+    var lines = parseLines(raw)
+    if (lines.length < 2) return []
+    var stages = lines.map(function (l) {
+      var cols = l.split('|').map(function (x) { return x.trim() })
+      var status = cols[3] || ''
+      var st = /完成/.test(status) ? 'done' : /进行中|当前|doing/.test(status) ? 'doing' : /按需/.test(status) ? 'asis' : 'todo'
+      return { name: cols[0], owner: cols[1] || null, output: cols[2] || null, status: st }
+    })
+    return stages
+  }
+  function renderRhythm(data) {
+    var body = $('#bd-ov-rhythm-body'); if (!body) return
+    var g = (data && data.teamGoal) || {}
+    var items = parseLines(g.rhythm)
+    var sub = $('#bd-ov-rhythm-sub')
+    if (sub) sub.textContent = items.length ? ('teamGoal.rhythm · ' + items.length + ' 条') : 'teamGoal.rhythm'
+    if (!items.length) { body.innerHTML = '<p class="bd-empty">节奏未采集（TEAM.md 计划节奏）</p>'; return }
+    body.innerHTML = '<ol class="bd-ov-rhythm">' + items.map(function (t, i) {
+      return '<li class="bd-ov-rhythm-row"><span class="bd-ov-rhythm-no" aria-hidden="true">' + (i + 1) + '</span><span>' + esc(t) + '</span></li>'
+    }).join('') + '</ol>'
+  }
+  var L15_EXAMPLE = [
+    { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', concurrent: 2, stage: '执行', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200 },
+    { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', concurrent: 0, stage: null, l2: 0, l3: 0, agentRuns: null, tokenTotal: null },
+    { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', concurrent: 0, stage: '交付', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500 }
+  ]
+  var L15_STATUS = { active: '进行中', paused: '暂停', done: '完成', cancelled: '已取消' }
+  function l15Row(it) {
+    var cls = it.status === 'active' ? 'bd-badge-info' : it.status === 'paused' ? 'bd-badge-paused' : 'bd-badge-muted'
+    var mini = ['设定', '拆解', '排期', '执行', '审阅', '验收', '交付'].map(function (s) {
+      var idx = ['设定', '拆解', '排期', '执行', '审阅', '验收', '交付'].indexOf(it.stage)
+      var ci = ['设定', '拆解', '排期', '执行', '审阅', '验收', '交付'].indexOf(s)
+      var c = it.stage && ci === idx ? 'cur' : it.stage && idx > ci ? 'done' : ''
+      return '<i class="bd-wi-wfseg ' + c + '" title="' + esc(s) + '"></i>'
+    }).join('')
+    return '<a class="bd-wi-row" href="/workitem?id=' + encodeURIComponent(it.id) + '" role="article" aria-label="大任务 ' + esc(it.title) + '，查看详情">' +
+      '<div class="bd-wi-col bd-wi-col-main"><div class="bd-wi-rowhead"><b class="bd-wi-title">' + esc(it.title) + '</b>' +
+      '<span class="bd-badge ' + cls + '">' + esc(L15_STATUS[it.status] || '未采集') + '</span>' +
+      (it.concurrent > 1 ? '<span class="bd-badge bd-badge-concurrent">并发中（' + it.concurrent + '）</span>' : '') +
+      (it.priority ? '<span class="bd-badge bd-badge-priority">' + esc(it.priority) + '</span>' : '') +
+      '<span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span></div>' +
+      '<div class="bd-wi-meta">示例 · 待 0.13 契约 · owner 未采集</div>' +
+      '<div class="bd-wi-stage">当前阶段：<b>' + esc(it.stage || '未采集') + '</b><span class="bd-wi-miniwf" aria-label="工作流 7 阶段">' + mini + '</span></div>' +
+      '<div class="bd-wi-fields"><span class="bd-wi-f">L2 <b>' + (it.l2 == null ? '未采集' : it.l2 + ' 条') + '</b></span>' +
+      '<span class="bd-wi-f">L3 <b>' + (it.l3 == null ? '未采集' : it.l3 + ' 条') + '</b></span>' +
+      '<span class="bd-wi-f">agent <b>' + (it.agentRuns == null ? '未采集' : it.agentRuns + ' 次') + '</b></span>' +
+      '<span class="bd-wi-f">token <b>' + (it.tokenTotal == null ? '未采集' : (it.tokenTotal / 1000).toFixed(1) + 'k') + '</b></span></div>' +
+      '</div><div class="bd-wi-col"><span class="bd-wi-detail-link">详情 →</span></div></a>'
+  }
+  function renderL15(data) {
+    var host = $('#bd-ov-l15-body'); if (!host) return
+    var items = L15_EXAMPLE
+    var visible = items.filter(function (it) { return it.status !== 'done' && it.status !== 'cancelled' })
+    var hidden = items.length - visible.length
+    host.innerHTML = '<div class="bd-l15-head"><div class="bd-l15-chips" role="group" aria-label="L1.5 筛选">' +
+      '<button type="button" class="bd-chip" aria-pressed="true">全部当前</button>' +
+      '<button type="button" class="bd-chip" aria-pressed="false">进行中</button>' +
+      '<button type="button" class="bd-chip" aria-pressed="false">暂停</button>' +
+      '<button type="button" class="bd-chip" aria-pressed="false">并发</button></div>' +
+      '<span class="bd-l15-count">当前 ' + visible.length + ' 个' + (hidden ? ' · 已隐藏 ' + hidden + ' 个（完成/已取消）' : '') + '</span></div>' +
+      '<div class="bd-l15-rows">' + visible.map(l15Row).join('') + '</div>' +
+      '<p class="bd-l15-note">示例 · 待 0.13 契约；L2 时间来自真实消息；计划时间未采集；各 workItem 的 token 不可横向加总。</p>'
+  }
+
   function renderPlaceholders(data) {
     var g = (data && data.teamGoal) || {}
     var goal = $('#bd-ov-goal-body')
@@ -104,10 +179,8 @@
     var team = $('#bd-ov-team')
     if (team) team.textContent = (data && data.teamName) || ''
     renderWorkflow(data)
-    var rh = $('#bd-ov-rhythm-body')
-    if (rh) rh.innerHTML = '<p class="bd-empty">节奏：示例（S5 实现）</p>'
-    var l15 = $('#bd-ov-l15-body')
-    if (l15) l15.innerHTML = '<p class="bd-empty">L1.5 大任务：示例 · 待 0.13 契约（S5 实现）</p>'
+    renderRhythm(data)
+    renderL15(data)
     var org = $('#bd-org-body')
     if (org) org.innerHTML = '<p class="bd-empty">角色与 agent：示例（S6 实现）</p>'
     var tasks = $('#bd-tasks-body')
