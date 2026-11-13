@@ -4,6 +4,8 @@ English | [中文](CHANGELOG.md)
 
 ## 0.13.0 (2026-11-14)
 
+> **Released 2026-11-14**: npm dsh-agent-lines@0.13.0 (latest) · GitHub Release v0.13.0 · tag at 19638b7 · **fallback v0.12.0**.
+
 ### Board 2.0 完整对齐（设计驱动）
 
 - 总览：5 独立区块（目标 + 计划双栏 / 工作流 7 阶段通栏 / 节奏 / L1.5 独立 section，不折叠）

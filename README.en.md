@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current release: v0.12.0 (2026-11-13) — Board 2.0 redesign, line-task layering, manager handover automation.
+> Current release: v0.13.0 (2026-11-14) — Board 2.0 full alignment (overview 5 blocks / org roles+agents / tasks L1.5→L2 / work-item detail v2 / member page v2 / Board 2.0 tokens & narrow screens); v0.12.0 is the fallback.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -195,13 +195,13 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.13.0：Board 2.0 完整对齐（当前开发版本）
+### 0.13.0：Board 2.0 完整对齐（已发布 2026-11-14）
 
 - 总览 5 独立区块（目标+计划双栏 / 工作流 7 阶段 / 节奏 / L1.5 独立 section）；组织页角色与 agent（不挂 L3）；任务页 L1.5→L2 分组；大任务详情 v2 八分区；成员页 v2。
 - 全站 Board 2.0 tokens + 窄屏 390；旧样式零残留；BOARD2 默认 on，显式 off 回退 0.12.0 旧视图（legacy 冻结）。
 - 无 schema / protocol 变更；工具数 27。
 
-### 0.12.0: Board enhancements (L1.5 list / standalone detail / member page / 4 metrics) + line-task layering (current release)
+### 0.12.0: Board enhancements (L1.5 list / standalone detail / member page / 4 metrics) + line-task layering (historical; fallback for 0.13.0)
 
 - **Board enhancements**: a full L1.5 work-item list at the top of the tasks view (four metrics: L2/L3 counts, agent runs, token usage); a standalone work-item detail page (gantt with timeline / table views); a standalone member page with shared avatars; the old detail drawer is kept as a fallback.
 - **Not in this release**: the five-block overview redesign (goal / plan / workflow / rhythm / L1.5), planned for 0.13 (see KNOWN_ISSUES).
