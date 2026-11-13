@@ -42,14 +42,18 @@
       'bd-ov-workflow-body': '工作流未采集',
       'bd-ov-rhythm-body': '节奏未采集',
       'bd-ov-l15-body': 'L1.5 大任务未采集',
-      'bd-org-body': '角色与 agent 未采集',
-      'bd-tasks-body': '任务未采集',
+      'bd-org-roles': '角色与 agent 未采集',
+      'bd-tasks-list': '任务未采集',
+      'bd-tasks-summary': '任务摘要未采集',
       'bd-data-body': '数据未采集',
       'bd-cost-body': '消耗未采集'
     }
     Object.keys(map).forEach(function (id) {
       var el = document.getElementById(id)
       if (el) el.innerHTML = '<p class="bd-empty">' + esc(map[id]) + '（' + esc(reason) + '）</p>'
+    })
+    ['bd-org-kpi-roles', 'bd-org-kpi-agents', 'bd-org-kpi-online', 'bd-tasks-kpi-total', 'bd-tasks-kpi-doing', 'bd-tasks-kpi-blocked', 'bd-tasks-kpi-latest'].forEach(function (id) {
+      var el = document.getElementById(id); if (el) el.textContent = '未采集'
     })
     var t = document.getElementById('bd-data-time'); if (t) t.textContent = '未采集'
   }
@@ -93,9 +97,17 @@
       return l.replace(/^(?:[-*•]\s*|(?:P|步骤|阶段)?\s*\d+[\.\)、:：]\s*)/, '')
     })
   }
-  // 工作流：文本行可含 "名称 | owner | 产出 | 状态"（状态：完成/进行中/待开始/按需）
+  // 工作流：支持多行（每行 名称 | owner | 产出 | 状态）或单行 "设定→拆解→..." / "设定、拆解、..."
+  function splitWorkflowText(raw) {
+    var text = String(raw == null ? '' : raw).trim()
+    if (!text) return []
+    var lines = text.split(new RegExp(String.fromCharCode(13) + '?[' + String.fromCharCode(10) + ']+')).map(function (l) { return l.trim() }).filter(Boolean)
+    if (lines.length >= 2) return lines
+    var parts = text.split(/\s*(?:→|->|、|;|；)\s*/).map(function (x) { return x.trim() }).filter(Boolean)
+    return parts.length >= 2 ? parts : lines
+  }
   function parseWorkflow(raw) {
-    var lines = parseLines(raw)
+    var lines = splitWorkflowText(raw)
     if (lines.length < 2) return []
     var stages = lines.map(function (l) {
       var cols = l.split('|').map(function (x) { return x.trim() })

@@ -320,8 +320,8 @@
 </section>
 <nav class="bd-wi-sec bd-wi-sec-nav" id="bd-wi-sec-nav" aria-label="大任务导航">
 <a href="#" class="bd-wi-back" data-wi-back="">← 返回总览</a>
-<span class="bd-wi-navlink bd-wi-empty">已是第一个</span>
-<a href="#/workitem/wi-weekly-report" class="bd-wi-navlink">下一个：视频团队周报 →</a>
+<a href="/" class="bd-wi-navlink bd-wi-empty" aria-disabled="true">已是第一个</a>
+<a href="/" class="bd-wi-navlink bd-wi-empty" aria-disabled="true">已是最后一个</a>
 </nav>
 </div>
 </main>
@@ -349,6 +349,11 @@
     var text = String(raw == null ? '' : raw).trim()
     if (!text) return []
     var lines = text.split(/\r?\n+/).map(function (l) { return l.trim() }).filter(Boolean)
+    if (lines.length < 2) {
+      var norm = text.split('->').join('→').split('、').join('→').split(';').join('→').split('；').join('→')
+      var parts = norm.split('→').map(function (x) { return x.trim() }).filter(Boolean)
+      if (parts.length >= 2) lines = parts
+    }
     if (lines.length < 2) return []
     return lines.map(function (l) {
       var cols = l.replace(/^(?:[-*•]\s*|(?:P|步骤|阶段)?\s*\d+[\.\)、:：]\s*)/, '').split('|').map(function (x) { return x.trim() })
