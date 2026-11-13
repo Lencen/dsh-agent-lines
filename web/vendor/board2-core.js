@@ -34,6 +34,55 @@
     var v = $('#bd-version'); if (v) v.textContent = '版本 ' + (state.version || (data && data.version) || '未采集')
   }
   // S3-S7 会实现以下渲染；S2 仅渲染壳层占位（保持「未采集/示例」口径）
+  var DEFAULT_WF = ['设定', '拆解', '排期', '执行', '审阅', '验收', '交付']
+  function degradeAll(reason) {
+    var map = {
+      'bd-ov-goal-body': '目标未采集',
+      'bd-ov-plan-body': '计划未采集',
+      'bd-ov-workflow-body': '工作流未采集',
+      'bd-ov-rhythm-body': '节奏未采集',
+      'bd-ov-l15-body': 'L1.5 大任务未采集',
+      'bd-org-body': '角色与 agent 未采集',
+      'bd-tasks-body': '任务未采集',
+      'bd-data-body': '数据未采集',
+      'bd-cost-body': '消耗未采集'
+    }
+    Object.keys(map).forEach(function (id) {
+      var el = document.getElementById(id)
+      if (el) el.innerHTML = '<p class="bd-empty">' + esc(map[id]) + '（' + esc(reason) + '）</p>'
+    })
+    var t = document.getElementById('bd-data-time'); if (t) t.textContent = '未采集'
+  }
+  function renderWorkflow(data) {
+    var body = $('#bd-ov-workflow-body'); if (!body) return
+    var g = (data && data.teamGoal) || {}
+    var wf = Array.isArray(g.workflow) && g.workflow.length ? g.workflow : null
+    var synthetic = !wf
+    var stages = (wf || DEFAULT_WF.map(function (n, i) { return { name: n, owner: null, output: null, status: 'todo', no: i + 1 } }))
+    var cur = g.currentStage || (wf ? null : null)
+    var doneCount = stages.filter(function (s) { return s.status === 'done' }).length
+    var pct = stages.length ? Math.round(doneCount / stages.length * 100) : 0
+    var head = '<div class="bd-wf-head"><span class="bd-wf-progress-text">阶段 ' + doneCount + '/' + stages.length + '</span>' +
+      '<span class="bd-wf-cur">当前：' + esc(cur || '未采集') + '</span>' +
+      (synthetic ? '<span class="bd-badge bd-badge-warn">示例 · 待 TEAM.md 工作流</span>' : '') +
+      '<span class="bd-wf-progress"><progress class="bd-wf-progress-bar" value="' + pct + '" max="100" aria-label="工作流进度 ' + pct + '%"></progress><b class="num">' + pct + '%</b></span>' +
+      '<span class="bd-wf-scrollhint">横滑查看 ' + stages.length + ' 阶段 →</span></div>'
+    var strip = stages.map(function (s, i) {
+      var isCur = cur && s.name === cur
+      var cls = 'bd-wf-stage ' + (s.status === 'done' ? 'bd-wf-done' : isCur ? 'bd-wf-doing' : s.status === 'asis' ? 'bd-wf-asis' : 'bd-wf-todo')
+      var badge = s.status === 'done' ? '<span class="bd-badge bd-badge-ok">完成</span>' : isCur ? '<span class="bd-badge bd-badge-info">进行中</span>' : s.status === 'asis' ? '<span class="bd-badge bd-badge-warn">按需</span>' : '<span class="bd-badge bd-badge-muted">待开始</span>'
+      var node = '<div class="' + cls + '" role="listitem" tabindex="0" aria-label="阶段 ' + (i + 1) + ' ' + esc(s.name) + '">' +
+        (isCur ? '<span class="bd-wf-current-badge">当前</span>' : '') +
+        '<span class="bd-wf-no">' + (s.status === 'done' ? '✓' : String(i + 1).padStart(2, '0')) + '</span>' +
+        '<b class="bd-wf-name">' + esc(s.name) + '</b>' +
+        '<span class="bd-wf-owner">' + (s.owner ? 'owner ' + esc(s.owner) : 'owner 未采集') + '</span>' +
+        '<span class="bd-wf-output">' + (s.output ? esc(s.output) : '产出未采集') + '</span>' + badge + '</div>'
+      var connector = i < stages.length - 1 ? '<span class="bd-wf-connector ' + (s.status === 'done' ? 'bd-wf-done' : 'bd-wf-todo') + '" aria-hidden="true">→</span>' : ''
+      return node + connector
+    }).join('')
+    body.innerHTML = head + '<div class="bd-wf-strip" role="list" aria-label="工作流 ' + stages.length + ' 阶段">' + strip + '</div>'
+  }
+
   function renderPlaceholders(data) {
     var g = (data && data.teamGoal) || {}
     var goal = $('#bd-ov-goal-body')
@@ -54,8 +103,7 @@
       : '<p class="bd-empty">计划未采集（TEAM.md 规划）</p>'
     var team = $('#bd-ov-team')
     if (team) team.textContent = (data && data.teamName) || ''
-    var wf = $('#bd-ov-workflow-body')
-    if (wf) wf.innerHTML = '<p class="bd-empty">工作流阶段：示例（S4 实现）</p>'
+    renderWorkflow(data)
     var rh = $('#bd-ov-rhythm-body')
     if (rh) rh.innerHTML = '<p class="bd-empty">节奏：示例（S5 实现）</p>'
     var l15 = $('#bd-ov-l15-body')
@@ -77,7 +125,7 @@
     fetch('/api/live', { cache: 'no-store' }).then(function (r) {
       if (!r.ok) throw new Error('live ' + r.status)
       return r.json()
-    }).then(function (data) { clearError(); render(data) }).catch(function (e) { showError('数据不可得：' + String(e && e.message || e) + '（只读，不伪造）'); var t = $('#bd-data-time'); if (t) t.textContent = '未采集' }).then(function () { state.loading = false })
+    }).then(function (data) { clearError(); if (!data || data.available === false) { degradeAll("数据不可得"); } else { render(data) } }).catch(function (e) { degradeAll("数据不可得"); showError('数据不可得：' + String(e && e.message || e) + '（只读，不伪造）'); var t = $('#bd-data-time'); if (t) t.textContent = '未采集' }).then(function () { state.loading = false })
   }
   function startAuto() {
     var sel = $('#bd-period'); var ms = parseInt((sel && sel.value) || '30000', 10)
