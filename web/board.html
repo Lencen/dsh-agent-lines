@@ -690,5 +690,60 @@ setInterval(function(){if(document.visibilityState==='visible')load(false)},6000
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
-</script></body>
+</script><script>
+/* board2 S2-S4: L1.5 list panel (flag-gated). flag off => no DOM change. */
+(function () {
+  'use strict'
+  var STATUS = { proposed: '拟议', confirmed: '已确认', decomposing: '拆解中', active: '进行中', paused: '暂停', done: '已完成', cancelled: '已取消' }
+  var EXAMPLE = [
+    { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200 },
+    { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', l2: 0, l3: 0, agentRuns: null, tokenTotal: null },
+    { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500 }
+  ]
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] }) }
+  function fmtK(n) { if (n == null) return '未采集'; if (n >= 1000) return (n / 1000).toFixed(1) + 'k'; return String(n) }
+  function metric(label, value, mark) {
+    return '<span class="bd-wi-metric"><i>' + esc(label) + '</i> <b>' + esc(value) + '</b> <em>' + esc(mark) + '</em></span>'
+  }
+  function rowOf(it) {
+    var st = STATUS[it.status] || '未采集'
+    var prio = it.priority ? '<span class="bd-wi-prio">' + esc(it.priority) + '</span>' : ''
+    var l2 = it.l2 == null ? '未采集' : String(it.l2)
+    var l3 = it.l3 == null ? '未采集' : String(it.l3)
+    var ag = it.agentRuns == null ? '未采集' : String(it.agentRuns)
+    var tk = it.tokenTotal == null ? '未采集' : fmtK(it.tokenTotal)
+    return '<a class="bd-wi-row" href="/workitem.html?id=' + encodeURIComponent(it.id) + '">' +
+      '<span class="bd-wi-title">' + esc(it.title) + '</span>' +
+      '<span class="bd-wi-status">' + esc(st) + '</span>' + prio +
+      metric('L2', l2, '真实') + metric('L3', l3, '示例') +
+      metric('agent', ag, ag === '未采集' ? '未采集' : '示例') +
+      metric('token', tk, tk === '未采集' ? '未采集' : '示例') +
+      '</a>'
+  }
+  function render(host, items) {
+    var visible = items.filter(function (it) { return it.status !== 'done' && it.status !== 'cancelled' })
+    var hidden = items.length - visible.length
+    var head = '<div class="bd-l15-head"><b>L1.5 大任务</b><span class="muted">只读 · 示例 · 待 0.13 契约</span>' +
+      (hidden > 0 ? '<span class="muted">已隐藏 ' + hidden + ' 个（已完成/已取消）</span>' : '') + '</div>'
+    host.innerHTML = head + visible.map(rowOf).join('') +
+      '<p class="bd-l15-note">L2 时间来自真实消息；计划时间未采集；agent/token 为示例估计，各 workItem 的 token 不可横向加总。</p>'
+  }
+  function install() {
+    fetch('/api/board-config', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (cfg) {
+      if (!cfg || !cfg.board2) return
+      var view = document.getElementById('view-tasks'); if (!view) return
+      var card = view.querySelector('.card'); if (!card) return
+      var panel = document.createElement('div')
+      panel.id = 'l15-panel'
+      panel.className = 'bd-l15-panel'
+      card.insertBefore(panel, card.firstChild)
+      fetch('/api/work-items', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (j) {
+        render(panel, j && j.available && Array.isArray(j.items) && j.items.length ? j.items : EXAMPLE)
+      }).catch(function () { render(panel, EXAMPLE) })
+    }).catch(function () { /* flag off or server old: no DOM change */ })
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install()
+})()
+</script>
+</body>
 </html>
