@@ -43,15 +43,37 @@
   <div class="bd-error" id="bd-error" role="alert" hidden></div>
 
   <section class="bd-view" id="bd-view-overview" data-view="overview" role="tabpanel" aria-labelledby="bd-tab-overview">
-    <div class="bd-overview">
-      <div class="bd-ov-goalplan">
-        <section class="bd-card" id="bd-ov-goal" aria-label="团队目标"><div class="bd-card-h">团队目标</div><div class="bd-card-b" id="bd-ov-goal-body"><p class="bd-empty">加载中…</p></div></section>
-        <section class="bd-card" id="bd-ov-plan" aria-label="计划与节奏"><div class="bd-card-h">计划</div><div class="bd-card-b" id="bd-ov-plan-body"><p class="bd-empty">加载中…</p></div></section>
-      </div>
-      <section class="bd-card bd-ov-wf" id="bd-ov-workflow" aria-label="工作流"><div class="bd-card-h">工作流</div><div class="bd-card-b" id="bd-ov-workflow-body"><p class="bd-empty">加载中…</p></div></section>
-      <section class="bd-card bd-ov-rhythm" id="bd-ov-rhythm" aria-label="节奏"><div class="bd-card-h">节奏</div><div class="bd-card-b" id="bd-ov-rhythm-body"><p class="bd-empty">加载中…</p></div></section>
-      <section class="bd-card bd-ov-l15" id="bd-ov-l15" aria-label="L1.5 大任务"><div class="bd-card-h">L1.5 大任务</div><div class="bd-card-b" id="bd-ov-l15-body"><p class="bd-empty">加载中…</p></div></section>
+    <div class="bd-view-head">
+      <h2 class="bd-view-title">总览</h2>
+      <p class="bd-view-sub">团队信息（目标 / 计划 / 工作流 / 节奏）→ L1.5 大任务</p>
     </div>
+    <section class="bd-ov-team-info" aria-labelledby="bd-ov-team-info-h">
+      <h2 class="bd-ov-section-title" id="bd-ov-team-info-h">团队信息</h2>
+      <div class="bd-ov-toprow" id="bd-ov-toprow">
+        <section class="bd-card bd-ov-block" id="bd-ov-goal" aria-labelledby="bd-ov-goal-h">
+          <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-goal-h">目标</h3><span class="bd-pill bd-badge-l2">L1 目标</span><span class="bd-card-sub" id="bd-ov-team"></span></div>
+          <div class="bd-ov-goal-body" id="bd-ov-goal-body"><p class="bd-empty">加载中…</p></div>
+        </section>
+        <section class="bd-card bd-ov-block" id="bd-ov-plan" aria-labelledby="bd-ov-plan-h">
+          <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-plan-h">计划</h3><span class="bd-card-sub" id="bd-ov-plan-sub">teamGoal.plan</span></div>
+          <div class="bd-ov-plan-body" id="bd-ov-plan-body"><p class="bd-empty">加载中…</p></div>
+        </section>
+      </div>
+    </section>
+    <section class="bd-ov-blocks" id="bd-ov-rest" aria-label="工作流 / 节奏 / L1.5">
+      <section class="bd-card bd-ov-block bd-ov-wf" id="bd-ov-workflow" aria-labelledby="bd-ov-workflow-h">
+        <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-workflow-h">工作流</h3><span class="bd-card-sub">7 阶段</span></div>
+        <div class="bd-ov-workflow-body" id="bd-ov-workflow-body"><p class="bd-empty">加载中…</p></div>
+      </section>
+      <section class="bd-card bd-ov-block bd-ov-rhythm" id="bd-ov-rhythm" aria-labelledby="bd-ov-rhythm-h">
+        <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-rhythm-h">节奏</h3></div>
+        <div class="bd-ov-rhythm-body" id="bd-ov-rhythm-body"><p class="bd-empty">加载中…</p></div>
+      </section>
+      <section class="bd-card bd-ov-block bd-ov-l15" id="bd-ov-l15" aria-labelledby="bd-ov-l15-h">
+        <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-l15-h">L1.5 大任务</h3><span class="bd-card-sub">当前 active + paused</span></div>
+        <div class="bd-ov-l15-body" id="bd-ov-l15-body"><p class="bd-empty">加载中…</p></div>
+      </section>
+    </section>
   </section>
 
   <section class="bd-view" id="bd-view-org" data-view="org" role="tabpanel" aria-labelledby="bd-tab-org" hidden>

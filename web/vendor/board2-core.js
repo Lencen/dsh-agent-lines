@@ -5,6 +5,19 @@
   function $(s, r) { return (r || document).querySelector(s) }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)) }
   function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] }) }
+  // 计划文本 → 步骤列表（支持 P1 xx / - a / 1) a / 单段视为 1 步）
+  function parsePlan(raw) {
+    var text = String(raw == null ? '' : raw).trim()
+    if (!text) return []
+    var lines = text.split(/\r?\n+/).map(function (l) { return l.trim() }).filter(Boolean)
+    if (lines.length === 1) return [{ title: lines[0].slice(0, 40), desc: '' }]
+    return lines.map(function (l) {
+      var m = l.match(/^(?:[-*]\s*|(?:P|步骤)?\s*\d+[\.\)、:：]\s*)(.*)$/)
+      var body = m ? m[1] : l
+      var parts = body.split(/[：:]\s*/)
+      return { title: (parts[0] || body).slice(0, 40), desc: parts.length > 1 ? parts.slice(1).join('：') : '' }
+    })
+  }
   function showError(msg) { var el = $('#bd-error'); if (!el) return; el.textContent = msg; el.hidden = false }
   function clearError() { var el = $('#bd-error'); if (el) { el.hidden = true; el.textContent = '' } }
   function setView(name) {
@@ -16,17 +29,31 @@
   function fmtTime(ms) { try { return new Date(ms).toLocaleTimeString('zh-CN', { hour12: false }) } catch (e) { return '--:--' } }
   function renderHeader(data) {
     state.live = data
-    var t = $('#bd-data-time'); if (t) t.textContent = data && data.snapshotAt ? fmtTime(data.snapshotAt) : fmtTime(Date.now())
+    var t = $('#bd-data-time'); if (t) t.textContent = data && (data.generatedAt || data.snapshotAt) ? fmtTime(data.generatedAt || data.snapshotAt) : fmtTime(Date.now())
     var team = $('#bd-team-name'); if (team) team.textContent = (data && data.teamName) || '团队'
     var v = $('#bd-version'); if (v) v.textContent = '版本 ' + (state.version || (data && data.version) || '未采集')
   }
   // S3-S7 会实现以下渲染；S2 仅渲染壳层占位（保持「未采集/示例」口径）
   function renderPlaceholders(data) {
+    var g = (data && data.teamGoal) || {}
     var goal = $('#bd-ov-goal-body')
-    var g = data && data.teamGoal
-    if (goal) goal.innerHTML = g && g.objective ? '<p>' + esc(g.objective) + '</p><p class="bd-muted">' + esc(g.intro || '简介未采集') + '</p>' : '<p class="bd-empty">未采集（TEAM.md 目标/简介）</p>'
+    if (goal) goal.innerHTML = g.objective
+      ? '<p class="bd-ov-goal-obj">' + esc(g.objective) + '</p>' +
+        (g.intro ? '<p class="bd-ov-prose">' + esc(g.intro) + '</p>' : '<p class="bd-empty">简介未采集（TEAM.md）</p>') +
+        '<div class="bd-ov-goal-meta"><span><span class="bd-ov-k">来源</span>TEAM.md</span>' +
+        '<span><span class="bd-ov-k">数据时刻</span><span class="num">' + esc(data && (data.generatedAt || data.snapshotAt) ? new Date(data.generatedAt || data.snapshotAt).toLocaleString('zh-CN', { hour12: false }) : '未采集') + '</span></span></div>'
+      : '<p class="bd-empty">目标未采集（TEAM.md）</p>'
     var plan = $('#bd-ov-plan-body')
-    if (plan) plan.innerHTML = g && g.plan ? '<p>' + esc(g.plan) + '</p>' : '<p class="bd-empty">未采集（规划/节奏）</p>'
+    var sub = $('#bd-ov-plan-sub')
+    var items = parsePlan(g.plan)
+    if (sub) sub.textContent = items.length ? ('teamGoal.plan · ' + items.length + ' 步') : 'teamGoal.plan'
+    if (plan) plan.innerHTML = items.length
+      ? '<ol class="bd-ov-plan">' + items.map(function (it, i) {
+          return '<li class="bd-ov-plan-row"><span class="bd-ov-plan-no" aria-hidden="true">' + (i + 1) + '</span><div class="bd-ov-plan-main"><b>' + esc(it.title) + '</b><span class="bd-ov-plan-desc">' + esc(it.desc) + '</span></div></li>'
+        }).join('') + '</ol>'
+      : '<p class="bd-empty">计划未采集（TEAM.md 规划）</p>'
+    var team = $('#bd-ov-team')
+    if (team) team.textContent = (data && data.teamName) || ''
     var wf = $('#bd-ov-workflow-body')
     if (wf) wf.innerHTML = '<p class="bd-empty">工作流阶段：示例（S4 实现）</p>'
     var rh = $('#bd-ov-rhythm-body')
