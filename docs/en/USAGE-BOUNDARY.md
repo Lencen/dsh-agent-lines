@@ -49,4 +49,4 @@
 
 ## Version
 
-Current release 0.12.0. If this document and the code disagree, AGENTS.md / CHANGELOG win; treat it as a docs bug.
+Current version 0.13.0. If this document and the code disagree, AGENTS.md / CHANGELOG win; treat it as a docs bug.

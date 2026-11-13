@@ -2,6 +2,20 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.13.0 (2026-11-14)
+
+### Board 2.0 完整对齐（设计驱动）
+
+- 总览：5 独立区块（目标 + 计划双栏 / 工作流 7 阶段通栏 / 节奏 / L1.5 独立 section，不折叠）
+- 组织：角色与 agent 模型（行=角色/岗位；点行开角色抽屉；点 agent 数展开实例；不挂 L3）
+- 任务：L1.5→L2 分组（线层为主；L3 见详情页）
+- 大任务详情 v2：八分区（头部/6 指标/7 阶段/甘特 L1.5+L2+L3+阶段线+今天快照/表格双视图/拆解看板/时间线证据/数据说明/导航+空态）
+- 成员页 v2：头像 48 / kind / 身份区 / 角色三块 7 anchor / 数据卡 / 名下任务 L1.5→L2→L3
+- 视觉：全站 Board 2.0 tokens；窄屏 390 适配；旧样式零残留（门禁 B11/B12）
+- DSH_AGENT_LINES_BOARD2 默认 on；显式 off 回退 web/board-legacy.html（0.12.0 视图，sha256 基线冻结）
+- 门禁：board scripts 13→19（旧类/旧 CSS 清零）；docs consistency 18
+- 无 schema / protocol 变更；工具数 27
+
 ## 0.12.0 (2026-11-13)
 
 > **已发布 2026-11-13**：npm dsh-agent-lines@0.12.0（latest）· GitHub Release v0.12.0 · tag 指向 849ffa5 · **回退位 v0.11.5**。
