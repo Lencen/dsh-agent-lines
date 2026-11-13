@@ -691,71 +691,69 @@ setInterval(function(){if(document.visibilityState==='visible')load(false)},6000
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script><script>
-/* board2 S2-S4: L1.5 list panel (flag-gated). flag off => no DOM change. */
+/* board2 S2-S4b: L1.5 list panel (flag-gated, port CSS). flag off => no DOM change. */
 (function () {
   'use strict'
   var STATUS = { proposed: '待确认', confirmed: '未拆解', decomposing: '拆解中', active: '进行中', paused: '暂停', done: '完成', cancelled: '已取消' }
+  var STATUS_CLS = { proposed: 'bd-badge-muted', confirmed: 'bd-badge-muted', decomposing: 'bd-badge-l3', active: 'bd-badge-info', paused: 'bd-badge-paused', done: 'bd-badge-ok', cancelled: 'bd-badge-muted' }
   var EXAMPLE = [
-    { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200, synthetic: true },
-    { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', l2: 0, l3: 0, agentRuns: null, tokenTotal: null, synthetic: true },
-    { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500, synthetic: true }
+    { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', origin: 'goal', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200, currentStage: '执行', updatedAt: 1763000000000, synthetic: true },
+    { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', origin: 'ad-hoc', l2: 0, l3: 0, agentRuns: null, tokenTotal: null, currentStage: null, updatedAt: 1762990000000, synthetic: true },
+    { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', origin: 'goal', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500, currentStage: '交付', updatedAt: 1762980000000, synthetic: true }
   ]
+  var STAGES = ['设定', '拆解', '排期', '执行', '审阅', '验收', '交付']
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] }) }
   function fmtK(n) { if (n == null) return '未采集'; if (n >= 1000) return (n / 1000).toFixed(1) + 'k'; return String(n) }
-  function metric(label, value, mark) {
-    return '<span class="bd-wi-metric"><i>' + esc(label) + '</i> <b>' + esc(value) + '</b> <em>' + esc(mark) + '</em></span>'
+  function t(ms) { return ms ? new Date(ms).toISOString().slice(5, 16).replace('T', ' ') : '未采集' }
+  function miniwf(cur) {
+    return '<span class="bd-wi-miniwf">' + STAGES.map(function (s) {
+      var cls = s === cur ? 'cur' : (cur && STAGES.indexOf(s) < STAGES.indexOf(cur) ? 'done' : '')
+      return '<i class="bd-wi-wfseg ' + cls + '"></i>'
+    }).join('') + '</span>'
   }
-  function rowOf(it) {
+  function field(k, v, mark) { return '<span class="bd-wi-f">' + esc(k) + ' <b>' + esc(v) + '</b> <i class="bd-badge bd-badge-muted">' + esc(mark) + '</i></span>' }
+  function row(it) {
     var st = STATUS[it.status] || '未采集'
-    var prio = it.priority ? '<span class="bd-wi-prio">' + esc(it.priority) + '</span>' : ''
-    var l2 = it.l2 == null ? '未采集' : String(it.l2)
-    var l3 = it.l3 == null ? '未采集' : String(it.l3)
-    var ag = it.agentRuns == null ? '未采集' : String(it.agentRuns)
-    var tk = it.tokenTotal == null ? '未采集' : fmtK(it.tokenTotal)
+    var stCls = STATUS_CLS[it.status] || 'bd-badge-muted'
+    var syn = it.synthetic !== false
     return '<a class="bd-wi-row" href="/workitem?id=' + encodeURIComponent(it.id) + '">' +
-      '<span class="bd-wi-title">' + esc(it.title) + '</span>' +
-      '<span class="bd-wi-status">' + esc(st) + '</span>' + prio +
-      metric('L2', l2, it.synthetic ? '示例' : '真实') + metric('L3', l3, '示例') +
-      metric('agent', ag, ag === '未采集' ? '未采集' : '示例') +
-      metric('token', tk, tk === '未采集' ? '未采集' : '示例') +
-      '</a>'
+      '<span class="bd-wi-col"><span class="bd-wi-rowhead"><span class="bd-wi-title">' + esc(it.title) + '</span>' +
+      '<span class="bd-badge ' + stCls + '">' + esc(st) + '</span>' +
+      (it.priority ? '<span class="bd-badge bd-badge-priority">' + esc(it.priority) + '</span>' : '') +
+      (syn ? '<span class="bd-badge bd-badge-warn">示例</span>' : '') +
+      '</span><span class="bd-wi-meta">更新 ' + esc(t(it.updatedAt)) + ' · 来源 ' + esc(it.origin === 'goal' ? '目标内' : it.origin === 'plan' ? '计划内' : it.origin === 'rhythm' ? '节奏内' : '未采集') + '</span></span>' +
+      '<span class="bd-wi-col"><span class="bd-wi-stage">' + miniwf(it.currentStage) + ' 当前阶段 ' + esc(it.currentStage || '未采集') + '</span></span>' +
+      '<span class="bd-wi-col"><span class="bd-wi-fields">' +
+      field('L2', it.l2 == null ? '未采集' : it.l2 + (it.l2 ? ' 条' : ' 未拆解'), syn ? '示例' : '真实') +
+      field('L3', it.l3 == null ? '未采集' : it.l3 + ' 条', '示例') +
+      field('agent', it.agentRuns == null ? '未采集' : it.agentRuns + ' 次', it.agentRuns == null ? '未采集' : '示例') +
+      field('token', fmtK(it.tokenTotal), it.tokenTotal == null ? '未采集' : '估计') +
+      '</span><span class="bd-wi-detail-link">详情 →</span></span></a>'
   }
   function render(host, items) {
     var visible = items.filter(function (it) { return it.status !== 'done' && it.status !== 'cancelled' })
     var hidden = items.length - visible.length
-    var head = '<div class="bd-l15-head"><b>L1.5 大任务</b><span class="muted">只读 · 示例 · 待 0.13 契约</span>' +
-      (hidden > 0 ? '<span class="muted">已隐藏 ' + hidden + ' 个（已完成/已取消）</span>' : '') + '</div>'
-    var body = visible.length ? visible.map(rowOf).join("") : '<p class="bd-l15-empty">暂无 L1.5 大任务（示例 · 待 0.13 契约）</p>'
-    host.innerHTML = head + body +
-      '<p class="bd-l15-note">L2 时间来自真实消息；计划时间未采集；agent/token 为示例估计，各 workItem 的 token 不可横向加总。</p>'
+    var head = '<div class="bd-l15-head"><b>L1.5 大任务</b><span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span>' +
+      '<span class="bd-l15-chips"><span class="bd-badge bd-badge-muted">当前</span></span>' +
+      (hidden > 0 ? '<span class="bd-l15-count">已隐藏 ' + hidden + ' 个（完成/已取消）</span>' : '') + '</div>'
+    var body = visible.length ? '<div class="bd-l15-rows">' + visible.map(row).join('') + '</div>' : '<p class="bd-l15-empty">暂无 L1.5 大任务（示例 · 待 0.13 契约）</p>'
+    host.innerHTML = head + body + '<p class="bd-l15-note">L2 时间来自真实消息；计划时间未采集；agent/token 为示例估计，各 workItem 的 token 不可横向加总。</p>'
   }
   function install() {
     fetch('/api/board-config', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (cfg) {
       if (!cfg || !cfg.board2) return
-      if (!document.getElementById('l15-style')) {
-        var st = document.createElement('style'); st.id = 'l15-style'
-        st.textContent = '#l15-panel{margin:12px 0 8px;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg)}' +
-          '.bd-l15-head{display:flex;gap:12px;align-items:center;margin-bottom:6px;flex-wrap:wrap}' +
-          '.bd-wi-row{display:grid;grid-template-columns:minmax(160px,1.4fr) auto auto repeat(4,minmax(86px,auto));gap:10px;align-items:center;padding:8px 2px;border-bottom:1px dashed var(--border);text-decoration:none;color:inherit}' +
-          '.bd-wi-title{font-weight:600}.bd-wi-status{font-size:12px;color:var(--accent)}.bd-wi-prio{font-size:12px;color:var(--muted)}' +
-          '.bd-wi-metric{display:inline-flex;gap:4px;align-items:baseline;font-size:12px;white-space:nowrap}' +
-          '.bd-wi-metric i{font-style:normal;color:var(--muted)}.bd-wi-metric em{font-style:normal;color:var(--muted);font-size:11px}' +
-          '.bd-l15-note{color:var(--muted);font-size:12px;margin:8px 0 0}' +
-          '.bd-member-link{display:inline-block;margin-top:12px;color:var(--accent);text-decoration:none;font-size:13px}' +
-          '.bd-l15-empty{color:var(--muted);font-size:13px;padding:8px 0}' +
-          '@media(max-width:1023px){.bd-wi-row{grid-template-columns:1fr 1fr;gap:6px 12px}}'
-        document.head.appendChild(st)
+      if (!document.getElementById('bd-l15-css')) {
+        var lk = document.createElement('link'); lk.id = 'bd-l15-css'; lk.rel = 'stylesheet'; lk.href = '/vendor/board-l15.css'
+        document.head.appendChild(lk)
       }
       var view = document.getElementById('view-tasks'); if (!view) return
       var card = view.querySelector('.card'); if (!card) return
-      var panel = document.createElement('div')
-      panel.id = 'l15-panel'
-      panel.className = 'bd-l15-panel'
+      var panel = document.createElement('div'); panel.id = 'l15-panel'; panel.className = 'bd-l15-panel'
       card.insertBefore(panel, card.firstChild)
       fetch('/api/work-items', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (j) {
         render(panel, j && j.available && Array.isArray(j.items) && j.items.length ? j.items : EXAMPLE)
       }).catch(function () { render(panel, EXAMPLE) })
-    }).catch(function () { /* flag off or server old: no DOM change */ })
+    }).catch(function () {})
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install()
 })()
