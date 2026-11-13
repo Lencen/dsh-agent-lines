@@ -6,133 +6,165 @@
 <title>L1.5 大任务 · dsh-agent-lines</title>
 <style>
 :root{--bg:#f7f7f5;--surface:#fff;--border:#e4e2dc;--text:#1f2023;--muted:#6b6f76;--accent:#3f5d8c;--ok:#2f7d4f;--warn:#a86b00;--danger:#a33}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/22px system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans SC",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/22px system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans SC",sans-serif}
 .top{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
-.top a{color:var(--accent);text-decoration:none}.crumb{color:var(--muted);font-size:13px}
-.ro{margin-left:auto;color:var(--muted);font-size:12px}
+.top a{color:var(--accent);text-decoration:none}.crumb{color:var(--muted);font-size:13px}.ro{margin-left:auto;color:var(--muted);font-size:12px}
 main{max-width:1440px;margin:0 auto;padding:20px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
-h1{font-size:20px;margin:0 0 8px}
-.metrics{display:flex;gap:16px;flex-wrap:wrap;margin:12px 0}
-.metric{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;min-width:120px}
+h1{font-size:20px;margin:0 0 8px}h2{font-size:15px;margin:0 0 10px}
+.sec-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.metrics{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.metric{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;min-width:110px}
 .metric i{display:block;color:var(--muted);font-size:12px;font-style:normal}
 .metric b{font-size:18px}.metric em{color:var(--muted);font-size:11px;font-style:normal;margin-left:4px}
 .badge{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid var(--border);font-size:12px;color:var(--muted)}
 .badge.active{color:var(--ok);border-color:var(--ok)}.badge.paused{color:var(--warn);border-color:var(--warn)}
 .row{display:flex;gap:12px;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--border);flex-wrap:wrap}
-.muted{color:var(--muted)}
-table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid var(--border);padding:6px 8px;text-align:left;font-size:13px}
+.muted{color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid var(--border);padding:6px 8px;text-align:left;font-size:13px}
 .tabs{display:flex;gap:6px;margin-bottom:8px}.tabs button{border:1px solid var(--border);background:var(--bg);padding:4px 10px;border-radius:6px;cursor:pointer}
 .tabs button[aria-selected="true"]{border-color:var(--accent);color:var(--accent)}
-#gantt{height:360px}.hidden{display:none}
-.note{color:var(--muted);font-size:12px}
+#gantt{height:360px}.hidden{display:none}.note{color:var(--muted);font-size:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid var(--border);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--muted)}
+.l2block{border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:8px}
+.l3row{margin-left:24px;font-size:12px;color:var(--muted);padding:2px 0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 </style>
 </head>
 <body>
 <header class="top">
-  <a href="/">← 返回看板</a>
+  <a href="/" id="nav-back">← 返回看板</a>
   <span class="crumb">看板 / L1.5 大任务 / <span id="wi-crumb">—</span></span>
   <span class="ro">只读 · 无写操作</span>
 </header>
 <main>
-  <section class="card">
+  <section class="card" id="wi-sec-header">
     <h1 id="wi-title">加载中…</h1>
-    <div><span class="badge" id="wi-status">—</span> <span class="badge" id="wi-prio">—</span> <span class="muted" id="wi-updated"></span></div>
+    <div class="sec-head"><span class="badge" id="wi-status">—</span><span class="badge" id="wi-prio">—</span><span class="badge" id="wi-origin">—</span><span class="muted" id="wi-updated"></span></div>
     <div class="metrics" id="wi-metrics"></div>
-    <p class="note" id="wi-note">L2 时间来自真实消息；计划时间未采集；agent/token 为示例估计，不可横向加总。</p>
   </section>
-  <section class="card">
-    <div class="tabs" role="group" aria-label="视图切换">
-      <button id="vi-timeline" aria-selected="true">时间轴</button>
-      <button id="vi-table" aria-selected="false">表格</button>
-    </div>
+  <section class="card" id="wi-sec-workflow"><h2>工作流阶段</h2><div class="chips" id="wi-stages"><span class="muted">未采集（无事件流，不推断）</span></div></section>
+  <section class="card" id="wi-sec-gantt"><h2>甘特</h2>
+    <div class="tabs" role="group" aria-label="视图切换"><button id="vi-timeline" aria-selected="true">时间轴</button><button id="vi-table" aria-selected="false">表格</button></div>
     <div id="gantt" role="img" aria-label="L1.5 大任务甘特：L1.5 汇总条 + L2 行"></div>
     <div id="witable" class="hidden"></div>
   </section>
-  <section class="card">
-    <div class="row"><b>阶段参考</b><span class="muted" id="wi-stages">未采集（无事件流）</span></div>
-    <div class="row"><b>证据消息</b><span class="muted" id="wi-evidence">未采集（0.13 契约）</span></div>
-    <div class="row"><b>说明</b><span class="muted">本页只读；数据缺口显示未采集，不推断</span></div>
+  <section class="card" id="wi-sec-board"><h2>拆解看板</h2><div id="wi-breakdown"><span class="muted">未采集</span></div></section>
+  <section class="card" id="wi-sec-timeline"><h2>时间线</h2><div id="wi-timeline-list"><span class="muted">未采集（0.13 契约）</span></div></section>
+  <section class="card" id="wi-sec-notes"><h2>数据说明</h2>
+    <div class="row"><b>口径</b><span class="muted">L2 时间来自真实消息（firstAt/latestAt）；计划时间未采集；agent/token 为按线采样估计，非账单</span></div>
+    <div class="row"><b>不可加总</b><span class="muted">各 workItem 的 token 不可横向加总（采样窗口/线/会话可能重叠）</span></div>
+    <div class="row"><b>覆盖</b><span class="muted" id="wi-coverage">未采集</span></div>
+    <div class="row"><b>示例标记</b><span class="muted" id="wi-synthetic">示例 · 待 0.13 契约</span></div>
   </section>
+  <section class="card" id="wi-sec-nav"><h2>导航</h2><div class="sec-head"><a href="/" id="nav-back2">← 返回看板</a><a href="#" id="nav-prev" class="muted">上一个</a><a href="#" id="nav-next" class="muted">下一个</a></div><p class="note" id="wi-nav-note">直接打开本页也可用；返回一律到看板，不依赖看板状态。</p></section>
+<p class="note">只读视图 · 数据来自 lines.db 与团队工作区；缺失字段显示未采集，不推断。</p>
 </main>
 <script src="/vendor/echarts.min.js"></script>
 <script>
 (function(){
   'use strict'
   var STATUS={proposed:'拟议',confirmed:'已确认',decomposing:'拆解中',active:'进行中',paused:'暂停',done:'已完成',cancelled:'已取消'}
+  var ORIGIN={goal:'目标内',plan:'计划内',rhythm:'节奏内','ad-hoc':'目标外临时'}
   var EXAMPLE={
-    'wi-demo-1':{id:'wi-demo-1',title:'0.12.0 发布准备',status:'active',priority:'P0',l2:2,l3:4,agentRuns:12,tokenTotal:48200,linked:['V60-T6d','V60-T7c'],synthetic:true},
-    'wi-demo-2':{id:'wi-demo-2',title:'官网文案改版',status:'paused',priority:'P2',l2:0,l3:0,agentRuns:null,tokenTotal:null,linked:[],synthetic:true},
-    'wi-demo-3':{id:'wi-demo-3',title:'视频 v2 收尾',status:'done',priority:'P1',l2:1,l3:2,agentRuns:8,tokenTotal:20500,linked:['V60-T9b'],synthetic:true}
+    'wi-demo-1':{id:'wi-demo-1',title:'0.12.0 发布准备',status:'active',priority:'P0',origin:'goal',l2:2,l3:4,done:0,agentRuns:12,tokenTotal:48200,linked:['V60-T6d','V60-T7c'],updatedAt:1763000000000,synthetic:true},
+    'wi-demo-2':{id:'wi-demo-2',title:'官网文案改版',status:'paused',priority:'P2',origin:'ad-hoc',l2:0,l3:0,done:0,agentRuns:null,tokenTotal:null,linked:[],updatedAt:1762990000000,synthetic:true},
+    'wi-demo-3':{id:'wi-demo-3',title:'视频 v2 收尾',status:'done',priority:'P1',origin:'goal',l2:1,l3:2,done:1,agentRuns:8,tokenTotal:20500,linked:['V60-T9b'],updatedAt:1762980000000,synthetic:true}
   }
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
   function fmtK(n){if(n==null)return '未采集';if(n>=1000)return (n/1000).toFixed(1)+'k';return String(n)}
+  function t(ms){return ms?new Date(ms).toISOString().slice(11,16):'未采集'}
   function q(name){var m=location.search.match(new RegExp('[?&]'+name+'=([^&]*)'));return m?decodeURIComponent(m[1]):''}
-  function metric(label,value,mark){return '<div class="metric bd-wi-metric"><i>'+esc(label)+'</i><b>'+esc(value)+'</b><em>'+esc(mark)+'</em></div>'}
+  function metric(label,value,mark){return '<div class="metric"><i>'+esc(label)+'</i><b>'+esc(value)+'</b><em>'+esc(mark)+'</em></div>'}
   function renderHead(it){
     document.getElementById('wi-title').textContent=it.title
     document.getElementById('wi-crumb').textContent=it.title
-    var st=document.getElementById('wi-status');st.textContent=STATUS[it.status]||'未采集';st.className='badge '+(it.status==='active'?'active':it.status==='paused'?'paused':'')
-    var pr=document.getElementById('wi-prio');pr.textContent=it.priority?'优先级 '+it.priority:'优先级未采集'
+    var s=document.getElementById('wi-status');s.textContent=STATUS[it.status]||'未采集';s.className='badge '+(it.status==='active'?'active':it.status==='paused'?'paused':'')
+    document.getElementById('wi-prio').textContent=it.priority?'优先级 '+it.priority:'优先级未采集'
+    document.getElementById('wi-origin').textContent=ORIGIN[it.origin]||'来源未采集'
+    document.getElementById('wi-updated').textContent=it.updatedAt?('更新 '+t(it.updatedAt)):'更新未采集'
     document.getElementById('wi-metrics').innerHTML=
       metric('关联 L2',it.l2==null?'未采集':String(it.l2),'真实')+
       metric('关联 L3',it.l3==null?'未采集':String(it.l3),'示例')+
+      metric('已完成',it.done==null?'未采集':String(it.done),'按消息状态')+
       metric('agent 执行',it.agentRuns==null?'未采集':String(it.agentRuns),it.agentRuns==null?'未采集':'示例')+
-      metric('token 消耗',fmtK(it.tokenTotal),it.tokenTotal==null?'未采集':'示例')
+      metric('token 消耗',fmtK(it.tokenTotal),it.tokenTotal==null?'未采集':'示例')+
+      metric('最近更新',it.updatedAt?t(it.updatedAt):'未采集','—')
   }
-  function renderTable(rows){
+  function renderBreakdown(it,by){
+    var host=document.getElementById('wi-breakdown')
+    if(!it.linked||!it.linked.length){host.innerHTML='<span class="muted">未关联 L2（不推断）</span>';return}
+    var html=''
+    it.linked.forEach(function(ref){
+      var hit=by.filter(function(x){return x.taskRef===ref})[0]
+      html+='<div class="l2block"><div class="row"><b>'+esc(ref)+'</b><span class="muted">'+(hit?('消息 '+hit.messageCount+' 条 · '+t(hit.firstAt)+'–'+t(hit.latestAt)):'未采集')+'</span></div>'
+      html+='<div class="l3row">└ L3：未采集（0.13 契约）</div></div>'
+    })
+    host.innerHTML=html
+  }
+  function renderTimeline(it,recent){
+    var host=document.getElementById('wi-timeline-list')
+    var refs=it.linked||[]
+    var rows=(recent||[]).filter(function(m){return refs.indexOf(m.taskRef)>=0})
+    if(!rows.length){host.innerHTML='<span class="muted">未采集（无关联消息明细）</span>';return}
+    host.innerHTML='<table aria-label="消息时间线"><thead><tr><th>时间</th><th>taskRef</th><th>摘要</th></tr></thead><tbody>'+
+      rows.map(function(m){return '<tr><td>'+esc(t(m.createdAt))+'</td><td>'+esc(m.taskRef)+'</td><td>'+esc(String(m.summary||'').slice(0,60))+'</td></tr>'}).join('')+
+      '</tbody></table>'
+  }
+  function renderTable(model){
     var html='<table aria-label="甘特表格视图"><thead><tr><th>层级</th><th>任务</th><th>状态</th><th>开始</th><th>结束</th></tr></thead><tbody>'
-    html+='<tr><td>L1.5</td><td>'+esc(rows.title)+'</td><td>'+esc(STATUS[rows.status]||'未采集')+'</td><td>未采集</td><td>未采集</td></tr>'
-    rows.rows.forEach(function(r){html+='<tr class="bd-wi-tr-l2"><td>L2</td><td>'+esc(r.ref)+'</td><td>'+esc(r.state)+'</td><td>'+esc(r.start)+'</td><td>'+esc(r.end)+'</td></tr>'})
-    html+='</tbody></table><p class="note">时间轴数据：L2 真实消息范围（firstAt/latestAt）；计划时间未采集。</p>'
+    html+='<tr><td>L1.5</td><td>'+esc(model.title)+'</td><td>'+esc(STATUS[model.status]||'未采集')+'</td><td>'+esc(t(model.start))+'</td><td>'+esc(t(model.end))+'</td></tr>'
+    model.rows.forEach(function(r){html+='<tr class="bd-wi-tr-l2"><td>L2</td><td>'+esc(r.ref)+'</td><td>'+esc(r.state)+'</td><td>'+esc(r.start)+'</td><td>'+esc(r.end)+'</td></tr>'
+      html+='<tr class="bd-wi-tr-l3"><td>L3</td><td style="padding-left:24px">未采集</td><td>未采集</td><td>未采集</td><td>未采集</td></tr>'})
+    html+='</tbody></table><p class="note">L2 时间为真实消息范围；L3 与计划时间未采集。</p>'
     document.getElementById('witable').innerHTML=html
   }
-  function renderGantt(rows){
+  function renderGantt(model){
     var host=document.getElementById('gantt')
     if(!window.echarts){host.innerHTML='<p class="note">图表库不可用，请用表格视图</p>';return}
     var chart=echarts.init(host)
-    var cats=['L1.5 '+rows.title].concat(rows.rows.map(function(r){return 'L2 '+r.ref}))
-    var data=[]
-    data.push({name:'L1.5',value:[0,rows.start,rows.end]})
-    rows.rows.forEach(function(r,i){data.push({name:r.ref,value:[i+1,r.start,r.end],state:r.state})})
-    chart.setOption({
-      grid:{left:120,right:24,top:16,bottom:24},
-      xAxis:{type:'time'},
-      yAxis:{type:'category',data:cats,inverse:true},
-      series:[{type:'custom',renderItem:function(p,api){
-        var y=api.value(0),start=api.coord([api.value(1),y]),end=api.coord([api.value(2),y])
-        var h=Math.min(api.size([0,1])[1]*0.42,14)
-        return {type:'rect',shape:{x:start[0],y:start[1]-h/2,width:Math.max(end[0]-start[0],2),height:h},style:{fill:'#3f5d8c',opacity:y===0?0.9:0.6}}
-      },data:data,encode:{x:[1,2],y:0}}]
-    })
+    var cats=['L1.5 '+model.title].concat(model.rows.map(function(r){return 'L2 '+r.ref}))
+    var data=[{name:'L1.5',value:[0,model.start,model.end]}]
+    model.rows.forEach(function(r,i){data.push({name:r.ref,value:[i+1,r.start,r.end]})})
+    chart.setOption({grid:{left:140,right:24,top:16,bottom:24},xAxis:{type:'time'},yAxis:{type:'category',data:cats,inverse:true},
+      series:[{type:'custom',renderItem:function(p,api){var y=api.value(0),s=api.coord([api.value(1),y]),e=api.coord([api.value(2),y]);var h=Math.min(api.size([0,1])[1]*0.42,14);return {type:'rect',shape:{x:s[0],y:s[1]-h/2,width:Math.max(e[0]-s[0],2),height:h},style:{fill:'#3f5d8c',opacity:y===0?0.9:0.6}}},data:data,encode:{x:[1,2],y:0}}]})
+  }
+  function renderNav(items,id){
+    var idx=-1;items.forEach(function(x,i){if(x.id===id)idx=i})
+    var prev=idx>0?items[idx-1]:null,next=idx>=0&&idx<items.length-1?items[idx+1]:null
+    if(prev){var a=document.getElementById('nav-prev');a.href='/workitem.html?id='+encodeURIComponent(prev.id);a.textContent='← '+prev.title}
+    if(next){var b=document.getElementById('nav-next');b.href='/workitem.html?id='+encodeURIComponent(next.id);b.textContent=next.title+' →'}
   }
   function install(){
     fetch('/api/board-config',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(cfg){
       if(!cfg||!cfg.board2){document.getElementById('wi-title').textContent='功能未启用';return}
       var id=q('id')
+      if(!id){document.getElementById('wi-title').textContent='未指定大任务';document.getElementById('wi-nav-note').textContent='未带 id 参数；请从看板 L1.5 列表进入。';return}
       fetch('/api/work-items',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){
-        var it=(j&&j.available&&Array.isArray(j.items))?j.items.filter(function(x){return x.id===id})[0]:null
-        it=it||EXAMPLE[id]||null
-        if(!it){document.getElementById('wi-title').textContent='未指定大任务或数据不可得';return}
-        renderHead(it)
-        var rows=[]
+        var items=(j&&j.available&&Array.isArray(j.items)&&j.items.length)?j.items:Object.keys(EXAMPLE).map(function(k){return EXAMPLE[k]})
+        var it=items.filter(function(x){return x.id===id})[0]||EXAMPLE[id]||null
+        if(!it){document.getElementById('wi-title').textContent='未找到该大任务或数据不可得';return}
+        renderHead(it);renderNav(items,id);renderBreakdown(it,[]);renderTable({title:it.title,status:it.status,start:Date.now()-3600e3,end:Date.now(),rows:[]})
         fetch('/api/live',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(live){
           var by=(live&&live.lineTasks&&live.lineTasks.byTaskRef)||[]
+          var recent=(live&&live.lineTasks&&live.lineTasks.recent)||[]
+          renderBreakdown(it,by);renderTimeline(it,recent)
+          var rows=[]
           ;(it.linked||[]).forEach(function(ref){
             var hit=by.filter(function(x){return x.taskRef===ref})[0]
-            rows.push(hit?{ref:ref,state:'按消息状态',start:new Date(hit.firstAt).toISOString().slice(11,16),end:new Date(hit.latestAt).toISOString().slice(11,16),firstAt:hit.firstAt,latestAt:hit.latestAt}:{ref:ref,state:'未采集',start:'未采集',end:'未采集'})
+            rows.push(hit?{ref:ref,state:'按消息状态',start:t(hit.firstAt),end:t(hit.latestAt),firstAt:hit.firstAt,latestAt:hit.latestAt}:{ref:ref,state:'未采集',start:'未采集',end:'未采集'})
           })
-          var now=Date.now(),span=3600*1000
-          var start=rows.reduce(function(a,r){return r.firstAt&&r.firstAt<a?r.firstAt:a},rows.filter(function(r){return r.firstAt})[0]?rows.filter(function(r){return r.firstAt})[0].firstAt:now-span)
-          var end=rows.reduce(function(a,r){return r.latestAt&&r.latestAt>a?r.latestAt:a},start+span)
+          var starts=rows.filter(function(r){return r.firstAt}).map(function(r){return r.firstAt})
+          var ends=rows.filter(function(r){return r.latestAt}).map(function(r){return r.latestAt})
+          var start=starts.length?Math.min.apply(null,starts):Date.now()-3600e3
+          var end=ends.length?Math.max.apply(null,ends):Date.now()
           var model={title:it.title,status:it.status,start:start,end:end,rows:rows}
           renderTable(model);renderGantt(model)
-        }).catch(function(){var model={title:it.title,status:it.status,start:Date.now()-3600e3,end:Date.now(),rows:[]};renderTable(model);renderGantt(model)})
+        }).catch(function(){})
       }).catch(function(){var it=EXAMPLE[id];if(it)renderHead(it)})
     }).catch(function(){document.getElementById('wi-title').textContent='服务不可用'})
-    var b1=document.getElementById('vi-timeline'),b2=document.getElementById('vi-table'),g=document.getElementById('gantt'),t=document.getElementById('witable')
-    b1.onclick=function(){b1.setAttribute('aria-selected','true');b2.setAttribute('aria-selected','false');g.classList.remove('hidden');t.classList.add('hidden')}
-    b2.onclick=function(){b2.setAttribute('aria-selected','true');b1.setAttribute('aria-selected','false');t.classList.remove('hidden');g.classList.add('hidden')}
+    var b1=document.getElementById('vi-timeline'),b2=document.getElementById('vi-table'),g=document.getElementById('gantt'),tb=document.getElementById('witable')
+    b1.onclick=function(){b1.setAttribute('aria-selected','true');b2.setAttribute('aria-selected','false');g.classList.remove('hidden');tb.classList.add('hidden')}
+    b2.onclick=function(){b2.setAttribute('aria-selected','true');b1.setAttribute('aria-selected','false');tb.classList.remove('hidden');g.classList.add('hidden')}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install()
 })()
