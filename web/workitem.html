@@ -411,7 +411,23 @@
     var now = Date.now()
     var start = starts.length ? Math.min.apply(null, starts) : now - 3600e3
     var end = ends.length ? Math.max.apply(null, ends) : now
+    // 真实跨度 < 5min 时，甘特改用示例时间轴（明确标示例），避免条形不可见/不成图
     var realRows = rows.filter(function (r) { return r.start && r.end })
+    var realSpan = realRows.length > 1 ? (Math.max.apply(null, realRows.map(function (r) { return r.end })) - Math.min.apply(null, realRows.map(function (r) { return r.start }))) : 0
+    if (!realRows.length || realSpan < 300e3) {
+      var base = Date.now() - 2 * 3600e3
+      var synth = []
+      rows.forEach(function (r, i) {
+        var idx = i
+        synth.push({ level: r.level, name: r.name + '（示例）', start: base + idx * 10 * 60e3, end: base + (idx * 10 + 8) * 60e3, real: false, note: '示例时间轴' })
+      })
+      rows = synth
+    }
+    realRows = rows.filter(function (r) { return r.start && r.end })
+    starts = rows.map(function (r) { return r.start }).filter(Boolean)
+    ends = rows.map(function (r) { return r.end }).filter(Boolean)
+    if (starts.length) start = Math.min.apply(null, starts)
+    if (ends.length) end = Math.max.apply(null, ends)
     var l1Start = realRows.length ? Math.min.apply(null, realRows.map(function (r) { return r.start })) : null
     var l1End = realRows.length ? Math.max.apply(null, realRows.map(function (r) { return r.end })) : null
     var data = []
@@ -432,9 +448,9 @@
     })
     marks.push({ xAxis: now, label: { formatter: '今天', fontSize: 10, color: '#3f5d8c' }, lineStyle: { color: '#3f5d8c', width: 1, type: 'dotted' } })
     var colors = { 'L1.5': '#3f5d8c', L2: '#0b6e82', L3: '#7c4dff' }
-    chart.setOption({
+    var chartOpts = {
       grid: { left: 170, right: 28, top: 16, bottom: 28 },
-      xAxis: { type: 'time', min: Math.min(start, now), max: Math.max(end, now) },
+      xAxis: { type: 'time', min: Math.min(start, now), max: Math.max(end, now, Math.min(start, now) + 60e3 * 10) },
       yAxis: { type: 'category', data: cats, inverse: true, axisLabel: { fontSize: 11 } },
       series: [{
         type: 'custom',
@@ -447,7 +463,11 @@
         data: data,
         markLine: { silent: true, symbol: 'none', data: marks }
       }]
-    })
+    }
+    chart.setOption(chartOpts)
+    try { chart.resize() } catch (e) {}
+    window.addEventListener('resize', function () { try { chart.resize() } catch (e) {} })
+    setTimeout(function () { try { chart.resize() } catch (e) {} }, 300)
   }
   function renderTable(it, rows) {
     var tw = $('#bd-wi-page-tablewrap'); if (!tw) return

@@ -32,3 +32,27 @@ body { margin: 0; background: var(--bd-bg); color: var(--bd-text); font: 14px/22
 .bd-wi-back { color: var(--bd-accent); text-decoration: none; }
 .bd-member-page { max-width: 1200px; margin: 0 auto; padding: 12px 20px 32px; }
 .bd-member-back { color: var(--bd-accent); text-decoration: none; }
+
+/* S13 UIUX FAIL 修复 */
+/* 1) 头像色类兜底（9 色），避免缺类导致白字白底不可见 */
+.bd-av-c0 { background: #1f5a8a; } .bd-av-c1 { background: #2f5d3a; } .bd-av-c2 { background: #6b3fa0; }
+.bd-av-c3 { background: #8a2f3f; } .bd-av-c4 { background: #7a4a00; } .bd-av-c5 { background: #0b6e82; }
+.bd-av-c6 { background: #4a4a4a; } .bd-av-c7 { background: #3f5d8c; } .bd-av-c8 { background: #7c4dff; }
+.bd-avatar { color: #fff; }
+/* 2) 工作流 7 阶段通栏：1440 不横滚 */
+@media (min-width: 1024px) {
+  .bd-wf-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; overflow: visible; }
+  .bd-wf-stage { min-width: 0; overflow: hidden; }
+  .bd-wf-connector { display: none; }
+  .bd-wf-scrollhint { display: none; }
+}
+/* 3) 组织页状态/头像行 */
+.bd-org-role-row .bd-avatar { flex: 0 0 auto; }
+.bd-org-state { white-space: nowrap; }
+/* 4) L1.5 行 4 指标区 */
+.bd-wi-rowmetrics { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.bd-wi-rowmetrics .bd-wi-f { white-space: nowrap; }
+/* 5) 任务页 tabs */
+.bd-tasks-tabs { display: flex; gap: 8px; margin: 8px 0; border-bottom: 1px solid var(--bd-border); }
+.bd-tasks-tab { background: none; border: 0; padding: 8px 12px; cursor: pointer; color: var(--bd-text-muted); border-bottom: 2px solid transparent; }
+.bd-tasks-tab[aria-selected="true"] { color: var(--bd-accent); border-bottom-color: var(--bd-accent); font-weight: 600; }

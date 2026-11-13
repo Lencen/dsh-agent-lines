@@ -116,11 +116,19 @@
     }).join('') + '</ol>'
   }
   var L15_EXAMPLE = [
-    { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', concurrent: 2, stage: '执行', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200, linked: ['V60-T6d', 'V60-T7c'] },
-    { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', concurrent: 0, stage: null, l2: 0, l3: 0, agentRuns: null, tokenTotal: null, linked: [] },
-    { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', concurrent: 0, stage: '交付', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500, linked: ['V60-T9b'] }
+    { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', concurrent: 2, stage: '执行', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200, linked: ['V60-T6d', 'V60-T7c'], l2list: ['V60-T6d', 'V60-T7c'], l3list: ['V60-T6d#L3a', 'V60-T6d#L3b', 'V60-T7c#L3a', 'V60-T7c#L3b'], l2done: 1, l3done: 1 },
+    { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', concurrent: 0, stage: null, l2: 0, l3: 0, agentRuns: null, tokenTotal: null, linked: [], l2list: [], l3list: [], l2done: 0, l3done: 0 },
+    { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', concurrent: 0, stage: '交付', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500, linked: ['V60-T9b'], l2list: ['V60-T9b'], l3list: ['V60-T9b#L3a', 'V60-T9b#L3b'], l2done: 1, l3done: 2 }
   ]
   var L15_STATUS = { active: '进行中', paused: '暂停', done: '完成', cancelled: '已取消' }
+  var L15_STAGES = ['设定', '拆解', '排期', '执行', '审阅', '验收', '交付']
+  function miniwf(cur) {
+    var idx = L15_STAGES.indexOf(cur)
+    return '<span class="bd-wi-miniwf" aria-label="工作流 7 阶段">' + L15_STAGES.map(function (s, i) {
+      var c = idx >= 0 && i === idx ? 'cur' : idx >= 0 && i < idx ? 'done' : ''
+      return '<i class="bd-wi-wfseg ' + c + '" title="' + s + '"></i>'
+    }).join('') + '</span>'
+  }
   function l15Row(it) {
     var cls = it.status === 'active' ? 'bd-badge-info' : it.status === 'paused' ? 'bd-badge-paused' : 'bd-badge-muted'
     var mini = ['设定', '拆解', '排期', '执行', '审阅', '验收', '交付'].map(function (s) {
@@ -145,17 +153,45 @@
   }
   function renderL15(data) {
     var host = $('#bd-ov-l15-body'); if (!host) return
-    var items = L15_EXAMPLE
-    var visible = items.filter(function (it) { return it.status !== 'done' && it.status !== 'cancelled' })
-    var hidden = items.length - visible.length
-    host.innerHTML = '<div class="bd-l15-head"><div class="bd-l15-chips" role="group" aria-label="L1.5 筛选">' +
-      '<button type="button" class="bd-chip" aria-pressed="true">全部当前</button>' +
-      '<button type="button" class="bd-chip" aria-pressed="false">进行中</button>' +
-      '<button type="button" class="bd-chip" aria-pressed="false">暂停</button>' +
-      '<button type="button" class="bd-chip" aria-pressed="false">并发</button></div>' +
-      '<span class="bd-l15-count">当前 ' + visible.length + ' 个' + (hidden ? ' · 已隐藏 ' + hidden + ' 个（完成/已取消）' : '') + '</span></div>' +
-      '<div class="bd-l15-rows">' + visible.map(l15Row).join('') + '</div>' +
-      '<p class="bd-l15-note">示例 · 待 0.13 契约；L2 时间来自真实消息；计划时间未采集；各 workItem 的 token 不可横向加总。</p>'
+    function draw(items) {
+      var visible = items.filter(function (it) { return it.status !== 'done' && it.status !== 'cancelled' })
+      var hidden = items.length - visible.length
+      var rows = visible.map(function (it) {
+        var syn = it.synthetic !== false
+        var l2 = (it.l2list || []).length
+        var l3 = (it.l3list || []).length
+        var l2done = it.l2done == null ? null : it.l2done
+        var l3done = it.l3done == null ? null : it.l3done
+        var st = L15_STATUS[it.status] || '未采集'
+        var cls = it.status === 'active' ? 'bd-badge-info' : it.status === 'paused' ? 'bd-badge-paused' : 'bd-badge-muted'
+        return '<a class="bd-wi-row" href="/workitem?id=' + encodeURIComponent(it.id) + '" role="article">' +
+          '<div class="bd-wi-col bd-wi-col-main"><div class="bd-wi-rowhead"><b class="bd-wi-title">' + esc(it.title) + '</b>' +
+          '<span class="bd-badge ' + cls + '">' + esc(st) + '</span>' +
+          (it.concurrent > 1 ? '<span class="bd-badge bd-badge-concurrent">并发中（' + it.concurrent + '）</span>' : '') +
+          (it.priority ? '<span class="bd-badge bd-badge-priority">' + esc(it.priority) + '</span>' : '') +
+          (syn ? '<span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span>' : '') + '</div>' +
+          '<div class="bd-wi-meta">' + (it.origin === 'goal' ? '目标内' : '来源未采集') + ' · owner 未采集</div>' +
+          '<div class="bd-wi-stage">当前阶段：<b>' + esc(it.currentStage || it.stage || '未采集') + '</b>' + miniwf(it.currentStage || it.stage) + '</div></div>' +
+          '<div class="bd-wi-col"><div class="bd-wi-rowmetrics">' +
+          '<span class="bd-wi-f">L2 <b>' + l2 + ' 条</b>（完成 ' + (l2done == null ? '未采集' : l2done) + '）</span>' +
+          '<span class="bd-wi-f">L3 <b>' + l3 + ' 条</b>（完成 ' + (l3done == null ? '未采集' : l3done) + '）</span>' +
+          '<span class="bd-wi-f">agent <b>' + (it.agentRuns == null ? '未采集' : it.agentRuns + ' 次') + '</b></span>' +
+          '<span class="bd-wi-f">token <b>' + (it.tokenTotal == null ? '未采集' : (it.tokenTotal / 1000).toFixed(1) + 'k') + '</b></span>' +
+          '</div><span class="bd-wi-detail-link">详情 →</span></div></a>'
+      }).join('')
+      host.innerHTML = '<div class="bd-l15-head"><div class="bd-l15-chips" role="group" aria-label="L1.5 筛选">' +
+        '<button type="button" class="bd-chip" aria-pressed="true">全部当前</button>' +
+        '<button type="button" class="bd-chip" aria-pressed="false">进行中</button>' +
+        '<button type="button" class="bd-chip" aria-pressed="false">暂停</button>' +
+        '<button type="button" class="bd-chip" aria-pressed="false">并发</button></div>' +
+        '<span class="bd-l15-count">当前 ' + visible.length + ' 个' + (hidden ? ' · 已隐藏 ' + hidden + ' 个（完成/已取消）' : '') + '</span></div>' +
+        '<div class="bd-l15-rows">' + rows + '</div>' +
+        '<p class="bd-l15-note">示例 · 待 0.13 契约；L2 时间来自真实消息；计划时间未采集；各 workItem 的 token 不可横向加总。</p>'
+    }
+    fetch('/api/work-items', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (j) {
+      var items = (j && j.available && Array.isArray(j.items) && j.items.length) ? j.items : L15_EXAMPLE
+      draw(items)
+    }).catch(function () { draw(L15_EXAMPLE) })
   }
 
   var AV_PAL = ['bd-av-c0', 'bd-av-c1', 'bd-av-c2', 'bd-av-c3', 'bd-av-c4', 'bd-av-c5', 'bd-av-c6', 'bd-av-c7', 'bd-av-c8']
@@ -169,7 +205,7 @@
     var byLine = ((data && data.lineTasks && data.lineTasks.byLine) || [])
     var cnt = { roles: $('#bd-org-kpi-roles'), online: $('#bd-org-kpi-online') }
     var now = Date.now()
-    var online = lines.filter(function (l) { return l.lastSeen && now - l.lastSeen < 5 * 60 * 1000 }).length
+    var online = lines.filter(function (l) { return l.lifecycle === 'active' }).length
     if (cnt.roles) cnt.roles.textContent = String(lines.length)
     if (cnt.online) cnt.online.textContent = String(online)
     if (!lines.length) { host.innerHTML = '<p class="bd-empty">角色线未采集（lines.db 无 lines 记录）</p>'; return }
@@ -182,8 +218,9 @@
       var name = l.title || l.role || l.label
       var hit = byLine.filter(function (x) { return x.line === l.label })[0]
       var l2 = hit ? hit.taskCount : null
-      var state = (l.lifecycle || '未采集') + (l.generation != null ? ' · gen' + l.generation : '')
-      var isOn = l.lastSeen && now - l.lastSeen < 5 * 60 * 1000
+      var LIFECYCLE_TEXT = { active: '在线', hibernating: '离线（休眠）', retired: '离线（退役）' }
+      var state = (LIFECYCLE_TEXT[l.lifecycle] || '未采集') + (l.generation != null ? ' · gen' + l.generation : '')
+      var isOn = l.lifecycle === 'active'
       var key = String(l.label)
       return '<div class="bd-org-role-row' + (l.role === 'manager' || l.label === managerLabel ? ' bd-org-role-l1' : '') + '" role="listitem" tabindex="0" data-org-role="' + esc(key) + '" aria-label="' + esc(name) + ' 角色，查看详情">' +
         '<span class="bd-avatar bd-avatar-24 ' + AV_PAL[fnv1a(key) % 9] + '" data-avatar-key="' + esc(key) + '" data-avatar-init="' + esc(initial(name)) + '" aria-hidden="true">' + esc(initial(name)) + '</span>' +
@@ -293,7 +330,22 @@
             '</div></div></div>'
         }).join('') + '</div>'
     }
-    host.innerHTML = html
+    host.innerHTML = '<div class="bd-tasks-tabs" role="tablist" aria-label="任务分组筛选">' +
+      '<button type="button" class="bd-tasks-tab" role="tab" data-tab="all" aria-selected="true">全部</button>' +
+      '<button type="button" class="bd-tasks-tab" role="tab" data-tab="wi" aria-selected="false">大任务</button>' +
+      '<button type="button" class="bd-tasks-tab" role="tab" data-tab="unlinked" aria-selected="false">未关联</button></div>' + html
+    $$('.bd-tasks-tab', host).forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        $$('.bd-tasks-tab', host).forEach(function (x) { x.setAttribute('aria-selected', String(x === tab)) })
+        var mode = tab.getAttribute('data-tab')
+        $$('.bd-tasks-wihead', host).forEach(function (h) { if (mode !== 'all') h.style.display = (mode === 'wi' ? '' : 'none') })
+        $$('.bd-tasks-group', host).forEach(function (g) {
+          var isUnlinked = !g.querySelector('.bd-pill.bd-badge-l15')
+          g.style.display = mode === 'all' ? '' : mode === 'unlinked' ? (isUnlinked ? '' : 'none') : (isUnlinked ? 'none' : '')
+        })
+        $$('.bd-tasks-unlinked-list', host).forEach(function (u) { u.style.display = mode === 'unlinked' ? '' : 'none' })
+      })
+    })
     $$('.bd-tasks-ghead', host).forEach(function (row) {
       row.addEventListener('click', function () {
         var ref = row.getAttribute('data-ref'); var hit = byMap[ref]

@@ -317,7 +317,7 @@
       var items = g.refs.map(function (ref) {
         var hit = byMap[ref]
         var l3 = hit ? 'L3 未采集' : 'L3 未采集'
-        return '<details class="bd-member-taskitem"><summary><span class="mono">' + esc(ref) + '</span> <span class="bd-badge ' + (hit ? 'bd-badge-info' : 'bd-badge-muted') + '">' + (hit ? '按消息状态' : '未采集') + '</span>' +
+        return '<details class="bd-member-taskitem" open><summary><span class="mono">' + esc(ref) + '</span> <span class="bd-badge ' + (hit ? 'bd-badge-info' : 'bd-badge-muted') + '">' + (hit ? '按消息状态' : '未采集') + '</span>' +
           '<span class="bd-member-taskname">' + (hit ? 'L2 线任务 · 消息 ' + (hit.messageCount || 0) + ' 条' : 'L2 线任务') + '</span>' +
           '<span class="bd-member-taskat">' + (hit ? new Date(hit.latestAt).toLocaleString('zh-CN', { hour12: false }) : '未采集') + '</span>' +
           '<span class="bd-member-taskn">' + l3 + '</span></summary>' +
@@ -349,7 +349,7 @@
         var av = $('.bd-avatar')
         if (av) { av.textContent = initial(name); av.setAttribute('data-avatar-key', key); av.setAttribute('data-avatar-init', initial(name)); av.setAttribute('aria-label', name); av.className = 'bd-avatar bd-avatar-48 ' + PAL[fnv1a(key) % 9] }
         var state = $('.bd-member-state')
-        if (state) state.innerHTML = '<span class="bd-badge ' + ((line && line.lifecycle) === 'active' ? 'bd-badge-ok' : 'bd-badge-muted') + '">' + esc((line && line.lifecycle) || '未采集') + '</span><span class="bd-member-last">最近活跃 ' + esc(line && line.lastSeen ? new Date(line.lastSeen).toLocaleString('zh-CN', { hour12: false }) : '未采集') + '</span>'
+        if (state) var LC = { active: '在线', hibernating: '离线（休眠）', retired: '离线（退役）' }; var lc = (line && line.lifecycle) || ''; state.innerHTML = '<span class="bd-badge ' + (lc === 'active' ? 'bd-badge-ok' : 'bd-badge-muted') + '">' + esc(LC[lc] || '未采集') + '</span><span class="bd-member-last">最近活跃 ' + esc(line && line.lastSeen ? new Date(line.lastSeen).toLocaleString('zh-CN', { hour12: false }) : '未采集') + '</span>'
         var dd = $$('.bd-kv dd')
         if (dd[0]) dd[0].textContent = key
         if (dd[1]) dd[1].innerHTML = unavailable()
