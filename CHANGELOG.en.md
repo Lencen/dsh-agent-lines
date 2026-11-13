@@ -2,7 +2,9 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.12.0 (2026-11-26)
+## 0.12.0 (2026-11-13)
+
+> **Released 2026-11-13**: npm dsh-agent-lines@0.12.0 (latest) · GitHub Release v0.12.0 · tag at 849ffa5 · **fallback v0.11.5**.
 
 ### Board enhancements (L1.5 list / standalone detail / member page / 4 metrics) + line-task layering
 
