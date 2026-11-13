@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current release: v0.12.0 (2026-11-26) — Board 2.0 redesign, line-task layering, manager handover automation.
+> Current release: v0.12.0 (2026-11-13) — Board 2.0 redesign, line-task layering, manager handover automation.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 

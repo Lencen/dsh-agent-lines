@@ -6,7 +6,7 @@
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> 当前发布：v0.12.0（2026-11-26）——Board 2.0 看板重设计、线层任务分层、负责人交接自动化。
+> 当前发布：v0.12.0（2026-11-13）——Board 2.0 看板重设计、线层任务分层、负责人交接自动化。
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
