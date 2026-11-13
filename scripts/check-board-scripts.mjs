@@ -43,6 +43,18 @@ const boardServerPath = resolve(ROOT, 'lib/board-server.js')
 const boardServer = existsSync(boardServerPath) ? readFileSync(boardServerPath, 'utf8') : ''
 check('B7 P1-04 服务端归一（normalizeBoardSnapshot + 诊断字段）',
   /export function normalizeBoardSnapshot\(/.test(boardServer) && /normalizeBoardSnapshot\(board\)/.test(boardServer) && /tasksDiagnostic/.test(boardServer) && /tasksShape/.test(boardServer))
+// B8-B10: 0.12.0 独立页（workitem/member）静态检查（flag gated 页面，必须同样只读）
+for (const [name, rel] of [['workitem', 'web/workitem.html'], ['member', 'web/member.html']]) {
+  const p = resolve(ROOT, rel)
+  if (!existsSync(p)) { check('B8 独立页脚本语法 ' + name, false, rel + ' missing'); continue }
+  const h = readFileSync(p, 'utf8')
+  const segs = [...h.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m => m[1]).filter(x => x.trim() !== '')
+  const bad2 = []
+  segs.forEach((src, i) => { try { vm.compileFunction(src, ['window', 'document'], { filename: rel + '#s' + i }) } catch (e) { bad2.push('script#' + (i + 1) + ': ' + String((e && e.message) || e)) } })
+  check('B8 独立页脚本语法 ' + name + ' (' + segs.length + ' 段)', bad2.length === 0, bad2.join(' | '))
+  check('B9 独立页只读声明 ' + name, (h.match(/只读/g) || []).length >= 2)
+  check('B10 独立页无写接口 ' + name, !/\/api\/actions/.test(h) && !/method="post"/i.test(h))
+}
 const failures = checks.filter(c => !c.pass)
 if (json) console.log(JSON.stringify({ ok: failures.length === 0, file: target, checks }, null, 1))
 else {

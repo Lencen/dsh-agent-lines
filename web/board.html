@@ -745,5 +745,38 @@ setInterval(function(){if(document.visibilityState==='visible')load(false)},6000
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install()
 })()
 </script>
+<script>
+/* board2 S8: drawer -> member page entry (flag-gated). flag off => no DOM change. */
+(function () {
+  'use strict'
+  var KEY = null
+  function findLabel(title) {
+    var d = window.DATA || {}
+    var lines = d.lines || []
+    for (var i = 0; i < lines.length; i++) {
+      var l = lines[i] || {}
+      if (l.name === title || l.id === title || l.label === title || l.role === title) return l.id || l.label || null
+    }
+    return null
+  }
+  function decorate() {
+    if (!KEY) return
+    var body = document.getElementById('drawer-body')
+    if (!body || body.querySelector('.bd-member-link')) return
+    var a = document.createElement('a')
+    a.className = 'bd-member-link'
+    a.href = '/member.html?id=' + encodeURIComponent(KEY)
+    a.textContent = '打开成员页 →'
+    a.style.cssText = 'display:inline-block;margin-top:12px;color:#3f5d8c;text-decoration:none'
+    body.appendChild(a)
+  }
+  fetch('/api/board-config', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (cfg) {
+    if (!cfg || !cfg.board2) return
+    var orig = window.renderDrawer
+    if (typeof orig !== 'function') return
+    window.renderDrawer = function (title, body) { orig(title, body); KEY = findLabel(String(title || '')); decorate() }
+  }).catch(function () {})
+})()
+</script>
 </body>
 </html>
