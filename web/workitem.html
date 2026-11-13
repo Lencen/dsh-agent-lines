@@ -8,6 +8,7 @@
 <style>
 body{margin:0;background:var(--bd-bg,#f7f7f5);color:var(--bd-text,#1f2023);font:14px/22px system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans SC",sans-serif}
 .bd-wi-page{max-width:1440px;margin:0 auto;padding:12px 20px 32px}
+#bd-wi-page-gantt{height:420px;width:100%}
 .bd-wi-back{color:var(--bd-accent,#3f5d8c);text-decoration:none}
 </style>
 </head>
@@ -370,8 +371,8 @@ body{margin:0;background:var(--bd-bg,#f7f7f5);color:var(--bd-text,#1f2023);font:
   function renderMetrics(it) {
     var ms = $$('#bd-wi-sec-metrics .bd-wi-metric')
     var vals = [
-      [it.synthetic ? '示例' : '真实', it.l2 == null ? '未采集' : String(it.l2) + (it.l2 ? ' · 完成率未采集' : ' · 未拆解')],
-      ['示例', it.l3 == null ? '未采集' : String(it.l3) + ' · L3 示例'],
+      [it.synthetic ? '示例' : '真实', it.l2 == null ? '未采集' : String(it.l2) + (it.l2 ? ' · 完成率未采集（无 L2 状态源）' : ' · 未拆解')],
+      ['示例', it.l3 == null ? '未采集' : String(it.l3) + ' · 完成率未采集（L3 示例）'],
       [it.agentRuns == null ? '未采集' : '示例', it.agentRuns == null ? '未采集' : it.agentRuns + ' 次'],
       [it.tokenTotal == null ? '未采集' : '估计', it.tokenTotal == null ? '未采集' : fmtK(it.tokenTotal)],
       ['未采集', '计划未采集'],
@@ -419,9 +420,17 @@ body{margin:0;background:var(--bd-bg,#f7f7f5);color:var(--bd-text,#1f2023);font:
     var l1Start = realRows.length ? Math.min.apply(null, realRows.map(function (r) { return r.start })) : null
     var l1End = realRows.length ? Math.max.apply(null, realRows.map(function (r) { return r.end })) : null
     var data = []
+    var sampleSpan = (l1Start && l1End && l1End > l1Start) ? (l1End - l1Start) : 60e3
+    var l3Index = 0
     rows.forEach(function (r, i) {
       if (r.level === 'L1.5') { if (l1Start && l1End) data.push({ value: [i, l1Start, l1End, r.level], name: r.name }); return }
-      if (r.start && r.end) data.push({ value: [i, r.start, r.end, r.level], name: r.name })
+      if (r.start && r.end) { data.push({ value: [i, r.start, r.end, r.level], name: r.name }); return }
+      if (r.level === 'L3' && l1Start && l1End) {
+        // L3 示例条：由 L2 真实范围切分子区间（明确标示例，不代表真实数据）
+        var seg = sampleSpan / 3
+        var st = l1Start + seg * (l3Index % 2)
+        data.push({ value: [i, st, Math.min(st + seg * 0.6, l1End), r.level], name: r.name }); l3Index++
+      }
     })
     var marks = DEFAULT_WF.map(function (n, i) {
       return { xAxis: start + (end - start) * (i / 7), label: { formatter: 'P' + (i + 1), fontSize: 10, color: '#7d858e' }, lineStyle: { color: '#e3e0da', type: 'dashed' } }
@@ -430,14 +439,14 @@ body{margin:0;background:var(--bd-bg,#f7f7f5);color:var(--bd-text,#1f2023);font:
     var colors = { 'L1.5': '#3f5d8c', L2: '#0b6e82', L3: '#7c4dff' }
     chart.setOption({
       grid: { left: 170, right: 28, top: 16, bottom: 28 },
-      xAxis: { type: 'time' },
+      xAxis: { type: 'time', min: Math.min(start, now), max: Math.max(end, now) },
       yAxis: { type: 'category', data: cats, inverse: true, axisLabel: { fontSize: 11 } },
       series: [{
         type: 'custom',
         renderItem: function (p, api) {
           var y = api.value(0), s = api.coord([api.value(1), y]), e = api.coord([api.value(2), y])
           var lvl = api.value(3); var h = lvl === 'L1.5' ? 14 : 10
-          return { type: 'rect', shape: { x: s[0], y: s[1] - h / 2, width: Math.max(e[0] - s[0], 2), height: h }, style: { fill: colors[lvl] || '#3f5d8c', opacity: lvl === 'L3' ? 0.5 : 0.85 } }
+          return { type: 'rect', shape: { x: s[0], y: s[1] - h / 2, width: Math.max(e[0] - s[0], 8), height: h }, style: { fill: colors[lvl] || '#3f5d8c', opacity: lvl === 'L3' ? 0.5 : 0.85 } }
         },
         encode: { x: [1, 2], y: 0 },
         data: data,
