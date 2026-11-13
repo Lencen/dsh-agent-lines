@@ -363,11 +363,20 @@
     $('.bd-wi-page-meta').textContent = 'owner ' + (it.owner || '未采集') + ' · 更新 ' + tfull(it.updatedAt)
     var src = $('.bd-wi-source'); if (src) src.textContent = '来源：示例 · 待 0.13 契约 · sourceMessageId 未采集 · 目标归属：' + (ORIGIN[it.origin] || '未采集')
   }
-  function renderMetrics(it) {
+  function renderMetrics(it, by) {
     var ms = $$('#bd-wi-sec-metrics .bd-wi-metric')
+    var linked = it.linked || []
+    var acked = 0, total = 0
+    ;(by || []).forEach(function (x) {
+      if (linked.indexOf(x.taskRef) < 0) return
+      total += x.messageCount || 0
+      acked += (x.byState && x.byState.acked) || 0
+    })
+    var rate = total > 0 ? Math.round(acked / total * 100) : null
+    var l2text = it.l2 == null ? '未采集' : String(it.l2) + (it.l2 ? (rate == null ? ' · 完成率未采集（无状态源）' : ' · 完成率 ' + rate + '%（近似·acked）') : ' · 未拆解')
     var vals = [
-      [it.synthetic ? '示例' : '真实', it.l2 == null ? '未采集' : String(it.l2) + (it.l2 ? ' · 完成率未采集（无 L2 状态源）' : ' · 未拆解')],
-      ['示例', it.l3 == null ? '未采集' : String(it.l3) + ' · 完成率未采集（L3 示例）'],
+      [it.synthetic ? '示例' : '真实', l2text],
+      ['示例', it.l3 == null ? '未采集' : String(it.l3) + ' · 完成率未采集（L3 示例，无状态源）'],
       [it.agentRuns == null ? '未采集' : '示例', it.agentRuns == null ? '未采集' : it.agentRuns + ' 次'],
       [it.tokenTotal == null ? '未采集' : '估计', it.tokenTotal == null ? '未采集' : fmtK(it.tokenTotal)],
       ['未采集', '计划未采集'],
@@ -414,7 +423,9 @@
     // 真实跨度 < 5min 时，甘特改用示例时间轴（明确标示例），避免条形不可见/不成图
     var realRows = rows.filter(function (r) { return r.start && r.end })
     var realSpan = realRows.length > 1 ? (Math.max.apply(null, realRows.map(function (r) { return r.end })) - Math.min.apply(null, realRows.map(function (r) { return r.start }))) : 0
+    var synthAxis = false
     if (!realRows.length || realSpan < 300e3) {
+      synthAxis = true
       var base = Date.now() - 2 * 3600e3
       var synth = []
       rows.forEach(function (r, i) {
@@ -423,6 +434,7 @@
       })
       rows = synth
     }
+    var sb = document.getElementById('bd-wi-synth-badge'); if (sb) sb.hidden = !synthAxis
     realRows = rows.filter(function (r) { return r.start && r.end })
     starts = rows.map(function (r) { return r.start }).filter(Boolean)
     ends = rows.map(function (r) { return r.end }).filter(Boolean)
@@ -516,9 +528,10 @@
         var items = (j && j.available && Array.isArray(j.items) && j.items.length) ? j.items : Object.keys(EXAMPLE).map(function (k) { return EXAMPLE[k] })
         var it = items.filter(function (x) { return x.id === id })[0] || EXAMPLE[id]
         if (!it) { emptyAll('未找到该大任务（空态）'); return }
-        renderHeader(it); renderMetrics(it); renderNav(items, id)
+        renderHeader(it); renderMetrics(it, null); renderNav(items, id)
         fetch('/api/live', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (live) {
           var by = (live && live.lineTasks && live.lineTasks.byTaskRef) || []
+          renderMetrics(it, by)
           renderWorkflow(live, it)
           var rows = buildRows(it, by)
           renderTable(it, rows); renderGantt(it, rows); renderBoard(it, rows)

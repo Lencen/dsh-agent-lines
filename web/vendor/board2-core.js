@@ -159,42 +159,43 @@
       var hidden = items.length - visible.length
       var rows = visible.map(function (it) {
         var syn = it.synthetic !== false
-        var l2 = (it.l2list || []).length
-        var l3 = (it.l3list || []).length
-        var l2done = it.l2done == null ? null : it.l2done
-        var l3done = it.l3done == null ? null : it.l3done
+        var l2 = it.l2list || []
+        var l3 = it.l3list || []
         var st = L15_STATUS[it.status] || '未采集'
         var cls = it.status === 'active' ? 'bd-badge-info' : it.status === 'paused' ? 'bd-badge-paused' : 'bd-badge-muted'
-        return '<a class="bd-wi-row" href="/workitem?id=' + encodeURIComponent(it.id) + '" role="article">' +
-          '<div class="bd-wi-col bd-wi-col-main"><div class="bd-wi-rowhead"><b class="bd-wi-title">' + esc(it.title) + '</b>' +
+        var l2chips = l2.slice(0, 3).map(function (r) { return '<span class="bd-l15-mini">' + esc(r) + '</span>' }).join('') + (l2.length > 3 ? '<span class="bd-l15-more">+' + (l2.length - 3) + '</span>' : '')
+        return '<a class="bd-wi-row" data-status="' + esc(it.status) + '" data-concurrent="' + (it.concurrent > 1 ? '1' : '0') + '" href="/workitem?id=' + encodeURIComponent(it.id) + '" role="article">' +
+          '<span class="bd-wi-col bd-wi-col-main"><span class="bd-wi-rowhead"><b class="bd-wi-title">' + esc(it.title) + '</b>' +
           '<span class="bd-badge ' + cls + '">' + esc(st) + '</span>' +
           (it.concurrent > 1 ? '<span class="bd-badge bd-badge-concurrent">并发中（' + it.concurrent + '）</span>' : '') +
           (it.priority ? '<span class="bd-badge bd-badge-priority">' + esc(it.priority) + '</span>' : '') +
-          (syn ? '<span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span>' : '') + '</div>' +
-          '<div class="bd-wi-meta">' + (it.origin === 'goal' ? '目标内' : '来源未采集') + ' · owner 未采集</div>' +
-          '<div class="bd-wi-stage">当前阶段：<b>' + esc(it.currentStage || it.stage || '未采集') + '</b>' + miniwf(it.currentStage || it.stage) + '</div></div>' +
-          '<div class="bd-wi-col"><div class="bd-wi-rowmetrics">' +
-          '<span class="bd-wi-f">L2 <b>' + l2 + ' 条</b>（完成 ' + (l2done == null ? '未采集' : l2done) + '）<i class="bd-badge bd-badge-muted">' + (syn ? '示例' : '真实') + '</i></span>' +
-          '<span class="bd-wi-f">L3 <b>' + l3 + ' 条</b>（完成 ' + (l3done == null ? '未采集' : l3done) + '）<i class="bd-badge bd-badge-muted">' + (syn ? '示例' : '真实') + '</i></span>' +
+          (syn ? '<span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span>' : '') + '</span>' +
+          '<span class="bd-wi-meta">' + (it.origin === 'goal' ? '目标内' : '来源未采集') + ' · owner 未采集</span></span>' +
+          '<span class="bd-wi-col"><span class="bd-wi-stage">' + miniwf(it.currentStage || it.stage) + ' 当前阶段 <b>' + esc(it.currentStage || it.stage || '未采集') + '</b></span></span>' +
+          '<span class="bd-wi-col bd-wi-col-board">' +
+          '<span class="bd-l15-board"><span class="bd-l15-boardk">L2 拆解</span><b>' + l2.length + '</b>' + (l2chips ? '<span class="bd-l15-minis">' + l2chips + '</span>' : '<span class="bd-l15-none">未拆解</span>') + '</span>' +
+          '<span class="bd-l15-board"><span class="bd-l15-boardk">L3 拆分</span><b>' + l3.length + '</b>' + (l3.length ? '<span class="bd-l15-minis"><span class="bd-l15-mini">示例</span></span>' : '<span class="bd-l15-none">未采集</span>') + '</span>' +
+          '<span class="bd-wi-rowmetrics">' +
+          '<span class="bd-wi-f">L2 完成 <b>' + (it.l2done == null ? '未采集' : it.l2done + '/' + l2.length) + '</b><i class="bd-badge bd-badge-muted">' + (syn ? '示例' : '真实') + '</i></span>' +
+          '<span class="bd-wi-f">L3 完成 <b>' + (it.l3done == null ? '未采集' : it.l3done + '/' + l3.length) + '</b><i class="bd-badge bd-badge-muted">' + (syn ? '示例' : '真实') + '</i></span>' +
           '<span class="bd-wi-f">agent <b>' + (it.agentRuns == null ? '未采集' : it.agentRuns + ' 次') + '</b><i class="bd-badge bd-badge-muted">' + (it.agentRuns == null ? '未采集' : '示例') + '</i></span>' +
           '<span class="bd-wi-f">token <b>' + (it.tokenTotal == null ? '未采集' : (it.tokenTotal / 1000).toFixed(1) + 'k') + '</b><i class="bd-badge bd-badge-muted">' + (it.tokenTotal == null ? '未采集' : '估计') + '</i></span>' +
-          '</div><span class="bd-wi-detail-link">详情 →</span></div></a>'
+          '</span><span class="bd-wi-detail-link">详情 →</span></span></a>'
       }).join('')
       host.innerHTML = '<div class="bd-l15-head"><div class="bd-l15-chips" role="group" aria-label="L1.5 筛选">' +
-        '<button type="button" class="bd-chip" aria-pressed="true">全部当前</button>' +
-        '<button type="button" class="bd-chip" aria-pressed="false">进行中</button>' +
-        '<button type="button" class="bd-chip" aria-pressed="false">暂停</button>' +
-        '<button type="button" class="bd-chip" aria-pressed="false">并发</button></div>' +
+        '<button type="button" class="bd-chip" data-filter="all" aria-pressed="true">全部当前</button>' +
+        '<button type="button" class="bd-chip" data-filter="active" aria-pressed="false">进行中</button>' +
+        '<button type="button" class="bd-chip" data-filter="paused" aria-pressed="false">暂停</button>' +
+        '<button type="button" class="bd-chip" data-filter="concurrent" aria-pressed="false">并发</button></div>' +
         '<span class="bd-l15-count">当前 ' + visible.length + ' 个' + (hidden ? ' · 已隐藏 ' + hidden + ' 个（完成/已取消）' : '') + '</span></div>' +
         '<div class="bd-l15-rows">' + rows + '</div>' +
         '<p class="bd-l15-note">示例 · 待 0.13 契约；L2 时间来自真实消息；计划时间未采集；各 workItem 的 token 不可横向加总。</p>'
       $$('.bd-chip', host).forEach(function (chip) {
         chip.addEventListener('click', function () {
           $$('.bd-chip', host).forEach(function (x) { x.setAttribute('aria-pressed', String(x === chip)) })
-          var mode = chip.textContent
+          var f = chip.getAttribute('data-filter')
           $$('.bd-wi-row', host).forEach(function (row) {
-            var st = row.querySelector('.bd-badge') ? row.querySelector('.bd-badge').textContent : ''
-            var show = mode === '全部当前' ? true : mode === '进行中' ? st === '进行中' : mode === '暂停' ? st === '暂停' : row.textContent.indexOf('并发中') >= 0
+            var show = f === 'all' || (f === 'concurrent' ? row.getAttribute('data-concurrent') === '1' : row.getAttribute('data-status') === f)
             row.style.display = show ? '' : 'none'
           })
         })

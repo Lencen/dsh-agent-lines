@@ -56,3 +56,12 @@ body { margin: 0; background: var(--bd-bg); color: var(--bd-text); font: 14px/22
 .bd-tasks-tabs { display: flex; gap: 8px; margin: 8px 0; border-bottom: 1px solid var(--bd-border); }
 .bd-tasks-tab { background: none; border: 0; padding: 8px 12px; cursor: pointer; color: var(--bd-text-muted); border-bottom: 2px solid transparent; }
 .bd-tasks-tab[aria-selected="true"] { color: var(--bd-accent); border-bottom-color: var(--bd-accent); font-weight: 600; }
+
+/* L1.5 三列：右列 L2/L3 拆解看板 */
+.bd-wi-col-board { gap: 4px; }
+.bd-l15-board { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--bd-text-muted); flex-wrap: wrap; }
+.bd-l15-boardk { color: var(--bd-text-dim); }
+.bd-l15-minis { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.bd-l15-mini { padding: 0 6px; border-radius: 999px; border: 1px solid var(--bd-border, #e3e0da); font-size: 11px; color: var(--bd-text-muted); }
+.bd-l15-more, .bd-l15-none { color: var(--bd-text-dim); font-size: 11px; }
+@media (min-width: 1024px) { .bd-wi-row { grid-template-columns: minmax(220px, 1.3fr) minmax(160px, 0.9fr) minmax(260px, 1.2fr); } }
