@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>团队成员 · dsh-agent-lines</title>
+<style>
+:root{--bg:#f7f7f5;--surface:#fff;--border:#e4e2dc;--text:#1f2023;--muted:#6b6f76;--accent:#3f5d8c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/22px system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans SC",sans-serif}
+.top{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.top a{color:var(--accent);text-decoration:none}.crumb{color:var(--muted);font-size:13px}.ro{margin-left:auto;color:var(--muted);font-size:12px}
+main{max-width:1200px;margin:0 auto;padding:20px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
+.avatar{width:48px;height:48px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:19px}
+.head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+h1{font-size:20px;margin:0}
+.muted{color:var(--muted)}.row{display:flex;gap:12px;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--border);flex-wrap:wrap}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:8px;font-size:13px}
+h2{font-size:15px;margin:0 0 8px}.note{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="/">← 返回看板</a>
+  <span class="crumb">看板 / 团队 / <span id="m-crumb">—</span></span>
+  <span class="ro">只读 · 无写操作</span>
+</header>
+<main>
+  <section class="card">
+    <div class="head"><span class="avatar" id="m-avatar" aria-hidden="true">?</span>
+      <h1 id="m-name">加载中…</h1><span class="muted" id="m-role"></span>
+    </div>
+    <div class="kv" style="margin-top:12px">
+      <span class="muted">line label</span><span id="m-label">未采集</span>
+      <span class="muted">生命周期</span><span id="m-life">未采集</span>
+      <span class="muted">最近活跃</span><span id="m-seen">未采集</span>
+      <span class="muted">DSH session</span><span id="m-sess">未采集（接口未暴露）</span>
+    </div>
+  </section>
+  <section class="card"><h2>角色定义</h2><p id="m-pos" class="note">未采集（缺 charter）</p></section>
+  <section class="card"><h2>执行规范</h2><p id="m-resp" class="note">未采集（缺 charter）</p></section>
+  <section class="card"><h2>数据卡</h2>
+    <div class="row"><b>入队时间</b><span class="muted">未采集（待 0.13 契约）</span></div>
+    <div class="row"><b>工作时长</b><span class="muted">未采集（待 0.13 契约）</span></div>
+    <div class="row"><b>参与任务</b><span class="muted" id="m-tasks">未采集</span></div>
+    <div class="row"><b>执行次数 / token</b><span class="muted">未采集（成员级无数据源）</span></div>
+  </section>
+  <section class="card"><h2>名下任务</h2><p id="m-owned" class="note">未采集（0.13 契约）</p></section>
+</main>
+<script>
+(function(){
+  'use strict'
+  var PAL=['#1F5A8A','#2F5D3A','#6B3FA0','#8A2F3F','#7A4A00','#0B6E82','#4A4A4A','#3F5D8C']
+  function fnv1a(s){var h=0x811c9dc5;s=String(s||'');for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)}return h>>>0}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  function q(n){var m=location.search.match(new RegExp('[?&]'+n+'=([^&]*)'));return m?decodeURIComponent(m[1]):''}
+  function initial(s){s=String(s||'').trim();if(!s)return '?';var c=s.charAt(0);if(/[a-z]/.test(c))return c.toUpperCase();return c}
+  function set(k,v){var el=document.getElementById(k);if(el)el.textContent=v}
+  function install(){
+    fetch('/api/board-config',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(cfg){
+      if(!cfg||!cfg.board2){set('m-name','功能未启用');return}
+      var key=q('id')
+      if(!key){set('m-name','未指定成员');return}
+      fetch('/api/live',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(live){
+        var lines=(live&&live.lines)||[]
+        var ws=((live&&live.teamWorkspace)||{}).lines||[]
+        var line=lines.filter(function(l){return l.label===key})[0]
+        var w=ws.filter(function(x){return x.label===key})[0]
+        var name=(w&&w.name)||(line&&(line.title&&line.title.indexOf(key)>=0?null:null))||(line&&(line.registryName||line.title||line.role))||key
+        set('m-name',name);set('m-crumb',name);set('m-label',key)
+        set('m-role',(line&&line.role)||'')
+        set('m-life',(line&&line.lifecycle)||'未采集')
+        set('m-seen',line&&line.lastSeen?new Date(line.lastSeen).toLocaleString():'未采集')
+        var av=document.getElementById('m-avatar');av.textContent=initial(name);av.style.background=PAL[fnv1a(key)%8]
+        var sec=(w&&w.sections)||{}
+        if(sec.positioning)set('m-pos',sec.positioning)
+        var resp=[sec.responsibilities,sec.collaboration,sec.dispatch,sec.outputs].filter(Boolean).join(' / ')
+        if(resp)set('m-resp',resp)
+        var by=(live&&live.lineTasks&&live.lineTasks.byLine)||[]
+        var hit=by.filter(function(x){return x.line===key})[0]
+        set('m-tasks',hit?('共 '+hit.total+' 条消息 / '+hit.taskCount+' 个 taskRef（按消息状态归并，近似）'):'未采集')
+      }).catch(function(){set('m-name','数据不可得')})
+    }).catch(function(){set('m-name','服务不可用')})
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install()
+})()
+</script>
+</body>
+</html>
