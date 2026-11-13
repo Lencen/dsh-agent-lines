@@ -77,9 +77,27 @@
   </section>
 
   <section class="bd-view" id="bd-view-org" data-view="org" role="tabpanel" aria-labelledby="bd-tab-org" hidden>
-    <div class="bd-card"><div class="bd-card-h">角色与 agent</div><div class="bd-card-b" id="bd-org-body"><p class="bd-empty">加载中…</p></div></div>
+    <div class="bd-view-head">
+      <h2 class="bd-view-title">组织</h2>
+      <p class="bd-view-sub">角色线与 agent 实例（不挂 L3 任务；L3 见任务页 / 大任务详情）</p>
+    </div>
+    <section class="bd-org-goal" aria-labelledby="bd-org-goal-h">
+      <h3 class="bd-org-goal-title" id="bd-org-goal-h">团队目标</h3>
+      <p class="bd-org-goal-text" id="bd-org-goal-text">未采集（TEAM.md 目标）</p>
+    </section>
+    <section class="bd-org-kpi-bar" id="bd-org-kpi" aria-label="组织关键指标">
+      <div class="bd-org-kpi-card"><span class="bd-org-kpi-label">角色线数</span><span class="bd-org-kpi-value num" id="bd-org-kpi-roles">—</span><span class="bd-org-kpi-hint">lines[]（含 L1 负责人）</span></div>
+      <div class="bd-org-kpi-card"><span class="bd-org-kpi-label">agent 实例数</span><span class="bd-org-kpi-value num" id="bd-org-kpi-agents">未采集</span><span class="bd-org-kpi-hint">官方成员投影未提供</span></div>
+      <div class="bd-org-kpi-card"><span class="bd-org-kpi-label">在线</span><span class="bd-org-kpi-value num" id="bd-org-kpi-online">—</span><span class="bd-org-kpi-hint">最近活跃 ≤ 5min</span></div>
+    </section>
+    <section class="bd-card bd-org-roles-card" aria-labelledby="bd-org-roles-h">
+      <div class="bd-card-head">
+        <h3 class="bd-card-title" id="bd-org-roles-h">角色与 agent</h3>
+        <span class="bd-card-sub">行=角色/岗位；点行开角色抽屉，点 agent 数展开实例</span>
+      </div>
+      <div class="bd-org-roles" id="bd-org-roles" role="list"><p class="bd-empty">加载中…</p></div>
+    </section>
   </section>
-
   <section class="bd-view" id="bd-view-tasks" data-view="tasks" role="tabpanel" aria-labelledby="bd-tab-tasks" hidden>
     <div class="bd-card"><div class="bd-card-h">任务（L1.5 → L2）</div><div class="bd-card-b" id="bd-tasks-body"><p class="bd-empty">加载中…</p></div></div>
   </section>

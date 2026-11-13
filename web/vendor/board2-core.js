@@ -158,6 +158,83 @@
       '<p class="bd-l15-note">示例 · 待 0.13 契约；L2 时间来自真实消息；计划时间未采集；各 workItem 的 token 不可横向加总。</p>'
   }
 
+  var AV_PAL = ['bd-av-c0', 'bd-av-c1', 'bd-av-c2', 'bd-av-c3', 'bd-av-c4', 'bd-av-c5', 'bd-av-c6', 'bd-av-c7', 'bd-av-c8']
+  function fnv1a(s) { var h = 0x811c9dc5; s = String(s || ''); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) } return h >>> 0 }
+  function initial(s) { s = String(s || '').trim(); if (!s) return '?'; var c = s.charAt(0); return /[a-z]/.test(c) ? c.toUpperCase() : c }
+  function renderOrg(data) {
+    var host = $('#bd-org-roles'); if (!host) return
+    var lines = (data && data.lines) || []
+    var g = (data && data.teamGoal) || {}
+    var goalText = $('#bd-org-goal-text'); if (goalText) goalText.textContent = g.objective || '未采集（TEAM.md 目标）'
+    var byLine = ((data && data.lineTasks && data.lineTasks.byLine) || [])
+    var cnt = { roles: $('#bd-org-kpi-roles'), online: $('#bd-org-kpi-online') }
+    var now = Date.now()
+    var online = lines.filter(function (l) { return l.lastSeen && now - l.lastSeen < 5 * 60 * 1000 }).length
+    if (cnt.roles) cnt.roles.textContent = String(lines.length)
+    if (cnt.online) cnt.online.textContent = String(online)
+    if (!lines.length) { host.innerHTML = '<p class="bd-empty">角色线未采集（lines.db 无 lines 记录）</p>'; return }
+    var managerLabel = (lines.filter(function (l) { return l.role === 'manager' || l.label === 'manager' })[0] || {}).label || '未采集'
+    var rows = lines.slice().sort(function (a, b) {
+      var am = (a.role === 'manager' || a.label === managerLabel) ? 0 : 1
+      var bm = (b.role === 'manager' || b.label === managerLabel) ? 0 : 1
+      return am - bm || String(a.label).localeCompare(String(b.label))
+    }).map(function (l) {
+      var name = l.title || l.role || l.label
+      var hit = byLine.filter(function (x) { return x.line === l.label })[0]
+      var l2 = hit ? hit.taskCount : null
+      var state = (l.lifecycle || '未采集') + (l.generation != null ? ' · gen' + l.generation : '')
+      var isOn = l.lastSeen && now - l.lastSeen < 5 * 60 * 1000
+      var key = String(l.label)
+      return '<div class="bd-org-role-row' + (l.role === 'manager' || l.label === managerLabel ? ' bd-org-role-l1' : '') + '" role="listitem" tabindex="0" data-org-role="' + esc(key) + '" aria-label="' + esc(name) + ' 角色，查看详情">' +
+        '<span class="bd-avatar bd-avatar-24 ' + AV_PAL[fnv1a(key) % 9] + '" data-avatar-key="' + esc(key) + '" data-avatar-init="' + esc(initial(name)) + '" aria-hidden="true">' + esc(initial(name)) + '</span>' +
+        '<span class="bd-dot ' + (isOn ? 'bd-dot-online' : '') + '" aria-hidden="true"></span>' +
+        '<span class="bd-org-role-main"><b>' + esc(name) + '</b><span class="bd-org-role-sub">' + (l.role === 'manager' || l.label === managerLabel ? 'L1 负责人' : 'L2 角色 · ' + esc(l.label)) + '</span></span>' +
+        '<span class="bd-org-owner">owner ' + esc(managerLabel) + '</span>' +
+        '<span class="bd-org-state">' + esc(state) + '</span>' +
+        '<span class="bd-org-load">负载 未采集（无 turns 口径）</span>' +
+        '<span class="bd-org-l2">负责 L2 <b class="num">' + (l2 == null ? '未采集' : l2) + '</b></span>' +
+        '<button type="button" class="bd-org-agents" data-org-agents="' + esc(key) + '" aria-expanded="false" aria-label="' + esc(name) + ' 的 agent 实例">agent 未采集 ▸</button>' +
+        '<span class="bd-org-go" aria-hidden="true">详情 ▸</span></div>'
+    }).join('')
+    host.innerHTML = rows
+    // 展开 agent 实例（官方 members[] 未提供 → 显示不可得说明）
+    $$('.bd-org-agents', host).forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation()
+        var open = btn.getAttribute('aria-expanded') !== 'true'
+        btn.setAttribute('aria-expanded', String(open))
+        btn.textContent = open ? 'agent 未采集 ▾' : 'agent 未采集 ▸'
+        var row = btn.closest('.bd-org-role-row')
+        var next = row && row.nextElementSibling
+        if (open) {
+          var div = document.createElement('div')
+          div.className = 'bd-org-agent-row'; div.setAttribute('role', 'listitem')
+          div.innerHTML = '<span class="bd-org-agent-empty"><span class="bd-unavailable" title="agent 实例未采集">不可得 · agent 实例未采集（官方 members[] 未提供 line 归属）</span></span>'
+          row.parentNode.insertBefore(div, row.nextSibling)
+        } else if (next && next.classList.contains('bd-org-agent-row')) {
+          next.remove()
+        }
+      })
+    })
+    // 点行开抽屉（角色信息；只读）
+    $$('.bd-org-role-row', host).forEach(function (row) {
+      row.addEventListener('click', function () {
+        var key = row.getAttribute('data-org-role')
+        var l = lines.filter(function (x) { return x.label === key })[0] || {}
+        var w = ((data.teamWorkspace && data.teamWorkspace.lines) || []).filter(function (x) { return x.label === key })[0] || {}
+        var sec = (w && w.sections) || {}
+        openDrawer(l.title || l.role || key,
+          '<p class="bd-drawer-kv"><b>label</b> ' + esc(key) + '</p>' +
+          '<p class="bd-drawer-kv"><b>角色</b> ' + esc(l.role || '未采集') + '</p>' +
+          '<p class="bd-drawer-kv"><b>生命周期</b> ' + esc(l.lifecycle || '未采集') + ' · gen' + esc(l.generation == null ? '未采集' : l.generation) + '</p>' +
+          '<p class="bd-drawer-kv"><b>最近活跃</b> ' + esc(l.lastSeen ? new Date(l.lastSeen).toLocaleString('zh-CN', { hour12: false }) : '未采集') + '</p>' +
+          '<p class="bd-drawer-kv"><b>章程来源</b> ' + esc(w.source || '未采集') + '</p>' +
+          '<p class="bd-drawer-kv"><b>定位</b> ' + esc(sec.positioning || '未采集（缺 charter）') + '</p>' +
+          '<p class="bd-drawer-note">只读 · 不挂 L3 任务（L3 见任务页/大任务详情）</p>')
+      })
+    })
+  }
+
   function renderPlaceholders(data) {
     var g = (data && data.teamGoal) || {}
     var goal = $('#bd-ov-goal-body')
@@ -181,8 +258,7 @@
     renderWorkflow(data)
     renderRhythm(data)
     renderL15(data)
-    var org = $('#bd-org-body')
-    if (org) org.innerHTML = '<p class="bd-empty">角色与 agent：示例（S6 实现）</p>'
+    renderOrg(data)
     var tasks = $('#bd-tasks-body')
     if (tasks) tasks.innerHTML = '<p class="bd-empty">任务分组：示例（S7 实现）</p>'
     var dt = $('#bd-data-body')
@@ -222,7 +298,7 @@
     var period = $('#bd-period'); if (period) period.addEventListener('change', function () { if (state.timer) startAuto() })
     var density = $('#bd-density'); if (density) density.addEventListener('click', function () { var on = density.getAttribute('aria-pressed') !== 'true'; density.setAttribute('aria-pressed', String(on)); document.documentElement.setAttribute('data-density', on ? 'compact' : 'comfortable') })
     var close = $('#bd-drawer-close'); if (close) close.addEventListener('click', closeDrawer)
-    setView('overview')
+    var qv = (new URLSearchParams(location.search).get('view') || '').trim(); if (['overview','org','tasks','data','cost'].indexOf(qv) >= 0) setView(qv); else setView('overview')
     load()
     startAuto()
   }
