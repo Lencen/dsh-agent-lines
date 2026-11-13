@@ -4,133 +4,364 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>团队成员 · dsh-agent-lines</title>
+<link rel="stylesheet" href="/vendor/board-l15.css">
 <style>
-:root{--bg:#f7f7f5;--surface:#fff;--border:#e4e2dc;--text:#1f2023;--muted:#6b6f76;--accent:#3f5d8c;--ok:#2f7d4f;--warn:#a86b00}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/22px system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans SC",sans-serif}
-.top{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
-.top a{color:var(--accent);text-decoration:none}.crumb{color:var(--muted);font-size:13px}.ro{margin-left:auto;color:var(--muted);font-size:12px}
-main{max-width:1200px;margin:0 auto;padding:20px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
-.avatar{width:48px;height:48px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:19px;flex:0 0 auto}
-.head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-h1{font-size:20px;margin:0}h2{font-size:15px;margin:0 0 8px}
-.badge{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid var(--border);font-size:12px;color:var(--muted)}
-.badge.active{color:var(--ok);border-color:var(--ok)}.badge.paused{color:var(--warn);border-color:var(--warn)}
-.muted{color:var(--muted)}.note{color:var(--muted);font-size:12px}
-.kv{display:grid;grid-template-columns:130px 1fr;gap:8px;font-size:13px;margin-top:12px}
-.kv .k{color:var(--muted)}
-.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-@media(max-width:1023px){.grid3{grid-template-columns:1fr}}
-.block{border:1px solid var(--border);border-radius:8px;padding:12px}
-.block h3{font-size:13px;margin:0 0 6px;color:var(--muted);font-weight:600}
-.anchor{font-size:12px;color:var(--muted);margin-top:6px}
-.rows{display:grid;gap:6px}
-.row{display:flex;gap:12px;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);flex-wrap:wrap;font-size:13px}
-.grp{margin-top:10px}.grp b{display:block;margin-bottom:4px}
-.grp .item{padding:4px 0 4px 16px;font-size:13px;color:var(--muted)}
+body{margin:0;background:var(--bd-bg,#f7f7f5);color:var(--bd-text,#1f2023);font:14px/22px system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans SC",sans-serif}
+.bd-member-page{max-width:1200px;margin:0 auto;padding:12px 20px 32px}
+.bd-member-back{color:var(--bd-accent,#3f5d8c);text-decoration:none}
 </style>
 </head>
 <body>
-<header class="top">
-  <a href="/">← 返回看板</a>
-  <span class="crumb">看板 / 团队 / <span id="m-crumb">—</span></span>
-  <span class="ro">只读 · 无写操作</span>
+<main id="bd-member-page" class="bd-member-page">
+<div class="bd-member-page-inner">
+<div class="bd-member-top">
+<a href="#" class="bd-member-back" data-md-back="">← 组织</a>
+<nav class="bd-member-crumb" aria-label="面包屑">组织 / 团队成员 / writer</nav>
+</div>
+<header class="bd-member-head">
+<span class="bd-avatar bd-avatar-48 bd-av-c3" data-avatar-key="writer" data-avatar-init="W" role="img" aria-label="writer，文案策划">W</span>
+<div class="bd-member-id">
+<h1 class="bd-member-name">writer</h1>
+<p class="bd-member-sub">
+<span class="bd-badge bd-badge-l2">角色线</span> 文案策划 · Writer · 上级：manager</p>
+</div>
+<div class="bd-member-state">
+<span class="bd-badge bd-badge-ok">在线</span>
+<span class="bd-member-last">最近活跃 2026-11-13 09:28:51</span>
+</div>
 </header>
-<main id="bd-member-page">
-  <section class="card" id="m-sec-identity">
-    <div class="head">
-      <span class="avatar" id="m-avatar" aria-hidden="true">?</span>
-      <div><h1 id="m-name">加载中…</h1><div class="muted" id="m-role"></div></div>
-      <span class="badge" id="m-kind">—</span>
-      <span class="badge" id="m-life">—</span>
-    </div>
-    <div class="kv">
-      <span class="k">line label</span><span id="m-label">未采集</span>
-      <span class="k">最近活跃</span><span id="m-seen">未采集</span>
-      <span class="k">DSH session</span><span>未采集（接口未暴露）</span>
-      <span class="k">上级 / manager</span><span id="m-manager">未采集</span>
-      <span class="k">团队</span><span id="m-team">未采集</span>
-    </div>
-  </section>
-  <section class="card" id="m-sec-role"><h2>角色与规范（引用 charter，7 段）</h2>
-    <div class="grid3">
-      <div class="block"><h3>角色定义</h3><div id="m-pos" class="note">未采集（缺 charter）</div><div class="anchor" id="m-pos-ref"></div>
-        <div class="anchor" id="m-resp-ref"></div><div id="m-resp" class="note" style="margin-top:6px"></div></div>
-      <div class="block"><h3>职位要求</h3><div id="m-qual" class="note">未采集（缺 charter）</div><div class="anchor" id="m-out-ref"></div><div class="anchor" id="m-qual-ref"></div></div>
-      <div class="block"><h3>执行规范</h3><div id="m-disp" class="note">未采集（缺 charter）</div><div class="anchor" id="m-col-ref"></div><div class="anchor" id="m-disp-ref"></div><div class="anchor" id="m-bound-ref"></div></div>
-    </div>
-    <p class="note" id="m-charter-src">来源：未采集</p>
-  </section>
-  <section class="card" id="m-sec-data"><h2>数据卡</h2>
-    <div class="rows">
-      <div class="row"><b>入队时间</b><span class="muted">未采集（待 0.13 契约）</span></div>
-      <div class="row"><b>工作时长</b><span class="muted">未采集（待 0.13 契约）</span></div>
-      <div class="row"><b>参与任务</b><span id="m-tasks" class="muted">未采集</span></div>
-      <div class="row"><b>完成率 / 阻塞</b><span id="m-rate" class="muted">未采集</span></div>
-      <div class="row"><b>当前并行任务</b><span class="muted">未采集（无并行语义）</span></div>
-      <div class="row"><b>执行次数 / token</b><span class="muted">未采集（成员级无数据源）</span></div>
-      <div class="row"><b>最近交接</b><span id="m-handoff" class="muted">未采集</span></div>
-    </div>
-  </section>
-  <section class="card" id="m-sec-owned"><h2>名下任务</h2>
-    <div class="grp"><b>L1.5 大任务</b><div id="m-l15" class="item">未采集（0.13 契约）</div></div>
-    <div class="grp"><b>L2 线任务</b><div id="m-l2" class="item">未采集</div></div>
-    <div class="grp"><b>L3 拆分任务</b><div id="m-l3" class="item">未采集（官方任务 0 条）</div></div>
-  </section>
+<section class="bd-member-section">
+<h2 class="bd-member-h2">身份与只读</h2>
+<dl class="bd-kv">
+<dt>MACS 线名</dt>
+<dd>writer</dd>
+<dt>DSH session</dt>
+<dd>
+<span class="mono">未采集（待 0.13 契约）</span> <button type="button" class="bd-btn" data-md-copy="" aria-label="复制 DSH session">复制</button> <span class="bd-member-copyfb" data-md-copyfb="">
+</span>
+</dd>
+<dt>agent id</dt>
+<dd>
+<span class="bd-unavailable">未采集（待 0.13 契约）</span>
+</dd>
+<dt>团队</dt>
+<dd>lines-video-team</dd>
+<dt>只读</dt>
+<dd>只读视图：不提供发消息/审批/交接控件；不显示 token/密钥原文。</dd>
+</dl>
+</section>
+<section class="bd-member-section">
+<h2 class="bd-member-h2">角色定义 / 职位要求 / 执行规范</h2>
+<div class="bd-member-charter">
+<div class="bd-member-charter-col">
+<h3>角色定义</h3>
+<p>把仓库文章里的组织设计思想，压缩成 15 秒能看懂的中文叙事；对文案事实、节奏与分镜可执行性负责。</p>
+<p>1) 阅读 video/BRIEF.md、README.md、docs/PHILOSOPHY.md、docs/关于AI组织的思考与探索.md、docs/从流程到岗位.md；
+2) 产出逐拍文案（含精确 in/out 时间码、换行与层级）和逐拍分镜（构图、动效、转场、音效落点）；
+3) 控制全片可读文字总量，保证静音可懂、无错别字、不虚构产品事实；
+4) 根据负责人/审片反馈修订文案。</p>
+<p class="bd-member-src">charters/writer.md#positioning；#responsibilities</p>
+</div>
+<div class="bd-member-charter-col">
+<h3>职位要求</h3>
+<ul>
+<li>- 5 拍叙事在 15.0s 内成立，3 秒内出现钩子，12 秒前出现产品名；
+- 主文案每拍 ≤ 2 行，全片可读汉字 ≤ 55 个（产品名/URL 除外）；
+- 每条主张可回溯到指定文章/README 段落；
+- 明确标注「DSH 社区插件 · Apache-2.0 · 非官方产品」。</li>
+<li>不写动画代码、不做渲染、不审自己的片；不改 video/src/、video/render/、video/out/、video/review/；不修改仓库源码；不编造插件能力或官方身份。</li>
+</ul>
+<p class="bd-member-src">charters/writer.md#quality；#boundaries</p>
+</div>
+<div class="bd-member-charter-col">
+<h3>执行规范</h3>
+<ul>
+<li>上游 manager 的任务单与 BRIEF；下游 motion 按 STORYBOARD 实现；reviewer 可对文案提出事实/可读性问题。</li>
+<li>接到任务后先确认输入是否齐全；完成即回报，不等催。阻塞直接升级 manager，不自行改需求范围。</li>
+<li>- video/script/SCRIPT.md：时间码表、每拍文案、引文出处、海报/落版文案；
+- video/script/STORYBOARD.md：逐拍画面与动效规格，motion 可据此直接实现；
+- 交付时向 manager 回一条简报（文件路径 + 关键决策 + 风险）。</li>
+</ul>
+<p class="bd-member-src">charters/writer.md#collaboration；#dispatch；#outputs</p>
+</div>
+<p class="bd-member-source">来源：charters/writer.md · 更新于 2026-11-12 08:00:00</p>
+</div>
+</section>
+<section class="bd-member-section">
+<h2 class="bd-member-h2">数据卡</h2>
+<div class="bd-member-cards">
+<div class="bd-member-card">
+<span class="bd-member-cardk">入队时间（线创建时间）</span>
+<span class="bd-member-cardv">
+<span class="bd-unavailable">未采集（待 0.13 契约）</span>
+</span>
+</div>
+<div class="bd-member-card">
+<span class="bd-member-cardk">工作时长（未采集/采样估计）</span>
+<span class="bd-member-cardv">
+<span class="bd-unavailable">未采集（待 0.13 契约）</span>
+</span>
+</div>
+<div class="bd-member-card">
+<span class="bd-member-cardk">参与任务（近似 · message-states）</span>
+<span class="bd-member-cardv">6（近似）</span>
+</div>
+<div class="bd-member-card">
+<span class="bd-member-cardk">完成率</span>
+<span class="bd-member-cardv">
+<span class="bd-unavailable">未采集（待 0.13 契约）</span>
+</span>
+</div>
+<div class="bd-member-card">
+<span class="bd-member-cardk">阻塞数</span>
+<span class="bd-member-cardv">0</span>
+</div>
+<div class="bd-member-card">
+<span class="bd-member-cardk">当前并行任务</span>
+<span class="bd-member-cardv">
+<span class="bd-unavailable">未采集（待 0.13 契约）</span>
+</span>
+</div>
+<div class="bd-member-card">
+<span class="bd-member-cardk">执行次数（成员级）</span>
+<span class="bd-member-cardv">
+<span class="bd-unavailable">未采集（待 0.13 契约）</span>
+</span>
+</div>
+<div class="bd-member-card">
+<span class="bd-member-cardk">token（成员级）</span>
+<span class="bd-member-cardv">
+<span class="bd-unavailable">未采集（待 0.13 契约）</span>
+</span>
+</div>
+<div class="bd-member-card">
+<span class="bd-member-cardk">最近交接</span>
+<span class="bd-member-cardv">
+<span class="bd-unavailable">未采集（待 0.13 契约）</span>
+</span>
+</div>
+<div class="bd-member-card">
+<span class="bd-member-cardk">最近换代</span>
+<span class="bd-member-cardv">
+<span class="bd-unavailable">未采集（待 0.13 契约）</span>
+</span>
+</div>
+</div>
+</section>
+<section class="bd-member-section">
+<h2 class="bd-member-h2">名下任务</h2>
+<div class="bd-member-tasks">
+<details class="bd-member-taskgroup">
+<summary>
+<span class="bd-badge bd-badge-muted">未关联 L1.5</span>
+<span class="bd-member-taskat">
+</span>
+<span class="bd-member-taskn">L2 6</span>
+</summary>
+<details class="bd-member-taskitem">
+<summary>
+<span class="mono">V60-T8c</span> <span class="bd-badge bd-badge-ok">完成</span>
+<span class="bd-member-taskname">L2 线任务</span>
+<span class="bd-member-taskat">2026-11-12 17:46:22</span>
+<span class="bd-member-taskn">L3 2</span>
+</summary>
+<div class="bd-member-l3row">
+<span class="mono">V60-T8c#L3a</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>分镜与时间码细化</span>
+<span class="bd-member-taskat">2026-11-12 17:09:45</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+<div class="bd-member-l3row">
+<span class="mono">V60-T8c#L3b</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>成片抽帧审查</span>
+<span class="bd-member-taskat">2026-11-12 17:26:59</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+</details>
+<details class="bd-member-taskitem">
+<summary>
+<span class="mono">V60-T8b</span> <span class="bd-badge bd-badge-ok">完成</span>
+<span class="bd-member-taskname">L2 线任务</span>
+<span class="bd-member-taskat">2026-11-12 17:02:57</span>
+<span class="bd-member-taskn">L3 2</span>
+</summary>
+<div class="bd-member-l3row">
+<span class="mono">V60-T8b#L3a</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>分镜与时间码细化</span>
+<span class="bd-member-taskat">2026-11-12 17:00:09</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+<div class="bd-member-l3row">
+<span class="mono">V60-T8b#L3b</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>成片抽帧审查</span>
+<span class="bd-member-taskat">2026-11-12 17:01:28</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+</details>
+<details class="bd-member-taskitem">
+<summary>
+<span class="mono">V60-T8</span> <span class="bd-badge bd-badge-ok">完成</span>
+<span class="bd-member-taskname">L2 线任务</span>
+<span class="bd-member-taskat">2026-11-12 16:56:31</span>
+<span class="bd-member-taskn">L3 2</span>
+</summary>
+<div class="bd-member-l3row">
+<span class="mono">V60-T8#L3a</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>分镜与时间码细化</span>
+<span class="bd-member-taskat">2026-11-12 16:53:25</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+<div class="bd-member-l3row">
+<span class="mono">V60-T8#L3b</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>成片抽帧审查</span>
+<span class="bd-member-taskat">2026-11-12 16:54:52</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+</details>
+<details class="bd-member-taskitem">
+<summary>
+<span class="mono">V60-T7</span> <span class="bd-badge bd-badge-ok">完成</span>
+<span class="bd-member-taskname">L2 线任务</span>
+<span class="bd-member-taskat">2026-11-12 16:44:57</span>
+<span class="bd-member-taskn">L3 2</span>
+</summary>
+<div class="bd-member-l3row">
+<span class="mono">V60-T7#L3a</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>分镜与时间码细化</span>
+<span class="bd-member-taskat">2026-11-12 16:15:23</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+<div class="bd-member-l3row">
+<span class="mono">V60-T7#L3b</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>成片抽帧审查</span>
+<span class="bd-member-taskat">2026-11-12 16:29:18</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+</details>
+<details class="bd-member-taskitem">
+<summary>
+<span class="mono">V60-T1</span> <span class="bd-badge bd-badge-ok">完成</span>
+<span class="bd-member-taskname">L2 线任务</span>
+<span class="bd-member-taskat">2026-11-12 15:59:19</span>
+<span class="bd-member-taskn">L3 2</span>
+</summary>
+<div class="bd-member-l3row">
+<span class="mono">V60-T1#L3a</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>分镜与时间码细化</span>
+<span class="bd-member-taskat">2026-11-12 15:51:06</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+<div class="bd-member-l3row">
+<span class="mono">V60-T1#L3b</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>成片抽帧审查</span>
+<span class="bd-member-taskat">2026-11-12 15:54:58</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+</details>
+<details class="bd-member-taskitem">
+<summary>
+<span class="mono">T1</span> <span class="bd-badge bd-badge-ok">完成</span>
+<span class="bd-member-taskname">L2 线任务</span>
+<span class="bd-member-taskat">2026-11-12 14:21:18</span>
+<span class="bd-member-taskn">L3 2</span>
+</summary>
+<div class="bd-member-l3row">
+<span class="mono">T1#L3a</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>分镜与时间码细化</span>
+<span class="bd-member-taskat">2026-11-12 14:13:37</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+<div class="bd-member-l3row">
+<span class="mono">T1#L3b</span> <span class="bd-badge bd-badge-info">进行中</span>
+<span>成片抽帧审查</span>
+<span class="bd-member-taskat">2026-11-12 14:17:14</span>
+<span class="bd-badge bd-badge-warn">示例</span>
+</div>
+</details>
+</details>
+</div>
+</section>
+<p class="bd-source-line">只读视图 · 缺失数据均显示「未采集（待 0.13 契约）」；成员执行次数/token 无成员级契约，不按线/会话分摊。数据时刻 2026-11-13 09:28:52。</p>
+</div>
 </main>
-<p class="note" style="max-width:1200px;margin:0 auto 24px;padding:0 20px">只读视图 · 数据来自 lines.db 与团队工作区；缺失字段显示未采集，不推断。</p>
 <script>
-(function(){
+(function () {
   'use strict'
-  var PAL=['#1F5A8A','#2F5D3A','#6B3FA0','#8A2F3F','#7A4A00','#0B6E82','#4A4A4A','#3F5D8C']
-  function fnv1a(s){var h=0x811c9dc5;s=String(s||'');for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)}return h>>>0}
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
-  function q(n){var m=location.search.match(new RegExp('[?&]'+n+'=([^&]*)'));return m?decodeURIComponent(m[1]):''}
-  function initial(s){s=String(s||'').trim();if(!s)return '?';var c=s.charAt(0);if(/[a-z]/.test(c))return c.toUpperCase();return c}
-  function set(k,v){var el=document.getElementById(k);if(el)el.textContent=v}
-  function ref(id,label,src){var el=document.getElementById(id);if(el&&src)el.textContent='引用：'+src+'#'+label}
-  function install(){
-    fetch('/api/board-config',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(cfg){
-      if(!cfg||!cfg.board2){set('m-name','功能未启用');return}
-      var key=q('id');if(!key){set('m-name','未指定成员');set('m-crumb','—');return}
-      fetch('/api/live',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(live){
-        var lines=(live&&live.lines)||[]
-        var ws=((live&&live.teamWorkspace)||{}).lines||[]
-        var line=lines.filter(function(l){return l.label===key})[0]
-        var w=ws.filter(function(x){return x.label===key})[0]
-        var name=(w&&w.name)||(line&&(line.registryName||line.title||line.role))||key
-        set('m-name',name);set('m-crumb',name);set('m-label',key);set('m-role',(line&&line.role)||'')
-        set('m-kind','kind: line（角色线）')
-        var lf=document.getElementById('m-life');lf.textContent=(line&&line.lifecycle)||'未采集';lf.className='badge '+((line&&line.lifecycle)==='active'?'active':(line&&line.lifecycle)==='hibernating'?'paused':'')
-        set('m-seen',line&&line.lastSeen?new Date(line.lastSeen).toLocaleString():'未采集')
-        set('m-team',(live&&live.teamName)||'未采集')
-        set('m-manager',(live&&live.managerLine&&live.managerLine.label)||'未采集')
-        var av=document.getElementById('m-avatar');av.textContent=initial(name);av.style.background=PAL[fnv1a(key)%8]
-        var sec=(w&&w.sections)||{}
-        set('m-pos',sec.positioning||'未采集（缺 charter）')
-        set('m-resp',sec.responsibilities||'')
-        var qual=[sec.quality,sec.boundaries].filter(Boolean).join(' / ');set('m-qual',qual||'未采集（缺 charter）')
-        var disp=[sec.collaboration,sec.dispatch,sec.outputs].filter(Boolean).join(' / ');set('m-disp',disp||'未采集（缺 charter）')
-        var src=(w&&w.source)||''
-        if(src){ref('m-pos-ref','定位',src);ref('m-resp-ref','职责',src);ref('m-out-ref','产出',src);ref('m-qual-ref','质量',src);ref('m-col-ref','协作',src);ref('m-disp-ref','调度',src);ref('m-bound-ref','边界',src)}
-        set('m-charter-src','来源：'+(src||'未采集')+'；missing：'+(((w&&w.missingSections)||[]).join(',')||'无'))
-        var by=(live&&live.lineTasks&&live.lineTasks.byLine)||[]
-        var hit=by.filter(function(x){return x.line===key})[0]
-        set('m-tasks',hit?('消息 '+hit.total+' 条 / taskRef '+hit.taskCount+' 个（按消息状态归并，近似）'):'未采集')
-        if(hit){var done=hit.acked||0,tot=hit.taskCount||0;set('m-rate',tot?('完成 '+Math.round(done/tot*100)+'% / 阻塞 '+(hit.failed||0)):'未采集')}
-        fetch('/api/work-items',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){
-          var items=(j&&j.available&&j.items)||[]
-          if(items.length){
-            var refs=((line&&line.taskRefs)||[])
-            var mine=items.filter(function(it){var l=it.linkedL2TaskRefs||[];return refs.some(function(r){return l.indexOf(r)>=0})})
-            set('m-l15',mine.length?mine.map(function(x){return x.title}).join(' / '):'未采集（无显式关联）')
+  var PAL = ['bd-av-c0', 'bd-av-c1', 'bd-av-c2', 'bd-av-c3', 'bd-av-c4', 'bd-av-c5', 'bd-av-c6', 'bd-av-c7']
+  function fnv1a(s) { var h = 0x811c9dc5; s = String(s || ''); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) } return h >>> 0 }
+  function q(n) { var m = location.search.match(new RegExp('[?&]' + n + '=([^&]*)')); return m ? decodeURIComponent(m[1]) : '' }
+  function $(s, r) { return (r || document).querySelector(s) }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)) }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] }) }
+  function initial(s) { s = String(s || '').trim(); if (!s) return '?'; var c = s.charAt(0); return /[a-z]/.test(c) ? c.toUpperCase() : c }
+  function unavailable() { return '<span class="bd-unavailable">未采集（待 0.13 契约）</span>' }
+  function install() {
+    fetch('/api/board-config', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (cfg) {
+      if (!cfg || !cfg.board2) { document.body.innerHTML = '<p style="padding:24px;color:#6b6f76">功能未启用（BOARD2 off）· 只读</p>'; return }
+      $$('.bd-member-back').forEach(function (a) { a.href = '/' })
+      var key = q('id')
+      if (!key) { $('.bd-member-name').textContent = '未指定成员（空态）'; return }
+      fetch('/api/live', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (live) {
+        var lines = (live && live.lines) || []
+        var ws = ((live && live.teamWorkspace) || {}).lines || []
+        var line = lines.filter(function (l) { return l.label === key })[0]
+        var w = ws.filter(function (x) { return x.label === key })[0]
+        var name = (w && w.name) || (line && (line.registryName || line.title || line.role)) || key
+        $('.bd-member-name').textContent = name
+        $('.bd-member-crumb').textContent = '看板 / 团队 / ' + name
+        var sub = $('.bd-member-sub')
+        if (sub) sub.innerHTML = '<span class="bd-badge bd-badge-l2">角色线</span> ' + esc((line && line.role) || '职责未采集') + ' · 上级：' + esc((live && live.managerLine && live.managerLine.label) || '未采集')
+        var av = $('.bd-avatar')
+        if (av) {
+          av.textContent = initial(name)
+          av.setAttribute('data-avatar-key', key)
+          av.setAttribute('data-avatar-init', initial(name))
+          av.setAttribute('aria-label', name)
+          var cls = 'bd-avatar bd-avatar-48 ' + PAL[fnv1a(key) % 8]
+          av.className = cls
+        }
+        var state = $('.bd-member-state')
+        if (state) state.innerHTML = '<span class="bd-badge ' + ((line && line.lifecycle) === 'active' ? 'bd-badge-ok' : 'bd-badge-warn') + '">' + esc((line && line.lifecycle) || '未采集') + '</span><span class="bd-member-last">最近活跃 ' + esc(line && line.lastSeen ? new Date(line.lastSeen).toLocaleString() : '未采集') + '</span>'
+        var dl = $$('.bd-kv dd')
+        if (dl[0]) dl[0].textContent = key
+        if (dl[1]) dl[1].innerHTML = unavailable()
+        if (dl[2]) dl[2].innerHTML = unavailable()
+        if (dl[3]) dl[3].textContent = (live && live.teamName) || '未采集'
+        if (dl[4]) dl[4].textContent = '只读视图：不提供发消息/审批/交接控件；不显示 token/密钥原文。'
+        var sec = (w && w.sections) || {}
+        var cols = $$('.bd-member-charter-col')
+        function setCol(i, heading, paras, refs, srcPath) {
+          var col = cols[i]; if (!col) return
+          var real = paras.filter(function (p) { return p && p !== '未采集（缺 charter）' })
+          var body = real.length ? real.map(function (p) { return '<p>' + esc(p) + '</p>' }).join('') : '<p class="bd-unavailable">未采集（缺 charter）</p>'
+          col.innerHTML = '<h3>' + heading + '</h3>' + body + '<p class="bd-member-src">' + esc(srcPath ? srcPath + '#' + refs.join('；#') : '引用：未采集（缺 charter）') + '</p>'
+        }
+        var srcPath = (w && w.source) || ''
+        setCol(0, '角色定义', [sec.positioning || '未采集（缺 charter）', sec.responsibilities || ''].filter(Boolean), ['positioning', 'responsibilities'], srcPath)
+        setCol(1, '职位要求', [sec.quality || '未采集（缺 charter）', sec.boundaries || ''].filter(Boolean), ['quality', 'boundaries'], srcPath)
+        setCol(2, '执行规范', [sec.collaboration || '未采集（缺 charter）', sec.dispatch || '', sec.outputs || ''].filter(Boolean), ['collaboration', 'dispatch', 'outputs'], srcPath)
+        var srcLine = $('.bd-member-source')
+        if (srcLine) srcLine.textContent = '来源：' + (srcPath || '未采集') + ' · 只读'
+        var cards = $$('.bd-member-card .bd-member-cardv')
+        var by = (live && live.lineTasks && live.lineTasks.byLine) || []
+        var hit = by.filter(function (x) { return x.line === key })[0]
+        if (cards[2]) cards[2].innerHTML = hit ? esc(hit.taskCount + '（近似 · message-states）') : unavailable()
+        if (cards[4]) cards[4].innerHTML = hit ? esc(String(hit.failed || 0)) : unavailable()
+        var tasks = $('.bd-member-tasks')
+        if (tasks) {
+          var refs = (hit && hit.taskRefs) || []
+          if (!refs.length) { tasks.innerHTML = '<p class="bd-wi-empty">未采集（无可归并 taskRef）</p>' }
+          else {
+            var rows = refs.map(function (ref) {
+              return '<details class="bd-member-taskitem"><summary><span class="mono">' + esc(ref) + '</span> <span class="bd-badge bd-badge-info">按消息状态</span><span class="bd-member-taskname">L2 线任务</span><span class="bd-member-taskat">近似归并</span><span class="bd-member-taskn">L3 未采集</span></summary><div class="bd-member-l3row"><span class="mono">' + esc(ref) + '#L3</span> <span class="bd-badge bd-badge-warn">示例</span><span>L3 拆分任务未采集（0.13 契约）</span><span class="bd-member-taskat">—</span></div></details>'
+            }).join('')
+            tasks.innerHTML = '<details class="bd-member-taskgroup" open><summary><span class="bd-badge bd-badge-muted">未关联 L1.5</span><span class="bd-member-taskn">L2 ' + refs.length + '</span></summary>' + rows + '</details>'
           }
-          if(hit&&hit.taskRefs&&hit.taskRefs.length)set('m-l2',hit.taskRefs.join(' / '))
-        }).catch(function(){})
-      }).catch(function(){set('m-name','未采集（数据源不可得）')})
-    }).catch(function(){set('m-name','未采集（服务不可得）')})
+        }
+      }).catch(function () { var n = $('.bd-member-name'); if (n) n.textContent = '未采集（数据源不可得）' })
+    }).catch(function () { var n = $('.bd-member-name'); if (n) n.textContent = '未采集（服务不可得）' })
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install()
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install()
 })()
 </script>
 </body>
