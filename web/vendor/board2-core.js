@@ -189,10 +189,15 @@
         return '<a class="bd-line-card bd-ov-line-card" href="/member?id=' + encodeURIComponent(l.label) + '">' +
           '<span class="bd-line-card-head"><span class="bd-dot' + (l.status === 'online' ? ' bd-dot-online' : '') + '" aria-hidden="true"></span>' +
           '<span class="bd-line-name">' + esc(l.title || l.registryName || l.label) + '</span>' +
-          (l.label === manager ? '<span class="bd-badge bd-badge-info">L1 负责人</span>' : '<span class="bd-badge bd-badge-muted">L2</span>') + '</span>' +
           '<span class="bd-ov-line-sub">' + esc(l.label) + (l.role ? ' · ' + esc(l.role) : '') + '</span>' +
+          '<span class="bd-ov-line-owner">owner <b>' + esc(l.label === manager ? 'lead' : manager) + '</b></span></span>' +
+          '<span class="bd-ov-badges">' +
+          (l.label === manager ? '<span class="bd-pill bd-badge-l2">L1 负责人</span>' : '<span class="bd-pill bd-badge-l2">L2 线</span>') +
+          '<span class="bd-badge ' + (l.status === 'online' ? 'bd-badge-ok' : 'bd-badge-muted') + '">' + esc(l.status === 'online' ? '在线' : (l.status ? '离线' : '未采集')) + '</span>' +
+          (l.lifecycle ? '<span class="bd-pill">' + esc(({ active: '活跃', hibernating: '休眠', retired: '退役' })[l.lifecycle] || l.lifecycle) + '</span>' : '') +
+          '</span>' +
           '<span class="bd-ov-line-stats">参与消息 <b class="num">' + (stat.total == null ? '未采集' : stat.total) + '</b> · 任务 <b class="num">' + (stat.taskCount == null ? '未采集' : stat.taskCount) + '</b> · 负载 未采集</span>' +
-          '<span class="bd-ov-line-foot">最近交接 <span class="num">' + (handoff ? esc(fmtDateTime(handoff)) : '未采集') + '</span><span class="bd-ov-line-go">查看 →</span></span></a>'
+          '<span class="bd-ov-line-foot">最近交接 <span class="num">' + (handoff ? esc(fmtDateTime(handoff)) : '未采集') + '</span><span class="bd-ov-line-go">查看该线 →</span></span></a>'
       }).join('')
     }
     if (linesCount) linesCount.textContent = lines.length ? '（' + lines.length + ' 条线）' : ''

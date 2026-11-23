@@ -65,3 +65,11 @@ body { margin: 0; background: var(--bd-bg); color: var(--bd-text); font: 14px/22
 .bd-l15-mini { padding: 0 6px; border-radius: 999px; border: 1px solid var(--bd-border, #e3e0da); font-size: 11px; color: var(--bd-text-muted); }
 .bd-l15-more, .bd-l15-none { color: var(--bd-text-dim); font-size: 11px; }
 @media (min-width: 1024px) { .bd-wi-row { grid-template-columns: minmax(220px, 1.3fr) minmax(160px, 0.9fr) minmax(260px, 1.2fr); } }
+
+/* S2-7 390/≤480：KPI 与线健康单列（对齐原型 narrow.css） */
+@media (max-width: 480px) {
+  .bd-kpi-grid, .bd-grid-4, .bd-grid-3 { grid-template-columns: minmax(0, 1fr); }
+  #bd-ov-kpi.bd-kpi-grid { grid-template-columns: minmax(0, 1fr); }
+  .bd-ov-line-grid { grid-template-columns: minmax(0, 1fr); }
+  .bd-ov-line-card { min-width: 0; }
+}

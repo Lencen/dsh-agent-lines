@@ -116,6 +116,7 @@ try {
     for (let i = 0; i < 100; i++) { ready = await evaluate('!!(document.querySelector("#bd-ov-kpi") && document.querySelector("#bd-ov-kpi").children.length)').catch(() => false); if (ready) break; await sleep(200) }
     check('board2 runtime：KPI 4 卡', await evaluate('document.querySelectorAll("#bd-ov-kpi .bd-kpi").length') === 4)
     check('board2 runtime：线卡非空', (await evaluate('document.querySelectorAll("#bd-ov-lines .bd-ov-line-card").length')) >= 1)
+    check('board2 runtime：线卡 owner+在线 badge', /owner/.test(String(await evaluate('(document.querySelector("#bd-ov-lines .bd-ov-line-owner")||{}).textContent||""'))) && /在线|离线/.test(String(await evaluate('(document.querySelector("#bd-ov-lines .bd-ov-badges .bd-badge")||{}).textContent||""'))))
     check('board2 runtime：决策卡非空或显式未采集', /未采集|暂无待决策|查看/.test(String(await evaluate('(document.querySelector("#bd-ov-decisions")||{}).textContent'))))
     check('board2 runtime：交接卡非空或显式未采集', /未采集|暂无交接|交接/.test(String(await evaluate('(document.querySelector("#bd-ov-deliveries")||{}).textContent'))))
     check('board2 runtime：异常卡非空或显式未采集', /未采集|暂无异常|failed|blocked|expired/.test(String(await evaluate('(document.querySelector("#bd-ov-alerts")||{}).textContent'))))
