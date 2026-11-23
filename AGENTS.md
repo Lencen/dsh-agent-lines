@@ -113,7 +113,7 @@ Lifecycle three states (0.10.0+): `active` (delivering), `hibernating` (parked: 
 ## 6. Versioning and gates (before any release)
 
 ```bash
-npm test             # unit tests + docs consistency 19 + bento 15 + business smoke 9 + board smoke 8 + board scripts 30 + views smoke 40
+npm test             # unit tests + docs consistency 20 + bento 15 + business smoke 9 + board smoke 8 + board scripts 30 + views smoke 40
 npm run test:board-e2e -- --require-chrome  # release gate: headless board render; missing Chrome fails (exit 2)
 ```
 

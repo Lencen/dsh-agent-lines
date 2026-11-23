@@ -376,6 +376,29 @@ const PAIRS = [
   else fail('C15 README current release matches package.json', bad.join('; '))
 }
 
+// ---------- C16 README 版本小节「未发布候选」不得用于已发布版本（防文档漂移） ----------
+{
+  const pkgVersion = JSON.parse(read('package.json')).version
+  let tags = []
+  try {
+    tags = execFileSync('git', ['tag', '--sort=-v:refname'], { cwd: ROOT, encoding: 'utf8', timeout: 5000 })
+      .split(String.fromCharCode(10))
+  } catch { tags = [] }
+  const released = new Set([pkgVersion, ...tags])
+  const bad = []
+  for (const file of ['README.md', 'README.en.md']) {
+    const lines = read(file).split(String.fromCharCode(10))
+    for (const line of lines) {
+      const m = line.match(/^###\s+(\d+\.\d+\.\d+)(?:-[0-9A-Za-z.-]+)?/)
+      if (!m) continue
+      if (!/未发布候选|unreleased candidate/i.test(line)) continue
+      if (released.has(m[1])) bad.push(file + ': ' + m[1] + ' 已是发布版本（package/tag），不得标「未发布候选」')
+    }
+  }
+  if (bad.length === 0) ok('C16 README unreleased-candidate only for unreleased versions')
+  else fail('C16 README unreleased-candidate only for unreleased versions', bad.join('; '))
+}
+
 // ---------- 输出 ----------
 const json = process.argv.includes('--json')
 if (json) {

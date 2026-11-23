@@ -195,12 +195,12 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
-### 0.14.1: prototype 8134b73db deltas (unreleased candidate)
+### 0.14.1: prototype 8134b73db deltas (released 2026-11-24)
 
 - owner styles / 390 cost-row wrap / cost chart legend; restored a vendored CSS truncation and added B16-B20 anti-truncation gates
 - Fallback: 0.14.0
 
-### 0.14.0: Board 2.0 prototype 100% parity (unreleased candidate)
+### 0.14.0: Board 2.0 prototype 100% parity (released 2026-11-24)
 
 - Overview runtime summary; full data/cost views; tasks recent feed & history; work-item real gantt & evidence; member identity & handoff; site-wide 390 narrow layout
 - done/in-progress = message-terminal approximation, not task completion state (D6 in KNOWN_ISSUES)
