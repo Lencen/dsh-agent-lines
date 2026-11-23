@@ -180,7 +180,53 @@
     </div>
   </section>
   <section class="bd-view" id="bd-view-data" data-view="data" role="tabpanel" aria-labelledby="bd-tab-data" hidden>
-    <div class="bd-card"><div class="bd-card-h">数据总览</div><div class="bd-card-b" id="bd-data-body"><p class="bd-empty">加载中…</p></div></div>
+    <section class="bd-view-head">
+      <h1 class="bd-view-title">数据</h1>
+      <p class="bd-view-sub">任务数按 distinct taskRef 聚合 · 消息数单列 · 缺失字段显示「未采集」</p>
+    </section>
+    <div class="bd-toolbar-row bd-data-filters">
+      <span class="bd-data-filter-label" id="bd-data-window-label">时间窗</span>
+      <div class="bd-chips" role="group" aria-labelledby="bd-data-window-label">
+        <button type="button" class="bd-chip" data-bd-data-window="7" aria-pressed="true">近 7 天</button>
+        <button type="button" class="bd-chip" data-bd-data-window="30" aria-pressed="false">近 30 天</button>
+        <button type="button" class="bd-chip" data-bd-data-window="0" aria-pressed="false">全部</button>
+      </div>
+      <p class="bd-meta bd-data-window-note" id="bd-data-window-note">时间窗只作用于按日序列；按线累计与任务快照不受影响。</p>
+    </div>
+    <div class="bd-kpi-grid bd-data-kpi" id="bd-data-kpi" aria-label="数据 KPI"></div>
+    <p class="bd-data-msgline" id="bd-data-msgline"></p>
+    <section class="bd-card bd-section bd-data-chart-card" aria-labelledby="bd-data-stack-title">
+      <div class="bd-card-head">
+        <h2 class="bd-card-title" id="bd-data-stack-title">按线任务</h2>
+        <span class="bd-card-sub">完成 / 进行中 · 堆叠柱 · x = L2 线</span>
+        <span class="bd-badge bd-badge-muted" id="bd-data-stack-badge">阻塞 / 超时：未采集</span>
+      </div>
+      <div class="bd-chart bd-chart-tall" id="bd-data-chart-stack" role="img" aria-label="按 L2 线统计的完成与进行中任务堆叠柱状图"></div>
+      <p class="bd-chart-note" id="bd-data-stack-note"></p>
+    </section>
+    <div class="bd-chart-grid">
+      <section class="bd-card bd-data-chart-card" aria-labelledby="bd-data-msgline-title">
+        <div class="bd-card-head"><h2 class="bd-card-title" id="bd-data-msgline-title">按线消息 / 日</h2><span class="bd-card-sub">条 · 快照日累计</span></div>
+        <div class="bd-chart" id="bd-data-chart-msgline" role="img" aria-label="按 L2 线统计的消息条数柱状图"></div>
+        <p class="bd-chart-note" id="bd-data-msgline-note"></p>
+      </section>
+      <section class="bd-card bd-data-chart-card" aria-labelledby="bd-data-costline-title">
+        <div class="bd-card-head"><h2 class="bd-card-title" id="bd-data-costline-title">按线消耗 / 日（k）</h2><span class="bd-card-sub">估算 · 非计费</span></div>
+        <div class="bd-chart" id="bd-data-chart-costline" role="img" aria-label="按 L2 线统计的 token 消耗柱状图，单位 k"></div>
+        <p class="bd-chart-note" id="bd-data-costline-note"></p>
+      </section>
+      <section class="bd-card bd-data-chart-card" aria-labelledby="bd-data-msgday-title">
+        <div class="bd-card-head"><h2 class="bd-card-title" id="bd-data-msgday-title">消息数 / 日</h2><span class="bd-card-sub">全部消息 · 条</span></div>
+        <div class="bd-chart" id="bd-data-chart-msgday" role="img" aria-label="按日期统计的全部消息条数折线图"></div>
+        <p class="bd-chart-note" id="bd-data-msgday-note"></p>
+      </section>
+      <section class="bd-card bd-data-chart-card" aria-labelledby="bd-data-tokenday-title">
+        <div class="bd-card-head"><h2 class="bd-card-title" id="bd-data-tokenday-title">token / 日</h2><span class="bd-card-sub">总 token / 输出 token · 估算</span></div>
+        <div class="bd-chart" id="bd-data-chart-tokenday" role="img" aria-label="按日期统计的总 token 与输出 token 折线面积图"></div>
+        <p class="bd-chart-note" id="bd-data-tokenday-note"></p>
+      </section>
+    </div>
+    <p class="bd-source-line" id="bd-data-source"></p>
   </section>
 
   <section class="bd-view" id="bd-view-cost" data-view="cost" role="tabpanel" aria-labelledby="bd-tab-cost" hidden>
@@ -199,6 +245,8 @@
   <div class="bd-drawer-body" id="drawer-body"></div>
 </aside>
 
+<script src="/vendor/echarts.min.js"></script>
+<script src="/vendor/board2-data.js"></script>
 <script src="/vendor/board2-core.js"></script>
 </body>
 </html>

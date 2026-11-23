@@ -21,6 +21,7 @@
   function showError(msg) { var el = $('#bd-error'); if (!el) return; el.textContent = msg; el.hidden = false }
   function clearError() { var el = $('#bd-error'); if (el) { el.hidden = true; el.textContent = '' } }
   function setView(name) {
+    if (name === 'data' && window.BD2Data) { window.BD2Data.rerender(); setTimeout(function () { window.BD2Data.resize() }, 80) }
     state.view = name
     $$('.bd-tab').forEach(function (b) { b.setAttribute('aria-selected', String(b.getAttribute('data-view') === name)) })
     $$('.bd-view').forEach(function (v) { v.hidden = v.getAttribute('data-view') !== name })
@@ -614,8 +615,7 @@
     renderRuntime(data)
     renderOrg(data)
     renderTasks(data)
-    var dt = $('#bd-data-body')
-    if (dt) dt.innerHTML = '<p class="bd-empty">数据总览：未采集（S11 对齐）</p>'
+    if (window.BD2Data) window.BD2Data.render(data)
     var cost = $('#bd-cost-body')
     if (cost) cost.innerHTML = '<p class="bd-empty">消耗总览：未采集（S11 对齐）</p>'
   }

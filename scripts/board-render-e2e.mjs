@@ -126,6 +126,19 @@ try {
     await sleep(600)
     check('board2 runtime：390 无横向溢出', (await evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 1)
     await send('Emulation.clearDeviceMetricsOverride')
+    await send('Page.navigate', { url: b2.url + '?view=data' })
+    let dataReady = false
+    for (let i = 0; i < 100; i++) { dataReady = await evaluate('!!(document.querySelector("#bd-data-kpi") && document.querySelector("#bd-data-kpi").children.length)').catch(() => false); if (dataReady) break; await sleep(200) }
+    check('board2 data：KPI 6 卡', await evaluate('document.querySelectorAll("#bd-data-kpi .bd-kpi").length') === 6)
+    check('board2 data：时间窗 chips 3 枚', await evaluate('document.querySelectorAll("#bd-view-data [data-bd-data-window]").length') === 3)
+    check('board2 data：5 图表容器为 canvas 或显式未采集', await evaluate('(function(){var ids=["bd-data-chart-stack","bd-data-chart-msgline","bd-data-chart-costline","bd-data-chart-msgday","bd-data-chart-tokenday"];return ids.every(function(id){var n=document.getElementById(id);return !!n && (!!n.querySelector("canvas") || !!n.querySelector(".bd-chart-na"))})})()') === true)
+    check('board2 data：msgline 非空', String(await evaluate('(document.querySelector("#bd-data-msgline")||{}).textContent||""')).length > 5)
+    check('board2 data：window note 非空', String(await evaluate('(document.querySelector("#bd-data-window-note")||{}).textContent||""')).length > 5)
+    check('board2 data：source line 非空', String(await evaluate('(document.querySelector("#bd-data-source")||{}).textContent||""')).length > 10)
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
+    await sleep(700)
+    check('board2 data：390 无横向溢出', (await evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 1)
+    await send('Emulation.clearDeviceMetricsOverride')
     check('board2 runtime：无 console 异常', exceptions.length === 0)
   } finally {
     await new Promise((resolve) => b2.server.close(resolve))
