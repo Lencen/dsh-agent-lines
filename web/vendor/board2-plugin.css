@@ -89,3 +89,12 @@ body { margin: 0; background: var(--bd-bg); color: var(--bd-text); font: 14px/22
 .bd-tasks-history-note { margin: 0 0 6px; color: var(--bd-text-muted, #5A6169); font-size: 12px; }
 .bd-tasks-history-item { display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 6px 0; border-bottom: 1px solid var(--bd-border, #e3e0da); font-size: 12px; }
 .bd-tasks-history-item:last-child { border-bottom: 0; }
+/* S5/S6-390 单列（2026-11-24）：tasks L2 卡换行、workitem 指标单列 */
+@media (max-width: 640px) {
+  .bd-tasks-wisection { flex-wrap: wrap; align-items: stretch; }
+  .bd-tasks-wisection > .bd-tasks-wihead { flex: 1 1 100%; }
+  .bd-tasks-wisection > .bd-task-card { flex: 1 1 100%; min-width: 0; }
+}
+@media (max-width: 480px) {
+  .bd-wi-metrics, .bd-wi-fields { grid-template-columns: minmax(0, 1fr); }
+}
