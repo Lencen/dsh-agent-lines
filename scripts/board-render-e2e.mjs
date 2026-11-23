@@ -139,6 +139,7 @@ try {
     await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
     await sleep(700)
     check('board2 data：390 无横向溢出', (await evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 1)
+    check('board2 data：390 KPI 单列', String(await evaluate('getComputedStyle(document.getElementById("bd-data-kpi")).gridTemplateColumns')).split(' ').length === 1)
     await send('Emulation.clearDeviceMetricsOverride')
     writeFileSync(join(dir, 'team-metrics.json'), JSON.stringify({ schemaVersion: 1, generatedAt: Date.now(), tasks: { byLine: [] }, sessions: { lines: 3 }, messages: { total: 3 }, tokens: { total: 12345678, today: 3456789, window: 3456789, outputTotal: 120000, samples: 42, perDay: [{ date: '2026-11-22', tokens: 1000000 }, { date: '2026-11-23', tokens: 3456789 }], perDayOutput: [{ date: '2026-11-22', tokens: 50000 }, { date: '2026-11-23', tokens: 68000 }], byLine: [{ line: 'writer', today: 2222222, totalTokens: 2345678 }] } }))
     await send('Page.navigate', { url: b2.url + '?view=cost' })

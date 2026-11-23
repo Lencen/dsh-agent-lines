@@ -168,10 +168,11 @@
     chart(id, {
       color: [L2],
       tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'shadow' }, formatter: function (ps) { if (!ps || !ps.length) return ''; var l = meta[ps[0].dataIndex] || {}; return '<div><b>' + esc(ps[0].axisValue) + '</b>（' + esc(l.line || '') + '）</div><div>' + ps[0].marker + '消息：' + fmtNum(ps[0].value) + ' 条</div>' } },
+      legend: { top: 0, left: 'center', itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 12, color: tone('--bd-text-muted', '#5A6169') } },
       grid: { left: 48, right: 12, top: 16, bottom: rotate ? 58 : 34 },
       xAxis: { type: 'category', data: cats, axisTick: { show: false }, axisLine: { lineStyle: { color: border } }, axisLabel: { color: muted, fontSize: 12, interval: 0, rotate: rotate } },
       yAxis: { type: 'value', name: '条', minInterval: 1, nameTextStyle: { color: muted, fontSize: 12 }, splitLine: { show: false }, axisLabel: { color: muted, fontSize: 12 } },
-      series: [{ name: '消息数（快照日累计）', type: 'bar', data: vals, barMaxWidth: 36 }]
+      series: [{ name: '消息数', type: 'bar', data: vals, barMaxWidth: 36 }]
     })
     if (note) note.textContent = '采样时刻 ' + dt(data && data.generatedAt) + ' · 按线累计（快照日） · 与「消息数 / 日」的 messages.total 口径不同'
   }
@@ -187,10 +188,11 @@
     chart(id, {
       color: [L2],
       tooltip: { trigger: 'axis', confine: true, formatter: function (ps) { if (!ps || !ps.length) return ''; return '<div><b>' + esc(ps[0].axisValue) + '</b></div><div>' + ps[0].marker + '全部消息：' + fmtNum(ps[0].value) + ' 条</div>' } },
+      legend: { top: 0, left: 'center', itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 12, color: tone('--bd-text-muted', '#5A6169') } },
       grid: { left: 52, right: 16, top: 24, bottom: 30 },
       xAxis: { type: 'category', data: shown.map(function (r) { return r.day }), axisTick: { show: false }, axisLine: { lineStyle: { color: border } }, axisLabel: { color: muted, fontSize: 12 } },
       yAxis: { type: 'value', minInterval: 1, splitLine: { show: false }, axisLabel: { color: muted, fontSize: 12 } },
-      series: [{ name: '全部消息', type: 'line', data: shown.map(function (r) { return r.v }), symbolSize: 8, lineStyle: { width: 2 }, areaStyle: { opacity: 0.12 }, label: { show: shown.length <= 7, position: 'top', color: muted, fontSize: 11, formatter: function (p) { return fmtNum(p.value) } } }]
+      series: [{ name: '消息数/日', type: 'line', data: shown.map(function (r) { return r.v }), symbolSize: 8, lineStyle: { width: 2 }, areaStyle: { opacity: 0.12 }, label: { show: shown.length <= 7, position: 'top', color: muted, fontSize: 11, formatter: function (p) { return fmtNum(p.value) } } }]
     })
     var note = byId('bd-data-msgday-note')
     if (note) note.textContent = '采样时刻 ' + dt(data && data.generatedAt) + ' · 口径：messages.byDay（全部消息，含无 taskRef 的消息） · 时间窗 ' + dayLabel() + '（窗口内 ' + shown.length + ' 天有数据）' + (shown.length === 1 ? ' · 仅 1 天（折线为单点）' : '')
@@ -243,10 +245,11 @@
     chart(id, {
       color: [L2],
       tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'shadow' }, formatter: function (ps) { if (!ps || !ps.length) return ''; var mm = meta[ps[0].dataIndex] || {}; return '<div><b>' + esc(ps[0].axisValue) + '</b>（' + esc(mm.line || '') + '）</div><div>' + ps[0].marker + '今日 token：' + fmtNum(mm.raw) + '（' + kfmt(mm.raw) + '）</div><div>' + (mm.estimated ? 'today 缺失，回退 window（估算）' : '估算 · 非计费') + '</div>' } },
+      legend: { top: 0, left: 'center', itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 12, color: tone('--bd-text-muted', '#5A6169') } },
       grid: { left: 60, right: 12, top: 16, bottom: rotate ? 58 : 34 },
       xAxis: { type: 'category', data: cats, axisTick: { show: false }, axisLine: { lineStyle: { color: border } }, axisLabel: { color: muted, fontSize: 12, interval: 0, rotate: rotate } },
       yAxis: { type: 'value', name: 'k token', minInterval: 1, nameTextStyle: { color: muted, fontSize: 12 }, splitLine: { show: false }, axisLabel: { color: muted, fontSize: 12 } },
-      series: [{ name: '今日 token（k）', type: 'bar', data: vals, barMaxWidth: 36 }]
+      series: [{ name: 'token/日（k）', type: 'bar', data: vals, barMaxWidth: 36 }]
     })
     var missing = []
     ;((data && data.lines) || []).forEach(function (l) { if (!seen[l.label]) missing.push(roleOf(roles, l.label)) })

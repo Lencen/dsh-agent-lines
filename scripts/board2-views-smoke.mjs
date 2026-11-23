@@ -49,7 +49,7 @@ check('V14 runtime CSS 齐备', ['\.bd-ov-runtime', '\.bd-ov-line-grid', '\.bd-o
 const dataJs = read('web/vendor/board2-data.js')
 check('V15 data 视图骨架齐备', ['bd-data-window-note', 'bd-data-kpi', 'bd-data-msgline', 'bd-data-chart-stack', 'bd-data-chart-msgline', 'bd-data-chart-costline', 'bd-data-chart-msgday', 'bd-data-chart-tokenday', 'bd-data-source'].every((id) => board.includes('id="' + id + '"')) && (board.match(/data-bd-data-window=/g) || []).length === 3)
 check('V16 data 脚本与 echarts 接线', board.includes('/vendor/echarts.min.js') && board.includes('/vendor/board2-data.js') && /BD2Data/.test(core) && /BD2Data/.test(dataJs))
-check('V17 data 图表 tooltip/legend/grid 齐备', (dataJs.match(/tooltip:/g) || []).length >= 4 && /legend:/.test(dataJs) && /grid:/.test(dataJs) && /type: 'bar'/.test(dataJs) && /type: 'line'/.test(dataJs))
+check('V17 data 5 图 legend/tooltip/grid 齐备', (dataJs.match(/legend:/g) || []).length >= 5 && (dataJs.match(/tooltip:/g) || []).length >= 4 && /grid:/.test(dataJs) && /消息数\/日/.test(dataJs) && /token\/日（k）/.test(dataJs) && /type: 'bar'/.test(dataJs) && /type: 'line'/.test(dataJs))
 check('V18 data 无源显式未采集且无 0 兜底', (dataJs.match(/未采集/g) || []).length >= 6 && !/\|\| 0/.test(dataJs) && /bd-chart-na/.test(dataJs))
 const costJs = read('web/vendor/board2-cost.js')
 check('V19 cost 视图骨架齐备', ['bd-cost-overview-title', 'bd-cost-kpis', 'bd-cost-badges', 'bd-cost-stats', 'bd-cost-chart-day', 'bd-cost-chart-line', 'bd-cost-source'].every((id) => board.includes('id="' + id + '"')) && /bd-cost-member/.test(board))

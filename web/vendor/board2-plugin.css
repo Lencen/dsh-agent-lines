@@ -70,6 +70,10 @@ body { margin: 0; background: var(--bd-bg); color: var(--bd-text); font: 14px/22
 @media (max-width: 480px) {
   .bd-kpi-grid, .bd-grid-4, .bd-grid-3 { grid-template-columns: minmax(0, 1fr); }
   #bd-ov-kpi.bd-kpi-grid { grid-template-columns: minmax(0, 1fr); }
+  .bd-view[data-view="data"] .bd-data-kpi,
+  #bd-view-data .bd-data-kpi { grid-template-columns: minmax(0, 1fr); }
+  .bd-view[data-view="cost"] .bd-cost-kpis,
+  #bd-view-cost .bd-cost-kpis { grid-template-columns: minmax(0, 1fr); }
   .bd-ov-line-grid { grid-template-columns: minmax(0, 1fr); }
   .bd-ov-line-card { min-width: 0; }
 }
