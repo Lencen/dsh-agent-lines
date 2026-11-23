@@ -107,3 +107,14 @@ body { margin: 0; background: var(--bd-bg); color: var(--bd-text); font: 14px/22
   .bd-tasks-kpi { grid-template-columns: minmax(0, 1fr); }
   .bd-org-kpi-bar { grid-template-columns: minmax(0, 1fr); }
 }
+/* N-1..N-6 390 单列补强（2026-11-24）：tasks KPI、member 卡、筛选首 chip */
+@media (max-width: 480px) {
+  .bd-tasks-kpi { grid-template-columns: minmax(0, 1fr); }
+  .bd-member-cards { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .bd-view[data-view="tasks"] .bd-tasks-filters { flex-wrap: wrap; row-gap: 8px; }
+  .bd-view[data-view="tasks"] .bd-tasks-filters .bd-chips { flex: 1 1 100%; min-width: 0; overflow-x: auto; padding-left: 0; }
+  .bd-view[data-view="tasks"] .bd-tasks-filters .bd-tasks-wi-select,
+  .bd-view[data-view="tasks"] .bd-tasks-filters .bd-tasks-line-select { max-width: 100%; }
+}
