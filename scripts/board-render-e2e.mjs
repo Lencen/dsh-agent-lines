@@ -155,6 +155,18 @@ try {
     check('board2 org：agent KPI 为数字（members.length）', /^[0-9]+$/.test(String(await evaluate('(document.querySelector("#bd-org-kpi-agents")||{}).textContent||""')).trim()))
     check('board2 org：负载显示 turns/steps 或未采集', /turns|未采集/.test(String(await evaluate('(document.querySelector("#bd-org-roles")||{}).textContent||""'))))
     check('board2 org：source line 非空', String(await evaluate('(document.querySelector("#bd-org-source")||{}).textContent||""')).length > 10)
+    await send('Page.navigate', { url: b2.url + 'member?id=writer' })
+    let memReady = false
+    for (let i = 0; i < 100; i++) { memReady = await evaluate('(document.body.innerText||"").indexOf("lines.created_at") >= 0').catch(() => false); if (memReady) break; await sleep(200) }
+    check('board2 member：身份 session/agent 非空', await evaluate('(function(){var dd=document.querySelectorAll(".bd-kv dd"); return dd.length>=3 && dd[1].textContent.trim().length>0 && dd[2].textContent.trim().length>0})()') === true)
+    check('board2 member：入队时间带 basis', /lines\.created_at|入队时间/.test(String(await evaluate('(document.body.innerText||"")'))))
+    check('board2 member：完成率术语或未采集', /按消息终态近似 · 非任务完成态|未采集（无状态源）/.test(String(await evaluate('(document.body.innerText||"")'))))
+    check('board2 member：最近交接 rebind 或未采集', /交接/.test(String(await evaluate('(document.body.innerText||"")'))))
+    check('board2 member：头像 role=img + aria-label', await evaluate('(function(){var a=document.querySelector(".bd-avatar-48"); return !!a && a.getAttribute("role")==="img" && (a.getAttribute("aria-label")||"").length>0})()') === true)
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
+    await sleep(600)
+    check('board2 member：390 无横向溢出', (await evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 1)
+    await send('Emulation.clearDeviceMetricsOverride')
     await send('Page.navigate', { url: b2.url + 'workitem?id=wi-demo-1' })
     let wiReady = false
     for (let i = 0; i < 100; i++) { wiReady = await evaluate('(function(){var a=document.querySelectorAll("#bd-wi-sec-nav .bd-wi-navlink").length === 2').catch(() => false); if (wiReady) break; await sleep(200) }
