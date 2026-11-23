@@ -11,6 +11,7 @@ import { readFileSync, existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import vm from 'node:vm'
+import { execFileSync } from 'node:child_process'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const args = process.argv.slice(2)
@@ -73,6 +74,30 @@ for (const [name, rel] of [['board2-data', 'web/vendor/board2-data.js'], ['board
   check('B13 board2 脚本语法 ' + name, bad3.length === 0, bad3.join(' | '))
   check('B14 board2 只读（无写方法/无写接口） ' + name, !/method\s*:\s*['"](?:POST|PUT|PATCH|DELETE)/i.test(src) && !/\/api\/actions/.test(src))
   check('B15 board2 数据源仅只读端点 ' + name, /\/api\/team-metrics/.test(src) && !/new\s+EventSource|WebSocket/.test(src))
+}
+// B16-B20: vendored board-2.0.css 完整性（防截断，0.14.1）
+{
+  const cssPath = resolve(ROOT, 'web/vendor/board-2.0.css')
+  const css20 = existsSync(cssPath) ? readFileSync(cssPath, 'utf8') : ''
+  const cssLines = css20 === '' ? 0 : css20.split(String.fromCharCode(10)).length
+  const selectorCount = (css20.match(/[^{}]+(?=\s*\{)/g) || []).length
+  check('B16 board-2.0.css 行数 >= 1400', cssLines >= 1400, 'lines=' + cssLines)
+  check('B17 board-2.0.css 选择器 >= 500', selectorCount >= 500, 'selectors=' + selectorCount)
+  check('B18 board-2.0.css 关键选择器齐备', ['.bd-tasks-', '.bd-wi-', '.bd-cost-', '.bd-data-', '.bd-ov-line-owner'].every(k => css20.includes(k)))
+  let headDeleted = 0
+  try {
+    const out = execFileSync('git', ['show', '--numstat', 'HEAD', '--', 'web/vendor/board-2.0.css'], { cwd: ROOT, encoding: 'utf8', timeout: 5000 })
+    const m = out.match(/^(\d+)\s+(\d+)\s/m)
+    if (m) headDeleted = Number(m[2])
+  } catch {}
+  check('B19 HEAD 提交对 board-2.0.css 删除行 <= 50', headDeleted <= 50, 'deleted=' + headDeleted)
+  let workDeleted = 0
+  try {
+    const out = execFileSync('git', ['diff', '--numstat', 'HEAD', '--', 'web/vendor/board-2.0.css'], { cwd: ROOT, encoding: 'utf8', timeout: 5000 })
+    const m = out.match(/^(\d+)\s+(\d+)\s/m)
+    if (m) workDeleted = Number(m[2])
+  } catch {}
+  check('B20 工作树对 board-2.0.css 删除行 <= 50', workDeleted <= 50, 'deleted=' + workDeleted)
 }
 const failures = checks.filter(c => !c.pass)
 if (json) console.log(JSON.stringify({ ok: failures.length === 0, file: target, checks }, null, 1))

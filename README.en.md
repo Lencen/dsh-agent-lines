@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current release: v0.14.0 (2026-11-24) — Board 2.0 100% prototype parity (overview runtime summary / full data & cost views / tasks recent feed & history / work-item real gantt & evidence / member identity & handoff / site-wide 390 narrow layout); v0.13.0 is the fallback.
+> Current release: v0.14.1 (2026-11-24) — three prototype deltas from 8134b73db (owner styles / 390 cost-row wrap / cost chart legend); Board 2.0 100% prototype parity; v0.14.0 is the fallback.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -194,6 +194,11 @@ Full text (invariants I1–I7, the five tradeoffs and what they cost, non-goals,
 Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md).
 
 ## What each version adds (business scenarios)
+
+### 0.14.1: prototype 8134b73db deltas (unreleased candidate)
+
+- owner styles / 390 cost-row wrap / cost chart legend; restored a vendored CSS truncation and added B16-B20 anti-truncation gates
+- Fallback: 0.14.0
 
 ### 0.14.0: Board 2.0 prototype 100% parity (unreleased candidate)
 
@@ -385,7 +390,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.14.0.tgz
+    bash install.sh ./dsh-agent-lines-0.14.1.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -678,7 +683,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current release `0.14.0` (maintenance phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current release `0.14.1` (maintenance phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 

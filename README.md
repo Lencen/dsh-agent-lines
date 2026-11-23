@@ -6,7 +6,7 @@
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> 当前发布：v0.14.0（2026-11-24）——Board 2.0 原型 100% 对齐（总览运行摘要 / 数据与消耗整页 / 任务最近消息流与历史 / 大任务详情真实甘特与证据 / 成员身份与交接 / 全站 390 窄屏）；v0.13.0 为回退位。
+> 当前发布：v0.14.1（2026-11-24）——按原型 8134b73db 补齐 3 处设计 delta（owner 样式 / 390 cost 行换行 / cost 图 legend）；Board 2.0 原型 100% 对齐；v0.14.0 为回退位。
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
@@ -195,6 +195,11 @@ L1 管理线会话（用户只说目标）
 已知会坏的地方与待修缺口：[docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md)。
 
 ## 版本能力与业务场景
+
+### 0.14.1：原型 8134b73db delta 补齐（未发布候选）
+
+- owner 样式 / 390 cost 行换行 / cost 图 legend 三处 delta；修复一次 vendored CSS 截断并新增 B16–B20 防截断判据
+- 回退位：0.14.0
 
 ### 0.14.0：Board 2.0 原型 100% 对齐（未发布候选）
 
@@ -402,7 +407,7 @@ L1 管理线会话（用户只说目标）
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.14.0.tgz
+    bash install.sh ./dsh-agent-lines-0.14.1.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -688,7 +693,7 @@ claim 不会对每个新会话自动执行：需要用户明确要求，或运�
 
 ## 状态
 
-当前发布 `0.14.0`（维护期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
+当前发布 `0.14.1`（维护期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
 
 ## 致谢
 

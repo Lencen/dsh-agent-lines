@@ -2,6 +2,26 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.14.1 (2026-11-24, unreleased)
+
+> **Unreleased**: candidate; three design deltas from prototype 8134b73db plus one vendored CSS truncation fix; **fallback v0.14.0**.
+
+### Design deltas (prototype 8134b73db)
+
+- Overview L2 line health: owner text styles (.bd-ov-line-owner / b) — text existed in 0.14.0; styles kept (introduced in 3facb00, CSS restored in 8da825f)
+- 390: .bd-ov-cost-row wraps under 480px (aligns with prototype narrow.css)
+- Cost per-line chart legend + grid.top 28 (already covered in 0.14.0; kept)
+
+### Fixes
+
+- Restored a vendored CSS truncation: 3facb00 cut web/vendor/board-2.0.css from 1488 to 777 lines; 8da825f restored the full 1488 lines + 2 owner lines
+- New anti-truncation gates (check-board-scripts B16-B20: line count / selector count / key selectors / deleted lines)
+
+### Gates / compatibility
+
+- No schema/protocol change; 27 tools; BOARD2 default on
+- Gates: unit 192+, docs 19 (C14b expected pre-tag), bento 15, board scripts 25+, views-smoke 40, e2e PASS
+
 ## 0.14.0 (2026-11-24, released)
 
 > **Released 2026-11-24**: npm dsh-agent-lines@0.14.0 (latest) · GitHub Release v0.14.0 · tag 0bbe755 · **fallback v0.13.0**.

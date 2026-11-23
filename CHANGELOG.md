@@ -2,6 +2,26 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.14.1 (2026-11-24，未发布)
+
+> **未发布**：候选版本；按原型 8134b73db 补齐 3 处设计 delta，并修复一次 vendored CSS 截断；**回退位 v0.14.0**。
+
+### 设计 delta 补齐（原型 8134b73db）
+
+- 总览 L2 线健康：owner 文本样式（.bd-ov-line-owner / b）——0.14.0 已有文本，本版保留样式（原 3facb00 引入，8da825f 恢复完整 CSS）
+- 390：≤480 下 .bd-ov-cost-row 换行（与原型 narrow.css 对齐）
+- 消耗视图按线图 legend + grid.top 28（0.14.0 已覆盖，本版保持）
+
+### 修复
+
+- 修复一次 vendored CSS 截断：3facb00 曾把 web/vendor/board-2.0.css 从 1488 行写成 777 行；8da825f 恢复完整 1488 行 + owner 2 行
+- 新增防截断判据（check-board-scripts B16–B20：行数/选择器数/关键选择器/删除行数）
+
+### 判据 / 兼容
+
+- 无 schema / protocol 变更；工具数 27；BOARD2 默认 on
+- 门禁：unit 192+、docs 19（tag 前 C14b 预期）、bento 15、board scripts 25+、views-smoke 40、e2e PASS
+
 ## 0.14.0 (2026-11-24，已发布)
 
 > **已发布 2026-11-24**：npm dsh-agent-lines@0.14.0（latest）· GitHub Release v0.14.0 · tag 指向 0bbe755 · **回退位 v0.13.0**。
