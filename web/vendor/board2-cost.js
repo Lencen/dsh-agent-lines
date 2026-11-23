@@ -59,7 +59,10 @@
     }
     if (stats) {
       var pills = []
-      function pill(label, n) { if (!isNum(n)) return; pills.push('<span class="bd-pill" title="' + esc(fmtNum(n) + ' token') + '">' + esc(label) + ' ' + esc(kfmt(n)) + '</span>') }
+      function pill(label, n) {
+        if (isNum(n)) pills.push('<span class="bd-pill" title="' + esc(fmtNum(n) + ' token') + '">' + esc(label) + ' ' + esc(kfmt(n)) + '</span>');
+        else pills.push('<span class="bd-pill bd-pill-unavailable" title="未采集（team-metrics 缺字段，不显示 0）">' + esc(label) + ' 未采集</span>');
+      }
       pill('输入', t.inputTokens); pill('缓存读', t.cacheReadTokens); pill('缓存写', t.cacheWriteTokens); pill('输出', t.outputTotal); pill('样本', t.samples)
       stats.innerHTML = pills.join('')
     }
@@ -107,8 +110,9 @@
     var rotate = window.innerWidth < 720 ? 32 : 0
     chart('bd-cost-chart-line', {
       color: [L2],
+      legend: { top: 0, left: 'center', itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 12, color: muted } },
       tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'shadow' }, formatter: function (ps) { if (!ps || !ps.length) return ''; var mm = meta[ps[0].dataIndex] || {}; return '<div><b>' + esc(ps[0].axisValue) + '</b>（' + esc(mm.line || '') + '）</div><div>' + ps[0].marker + '今日 token：' + fmtNum(mm.raw) + '（' + kfmt(mm.raw) + '）</div><div>' + (mm.estimated ? 'today 缺失，回退 window（估算）' : '估算 · 非计费') + '</div>' } },
-      grid: { left: 60, right: 12, top: 16, bottom: rotate ? 58 : 34 },
+      grid: { left: 60, right: 12, top: 28, bottom: rotate ? 58 : 34 },
       xAxis: { type: 'category', data: cats, axisTick: { show: false }, axisLine: { lineStyle: { color: border } }, axisLabel: { color: muted, fontSize: 12, interval: 0, rotate: rotate } },
       yAxis: { type: 'value', name: 'k token', minInterval: 1, nameTextStyle: { color: muted, fontSize: 12 }, splitLine: { show: false }, axisLabel: { color: muted, fontSize: 12 } },
       series: [{ name: '今日 token（k）', type: 'bar', data: vals, barMaxWidth: 36 }]
