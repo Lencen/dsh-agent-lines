@@ -149,8 +149,8 @@
 <span class="bd-wi-lg bd-badge bd-badge-warn" id="bd-wi-synth-badge" hidden>示例轴（真实跨度 &lt; 5min）</span>
 </div>
 <div class="bd-wi-page-gantt-wrap">
-<div class="bd-wi-page-gantt" id="bd-wi-page-gantt" role="img" aria-label="大任务甘特图">
-</div>
+<div class="bd-wi-page-gantt" id="bd-wi-page-gantt" role="img" aria-label="大任务甘特图"></div>
+<p class="bd-chart-note" id="bd-wi-gantt-note"></p>
 </div>
 <div class="bd-wi-tablewrap" id="bd-wi-page-tablewrap" hidden="">
 <p class="bd-wi-tablehint">表格可横向滚动 · 首列固定</p>
@@ -304,7 +304,7 @@
 <button type="button" class="bd-btn" aria-disabled="true">交接</button>
 <button type="button" class="bd-btn" aria-disabled="true">变更</button>
 </div>
-<p class="bd-wi-empty">暂无关联消息（0.12 无事件流；0.13 契约后提供，不伪造）</p>
+<div class="bd-wi-evidence-list" id="bd-wi-evidence-list"><p class="bd-wi-empty">加载中…</p></div>
 </div>
 </section>
 <section class="bd-wi-sec bd-wi-sec-notes" id="bd-wi-sec-notes">
@@ -370,6 +370,26 @@
     $('.bd-wi-page-meta').textContent = 'owner ' + (it.owner || '未采集') + ' · 更新 ' + tfull(it.updatedAt)
     var src = $('.bd-wi-source'); if (src) src.textContent = '来源：示例 · 待 0.13 契约 · sourceMessageId 未采集 · 目标归属：' + (ORIGIN[it.origin] || '未采集')
   }
+  function renderEvidence(it, live) {
+    var host = document.getElementById('bd-wi-evidence-list'); if (!host) return
+    var linked = it.linked || []
+    var recent = (live && live.lineTasks && Array.isArray(live.lineTasks.recent)) ? live.lineTasks.recent : null
+    if (!recent) { host.innerHTML = '<p class="bd-wi-empty">时间线证据未采集（/api/live lineTasks.recent 不可得），不伪造。</p>'; return }
+    var hits = recent.filter(function (m) { return m.taskRef && linked.indexOf(m.taskRef) >= 0 }).slice(0, 5)
+    if (!hits.length) {
+      var reason = linked.length ? ('该 taskRef 无关联消息（linked=' + linked.join('、') + '；recent 中无命中，可能超出最近 10 条）') : '该 workitem 无关联 taskRef（linked 为空），无消息可关联'
+      host.innerHTML = '<p class="bd-wi-empty">暂无关联消息：' + esc(reason) + '</p>'
+      return
+    }
+    host.innerHTML = '<ol class="bd-wi-evidence-ol">' + hits.map(function (m) {
+      return '<li class="bd-wi-evidence-item"><span class="num">' + esc(tfull(m.createdAt)) + '</span>' +
+        '<span>' + esc(m.from) + ' -> ' + esc(m.to) + '</span>' +
+        '<span class="bd-wi-evref">' + esc(m.taskRef) + '</span>' +
+        '<span class="bd-badge bd-badge-muted">' + esc(m.state || '未采集') + '</span>' +
+        '<span class="bd-wi-evsummary">' + esc((m.summary || '').slice(0, 120) || '（无摘要）') + '</span></li>'
+    }).join('') + '</ol>' +
+      '<p class="bd-wi-evnote">最近 5 条 · 摘要截断 ≤120 字 · 不含消息正文全文 · 只读</p>'
+  }
   function renderMetrics(it, by) {
     var ms = $$('#bd-wi-sec-metrics .bd-wi-metric')
     var linked = it.linked || []
@@ -380,10 +400,10 @@
       acked += (x.byState && x.byState.acked) || 0
     })
     var rate = total > 0 ? Math.round(acked / total * 100) : null
-    var l2text = it.l2 == null ? '未采集' : String(it.l2) + (it.l2 ? (rate == null ? ' · 完成率未采集（无状态源）' : ' · 完成率 ' + rate + '%（近似·acked）') : ' · 未拆解')
+    var l2text = it.l2 == null ? '未采集' : (it.l2 ? (rate == null ? String(it.l2) + ' 条 · 完成率未采集（无状态源）' : String(it.l2) + ' 条 · 完成率 ' + rate + '%（按消息终态近似 · 非任务完成态）') : String(it.l2) + ' 条 · —/未拆解')
     var vals = [
       [it.synthetic ? '示例' : '真实', l2text],
-      ['示例', it.l3 == null ? '未采集' : String(it.l3) + ' · 完成率未采集（L3 示例，无状态源）'],
+      ['示例', it.l3 == null ? '未采集' : String(it.l3) + ' 条 · 未采集（无状态源）'],
       [it.agentRuns == null ? '未采集' : '示例', it.agentRuns == null ? '未采集' : it.agentRuns + ' 次'],
       [it.tokenTotal == null ? '未采集' : '估计', it.tokenTotal == null ? '未采集' : fmtK(it.tokenTotal)],
       ['未采集', '计划未采集'],
@@ -419,64 +439,44 @@
     return rows
   }
   function renderGantt(it, rows) {
-    var host = $('#bd-wi-page-gantt'); if (!host || !window.echarts) return
-    var chart = echarts.init(host)
-    var cats = rows.map(function (r) { return r.level + ' ' + r.name })
-    var starts = rows.map(function (r) { return r.start }).filter(Boolean)
-    var ends = rows.map(function (r) { return r.end }).filter(Boolean)
-    var now = Date.now()
-    var start = starts.length ? Math.min.apply(null, starts) : now - 3600e3
-    var end = ends.length ? Math.max.apply(null, ends) : now
-    // 真实跨度 < 5min 时，甘特改用示例时间轴（明确标示例），避免条形不可见/不成图
+    var host = $('#bd-wi-page-gantt'); if (!host) return
+    var note = $('#bd-wi-gantt-note')
+    var synthBadge = document.getElementById('bd-wi-synth-badge'); if (synthBadge) synthBadge.hidden = true
     var realRows = rows.filter(function (r) { return r.start && r.end })
-    var realSpan = realRows.length > 1 ? (Math.max.apply(null, realRows.map(function (r) { return r.end })) - Math.min.apply(null, realRows.map(function (r) { return r.start }))) : 0
-    var synthAxis = false
-    if (!realRows.length || realSpan < 300e3) {
-      synthAxis = true
-      var base = Date.now() - 2 * 3600e3
-      var synth = []
-      rows.forEach(function (r, i) {
-        var idx = i
-        synth.push({ level: r.level, name: r.name + '（示例）', start: base + idx * 10 * 60e3, end: base + (idx * 10 + 8) * 60e3, real: false, note: '示例时间轴' })
-      })
-      rows = synth
+    if (!realRows.length) {
+      host.innerHTML = '<p class="bd-wi-empty">无时间数据：该 workitem 无关联消息（firstAt/latestAt 未采集），不伪造时间轴。</p>'
+      if (note) note.textContent = '甘特未绘制：真实首末消息时间未采集（不合成、不伪造）'
+      return
     }
-    var sb = document.getElementById('bd-wi-synth-badge'); if (sb) sb.hidden = !synthAxis
-    realRows = rows.filter(function (r) { return r.start && r.end })
-    starts = rows.map(function (r) { return r.start }).filter(Boolean)
-    ends = rows.map(function (r) { return r.end }).filter(Boolean)
-    if (starts.length) start = Math.min.apply(null, starts)
-    if (ends.length) end = Math.max.apply(null, ends)
-    var l1Start = realRows.length ? Math.min.apply(null, realRows.map(function (r) { return r.start })) : null
-    var l1End = realRows.length ? Math.max.apply(null, realRows.map(function (r) { return r.end })) : null
+    if (!window.echarts) return
+    var chart = echarts.init(host)
+    var start = Math.min.apply(null, realRows.map(function (r) { return r.start }))
+    var end = Math.max.apply(null, realRows.map(function (r) { return r.end }))
+    if (!(end > start)) end = start + 60e3
+    var spanMin = Math.max(1, Math.round((end - start) / 60e3))
+    var pad = Math.max(30e3, Math.min((end - start) * 0.05, 300e3))
     var data = []
-    var sampleSpan = (l1Start && l1End && l1End > l1Start) ? (l1End - l1Start) : 60e3
-    var l3Index = 0
-    rows.forEach(function (r, i) {
-      if (r.level === 'L1.5') { if (l1Start && l1End) data.push({ value: [i, l1Start, l1End, r.level], name: r.name }); return }
-      if (r.start && r.end) { data.push({ value: [i, r.start, r.end, r.level], name: r.name }); return }
-      if (r.level === 'L3' && l1Start && l1End) {
-        // L3 示例条：由 L2 真实范围切分子区间（明确标示例，不代表真实数据）
-        var seg = sampleSpan / 3
-        var st = l1Start + seg * (l3Index % 2)
-        data.push({ value: [i, st, Math.min(st + seg * 0.6, l1End), r.level], name: r.name }); l3Index++
-      }
-    })
+    var cats = []
+    var l1Start = null, l1End = null
+    realRows.forEach(function (r) { if (r.level === 'L2') { l1Start = l1Start == null ? r.start : Math.min(l1Start, r.start); l1End = l1End == null ? r.end : Math.max(l1End, r.end) } })
+    if (l1Start != null) { cats.push('L1.5 ' + it.title); data.push({ value: [data.length, l1Start, l1End, 'L1.5'], name: it.title }) }
+    realRows.forEach(function (r) { cats.push(r.level + ' ' + r.name); data.push({ value: [data.length, r.start, r.end, r.level], name: r.name }) })
     var marks = DEFAULT_WF.map(function (n, i) {
       return { xAxis: start + (end - start) * (i / 7), label: { formatter: 'P' + (i + 1), fontSize: 10, color: '#7d858e' }, lineStyle: { color: '#e3e0da', type: 'dashed' } }
     })
-    marks.push({ xAxis: now, label: { formatter: '今天', fontSize: 10, color: '#3f5d8c' }, lineStyle: { color: '#3f5d8c', width: 1, type: 'dotted' } })
-    var colors = { 'L1.5': '#3f5d8c', L2: '#0b6e82', L3: '#7c4dff' }
+    var now = Date.now()
+    if (now >= start && now <= end) marks.push({ xAxis: now, label: { formatter: '今天', fontSize: 10, color: '#3f5d8c' }, lineStyle: { color: '#3f5d8c', width: 1, type: 'dotted' } })
+    var colors = { 'L1.5': '#3f5d8c', L2: '#0b6e82' }
     var chartOpts = {
       grid: { left: 170, right: 28, top: 16, bottom: 28 },
-      xAxis: { type: 'time', min: Math.min(start, now), max: Math.max(end, now, Math.min(start, now) + 60e3 * 10) },
+      xAxis: { type: 'time', min: start - pad, max: end + pad },
       yAxis: { type: 'category', data: cats, inverse: true, axisLabel: { fontSize: 11 } },
       series: [{
         type: 'custom',
         renderItem: function (p, api) {
           var y = api.value(0), s = api.coord([api.value(1), y]), e = api.coord([api.value(2), y])
           var lvl = api.value(3); var h = lvl === 'L1.5' ? 14 : 10
-          return { type: 'rect', shape: { x: s[0], y: s[1] - h / 2, width: Math.max(e[0] - s[0], 8), height: h }, style: { fill: colors[lvl] || '#3f5d8c', opacity: lvl === 'L3' ? 0.5 : 0.85 } }
+          return { type: 'rect', shape: { x: s[0], y: s[1] - h / 2, width: Math.max(e[0] - s[0], 8), height: h }, style: { fill: colors[lvl] || '#3f5d8c', opacity: 0.85 } }
         },
         encode: { x: [1, 2], y: 0 },
         data: data,
@@ -485,8 +485,8 @@
     }
     chart.setOption(chartOpts)
     try { chart.resize() } catch (e) {}
-    window.addEventListener('resize', function () { try { chart.resize() } catch (e) {} })
     setTimeout(function () { try { chart.resize() } catch (e) {} }, 300)
+    if (note) note.textContent = '真实跨度 ' + spanMin + ' 分钟 · 范围 ' + tfull(start) + ' → ' + tfull(end) + ' · 仅绘制真实 byTaskRef 首末消息（L1.5 由 L2 聚合；L3 无状态源不绘制）'
   }
   function renderTable(it, rows) {
     var tw = $('#bd-wi-page-tablewrap'); if (!tw) return
@@ -549,10 +549,11 @@
         var items = (j && j.available && Array.isArray(j.items) && j.items.length) ? j.items : Object.keys(EXAMPLE).map(function (k) { return EXAMPLE[k] })
         var it = items.filter(function (x) { return x.id === id })[0] || EXAMPLE[id]
         if (!it) { emptyAll('未找到该大任务（空态）'); return }
-        renderHeader(it); renderMetrics(it, null); renderNav(items, id)
+        renderHeader(it); renderMetrics(it, null); renderEvidence(it, null); renderNav(items, id)
         fetch('/api/live', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (live) {
           var by = (live && live.lineTasks && live.lineTasks.byTaskRef) || []
           renderMetrics(it, by)
+          renderEvidence(it, live)
           renderWorkflow(live, it)
           var rows = buildRows(it, by)
           renderTable(it, rows); renderGantt(it, rows); renderBoard(it, rows)

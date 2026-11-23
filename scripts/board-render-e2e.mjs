@@ -155,6 +155,23 @@ try {
     check('board2 org：agent KPI 为数字（members.length）', /^[0-9]+$/.test(String(await evaluate('(document.querySelector("#bd-org-kpi-agents")||{}).textContent||""')).trim()))
     check('board2 org：负载显示 turns/steps 或未采集', /turns|未采集/.test(String(await evaluate('(document.querySelector("#bd-org-roles")||{}).textContent||""'))))
     check('board2 org：source line 非空', String(await evaluate('(document.querySelector("#bd-org-source")||{}).textContent||""')).length > 10)
+    await send('Page.navigate', { url: b2.url + 'workitem?id=wi-demo-1' })
+    let wiReady = false
+    for (let i = 0; i < 100; i++) { wiReady = await evaluate('(function(){var a=document.querySelectorAll("#bd-wi-sec-nav .bd-wi-navlink").length === 2').catch(() => false); if (wiReady) break; await sleep(200) }
+    check('board2 workitem：首条边界文案', /已是第一个/.test(String(await evaluate('(document.querySelectorAll("#bd-wi-sec-nav .bd-wi-navlink")[0]||{}).textContent||""'))))
+    check('board2 workitem：下一条可点 href', /workitem\?id=wi-demo-2/.test(String(await evaluate('(document.querySelectorAll("#bd-wi-sec-nav .bd-wi-navlink")[1]||{}).getAttribute("href")||""'))))
+    await evaluate('(function(){var a=document.querySelectorAll("#bd-wi-sec-nav .bd-wi-navlink")[1]; if(a) a.click(); return true})()')
+    await sleep(1500)
+    check('board2 workitem：点击后 URL 变 B', /wi-demo-2/.test(String(await evaluate('location.search'))))
+    await send('Page.navigate', { url: b2.url + 'workitem?id=wi-demo-3' })
+    await sleep(1500)
+    check('board2 workitem：末条边界文案', /已是最后一个/.test(String(await evaluate('(document.querySelectorAll("#bd-wi-sec-nav .bd-wi-navlink")[1]||{}).textContent||""'))))
+    check('board2 workitem：证据区有事实或原因', String(await evaluate('(document.querySelector("#bd-wi-evidence-list")||{}).textContent||""')).length > 8)
+    check('board2 workitem：甘特真实跨度或显式空态', /真实跨度|未绘制|无时间数据/.test(String(await evaluate('(document.querySelector("#bd-wi-gantt-note")||{}).textContent||""'))))
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
+    await sleep(600)
+    check('board2 workitem：390 无横向溢出', (await evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 1)
+    await send('Emulation.clearDeviceMetricsOverride')
     writeFileSync(join(dir, 'team-metrics.json'), JSON.stringify({ schemaVersion: 1, generatedAt: Date.now(), tasks: { byLine: [] }, sessions: { lines: 3 }, messages: { total: 3 }, tokens: { total: 12345678, today: 3456789, window: 3456789, outputTotal: 120000, samples: 42, perDay: [{ date: '2026-11-22', tokens: 1000000 }, { date: '2026-11-23', tokens: 3456789 }], perDayOutput: [{ date: '2026-11-22', tokens: 50000 }, { date: '2026-11-23', tokens: 68000 }], byLine: [{ line: 'writer', today: 2222222, totalTokens: 2345678 }] } }))
     await send('Page.navigate', { url: b2.url + '?view=cost' })
     let costReady = false
