@@ -50,6 +50,7 @@
 | K6 | 删 Session = 杀线 | 消息会永久投递失败（`session/not-found`） |
 | K7 | 在别的 DSH 进程打开线 Session | 会 `session/writer-held`；关掉那个视图，或给线独立 Session |
 | K8 | 旧版本打过本地补丁的用户 | 0.3.5 时代有用户改 `lib/index.js`/`lib/tools.js` 加标题改名；0.6.x 已内置 `line_rename`，补丁可回退 |
+| K9 | MACS client 的本地 spool 会重放平台侧已终态的报文 | spool 里 `delivery_status=read/expired/deleted` 的条目**必须丢弃、不得注入**（重放前按 mid 回平台查状态；查不到也丢弃）；根因修复在 `packages/lions_client`（owner=macs-backend-2），插件侧不实现 | 判据 `node scripts/check-spool-replay-age.cjs`（在 **lions 仓**，非本仓）；客户端修复上线后标「已修复」 |
 
 ## 四、如何报告问题
 

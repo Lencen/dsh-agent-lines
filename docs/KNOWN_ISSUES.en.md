@@ -50,6 +50,7 @@ English | [中文](KNOWN_ISSUES.md)
 | K6 | Deleting a Session kills the line | Messages then fail permanently (`session/not-found`) |
 | K7 | Opening a line's Session in another DSH process | `session/writer-held`; close that view or give the line a dedicated Session |
 | K8 | Users who patched 0.3.5 locally | Title renaming was patched into `lib/index.js`/`lib/tools.js`; 0.6.x ships `line_rename`, so the patch can be reverted |
+| K9 | MACS client local spool may replay messages that are already terminal on the platform | Entries whose platform `delivery_status=read/expired/deleted` **must be dropped, never injected** (query platform status by mid before replay; drop if unknown). Root fix lives in `packages/lions_client` (owner=macs-backend-2); the plugin does not implement it | Gate: `node scripts/check-spool-replay-age.cjs` (in the **lions repo**, not this repo); mark "fixed" once the client ships the fix |
 
 ## 4. How to report a problem
 
