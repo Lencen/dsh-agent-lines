@@ -383,6 +383,7 @@ const PAIRS = [
   try {
     tags = execFileSync('git', ['tag', '--sort=-v:refname'], { cwd: ROOT, encoding: 'utf8', timeout: 5000 })
       .split(String.fromCharCode(10))
+      .map(t => t.trim()).filter(Boolean).map(t => t.replace(/^v/, ''))
   } catch { tags = [] }
   const released = new Set([pkgVersion, ...tags])
   const bad = []
