@@ -138,6 +138,7 @@
       </div>
       <div class="bd-org-roles" id="bd-org-roles" role="list"><p class="bd-empty">加载中…</p></div>
     </section>
+    <p class="bd-source-line" id="bd-org-source"></p>
   </section>
   <section class="bd-view" id="bd-view-tasks" data-view="tasks" role="tabpanel" aria-labelledby="bd-tab-tasks" hidden>
     <div class="bd-tasks" id="bd-tasks-view">
@@ -177,6 +178,15 @@
       </div>
       <p class="bd-tasks-summary" id="bd-tasks-summary">加载中…</p>
       <div class="bd-tasks-list" id="bd-tasks-list"><p class="bd-empty">加载中…</p></div>
+      <div class="bd-tasks-historywrap" id="bd-tasks-history" hidden>
+        <p class="bd-tasks-history-note">历史任务 · 按消息终态近似 · 非任务完成态（仅事实陈述，不参与任何完成率/完成数 KPI）</p>
+        <div class="bd-tasks-history-list" id="bd-tasks-history-list"></div>
+      </div>
+      <section class="bd-card bd-tasks-recent" aria-labelledby="bd-tasks-recent-h">
+        <div class="bd-card-head"><h2 class="bd-card-title" id="bd-tasks-recent-h">最近消息流</h2><span class="bd-card-sub">最近 10 条 · 只读 · 摘要截断</span></div>
+        <div class="bd-tasks-recent-list" id="bd-tasks-recent-list"></div>
+      </section>
+      <p class="bd-source-line" id="bd-tasks-source"></p>
     </div>
   </section>
   <section class="bd-view" id="bd-view-data" data-view="data" role="tabpanel" aria-labelledby="bd-tab-data" hidden>

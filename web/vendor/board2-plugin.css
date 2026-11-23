@@ -77,3 +77,15 @@ body { margin: 0; background: var(--bd-bg); color: var(--bd-text); font: 14px/22
   .bd-ov-line-grid { grid-template-columns: minmax(0, 1fr); }
   .bd-ov-line-card { min-width: 0; }
 }
+
+/* S5 tasks 最近消息流 / 历史 pane；org source */
+.bd-tasks-recent { margin-top: var(--bd-gap); }
+.bd-tasks-recent-ol, .bd-tasks-history-ul { list-style: none; margin: 0; padding: 0; }
+.bd-tasks-recent-item { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 6px 0; border-bottom: 1px solid var(--bd-border, #e3e0da); font-size: 12px; }
+.bd-tasks-recent-item:last-child { border-bottom: 0; }
+.bd-tasks-recent-time { color: var(--bd-text-dim, #8a8f98); white-space: nowrap; }
+.bd-tasks-recent-flow { white-space: nowrap; }
+.bd-tasks-recent-summary { flex: 1 1 220px; min-width: 0; color: var(--bd-text-muted, #5A6169); overflow-wrap: anywhere; }
+.bd-tasks-history-note { margin: 0 0 6px; color: var(--bd-text-muted, #5A6169); font-size: 12px; }
+.bd-tasks-history-item { display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 6px 0; border-bottom: 1px solid var(--bd-border, #e3e0da); font-size: 12px; }
+.bd-tasks-history-item:last-child { border-bottom: 0; }

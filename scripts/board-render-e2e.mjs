@@ -141,6 +141,20 @@ try {
     check('board2 data：390 无横向溢出', (await evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 1)
     check('board2 data：390 KPI 单列', String(await evaluate('getComputedStyle(document.getElementById("bd-data-kpi")).gridTemplateColumns')).split(' ').length === 1)
     await send('Emulation.clearDeviceMetricsOverride')
+    await send('Page.navigate', { url: b2.url + '?view=tasks' })
+    let tasksReady = false
+    for (let i = 0; i < 100; i++) { tasksReady = await evaluate('!!(document.querySelector("#bd-tasks-recent-list") && document.querySelector("#bd-tasks-recent-list").children.length)').catch(() => false); if (tasksReady) break; await sleep(200) }
+    check('board2 tasks：最近消息流非空或空态', /暂无消息|→|->|bd-tasks-recent-item/.test(String(await evaluate('(document.querySelector("#bd-tasks-recent-list")||{}).innerHTML||""'))))
+    await evaluate('(function(){var t=document.querySelector(".bd-tasks-tab[data-pane=history]"); if(t) t.click(); return true})()')
+    await sleep(400)
+    check('board2 tasks：历史 pane 可见且有近似标注', await evaluate('(function(){var h=document.getElementById("bd-tasks-history"); if(!h || h.hidden) return false; var n=document.querySelector(".bd-tasks-history-note"); return !!n && /按消息终态近似 · 非任务完成态/.test(n.textContent)})()') === true)
+    check('board2 tasks：source line 非空', String(await evaluate('(document.querySelector("#bd-tasks-source")||{}).textContent||""')).length > 10)
+    await send('Page.navigate', { url: b2.url + '?view=org' })
+    let orgReady = false
+    for (let i = 0; i < 100; i++) { orgReady = await evaluate('document.querySelectorAll("#bd-org-roles") && document.querySelector("#bd-org-roles").children.length)').catch(() => false); if (orgReady) break; await sleep(200) }
+    check('board2 org：agent KPI 为数字（members.length）', /^[0-9]+$/.test(String(await evaluate('(document.querySelector("#bd-org-kpi-agents")||{}).textContent||""')).trim()))
+    check('board2 org：负载显示 turns/steps 或未采集', /turns|未采集/.test(String(await evaluate('(document.querySelector("#bd-org-roles")||{}).textContent||""'))))
+    check('board2 org：source line 非空', String(await evaluate('(document.querySelector("#bd-org-source")||{}).textContent||""')).length > 10)
     writeFileSync(join(dir, 'team-metrics.json'), JSON.stringify({ schemaVersion: 1, generatedAt: Date.now(), tasks: { byLine: [] }, sessions: { lines: 3 }, messages: { total: 3 }, tokens: { total: 12345678, today: 3456789, window: 3456789, outputTotal: 120000, samples: 42, perDay: [{ date: '2026-11-22', tokens: 1000000 }, { date: '2026-11-23', tokens: 3456789 }], perDayOutput: [{ date: '2026-11-22', tokens: 50000 }, { date: '2026-11-23', tokens: 68000 }], byLine: [{ line: 'writer', today: 2222222, totalTokens: 2345678 }] } }))
     await send('Page.navigate', { url: b2.url + '?view=cost' })
     let costReady = false

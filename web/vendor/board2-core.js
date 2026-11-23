@@ -384,21 +384,46 @@
   var AV_PAL = ['bd-av-c0', 'bd-av-c1', 'bd-av-c2', 'bd-av-c3', 'bd-av-c4', 'bd-av-c5', 'bd-av-c6', 'bd-av-c7', 'bd-av-c8']
   function fnv1a(s) { var h = 0x811c9dc5; s = String(s || ''); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) } return h >>> 0 }
   function initial(s) { s = String(s || '').trim(); if (!s) return '?'; var c = s.charAt(0); return /[a-z]/.test(c) ? c.toUpperCase() : c }
-  function renderOrg(data) {
-    fetch('/api/team-board', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (j) { drawOrg(data, j) }).catch(function () { drawOrg(data, null) })
+  function ovActivityOf(metrics, label) {
+    if (!metrics) return null
+    var a = metrics.activity
+    if (Array.isArray(a)) {
+      var hit = a.filter(function (x) { return x && (x.line === label || x.label === label) })[0]
+      if (hit) return { turns: hit.turns == null ? null : hit.turns, steps: hit.steps == null ? null : hit.steps }
+    } else if (a && typeof a === 'object') {
+      var rec = a[label]
+      if (rec && typeof rec === 'object') return { turns: rec.turns == null ? null : rec.turns, steps: rec.steps == null ? null : rec.steps }
+    }
+    var ls = metrics.lines
+    if (Array.isArray(ls)) {
+      var row = ls.filter(function (x) { return x && (x.line === label || x.label === label) })[0]
+      if (row) {
+        var src = row.activity && typeof row.activity === 'object' ? row.activity : row
+        if (src && (src.turns != null || src.steps != null)) return { turns: src.turns == null ? null : src.turns, steps: src.steps == null ? null : src.steps }
+      }
+    }
+    return null
   }
-  function drawOrg(data, teamBoard) {
+  function renderOrg(data) {
+    Promise.all([
+      fetch('/api/team-board', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).catch(function () { return null }),
+      fetch('/api/team-metrics', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).catch(function () { return null })
+    ]).then(function (out) { drawOrg(data, out[0], out[1]) })
+  }
+  function drawOrg(data, teamBoard, metrics) {
     var members = (teamBoard && Array.isArray(teamBoard.members)) ? teamBoard.members : []
+    var membersKnown = !!(teamBoard && Array.isArray(teamBoard.members))
     function membersOf(line) { return members.filter(function (m) { return m.line === line || m.owner === line || m.name === line }) }
     var host = $('#bd-org-roles'); if (!host) return
     var lines = (data && data.lines) || []
     var g = (data && data.teamGoal) || {}
     var goalText = $('#bd-org-goal-text'); if (goalText) goalText.textContent = g.objective || '未采集（TEAM.md 目标）'
     var byLine = ((data && data.lineTasks && data.lineTasks.byLine) || [])
-    var cnt = { roles: $('#bd-org-kpi-roles'), online: $('#bd-org-kpi-online') }
+    var cnt = { roles: $('#bd-org-kpi-roles'), agents: $('#bd-org-kpi-agents'), online: $('#bd-org-kpi-online') }
     var now = Date.now()
     var online = lines.filter(function (l) { return l.lifecycle === 'active' }).length
     if (cnt.roles) cnt.roles.textContent = String(lines.length)
+    if (cnt.agents) cnt.agents.textContent = membersKnown ? String(members.length) : '未采集'
     if (cnt.online) cnt.online.textContent = String(online)
     if (!lines.length) { host.innerHTML = '<p class="bd-empty">角色线未采集（lines.db 无 lines 记录）</p>'; return }
     var managerLabel = (lines.filter(function (l) { return l.role === 'manager' || l.label === 'manager' })[0] || {}).label || '未采集'
@@ -420,9 +445,9 @@
         '<span class="bd-org-role-main"><b>' + esc(name) + '</b><span class="bd-org-role-sub">' + (l.role === 'manager' || l.label === managerLabel ? 'L1 负责人' : 'L2 角色 · ' + esc(l.label)) + '</span></span>' +
         '<span class="bd-org-owner">owner ' + esc(managerLabel) + '</span>' +
         '<span class="bd-org-state">' + esc(state) + '</span>' +
-        '<span class="bd-org-load">负载 未采集（无 turns 口径）</span>' +
+        '<span class="bd-org-load">负载 ' + (function (act) { return act ? ('turns ' + (act.turns == null ? '未采集' : act.turns) + ' · steps ' + (act.steps == null ? '未采集' : act.steps)) : '未采集（team-metrics.activity 无该线）' })(ovActivityOf(metrics, l.label)) + '</span>' +
         '<span class="bd-org-l2">负责 L2 <b class="num">' + (l2 == null ? '未采集' : l2) + '</b></span>' +
-        '<button type="button" class="bd-org-agents" data-org-agents="' + esc(key) + '" aria-expanded="false" aria-label="' + esc(name) + ' 的 agent 实例">agent 未采集 ▸</button>' +
+        '<button type="button" class="bd-org-agents" data-org-agents="' + esc(key) + '" aria-expanded="false" aria-label="' + esc(name) + ' 的 agent 实例">' + (membersOf(key).length ? 'agent ' + membersOf(key).length + ' ▸' : 'agent 未采集 ▸') + '</button>' +
         '<span class="bd-org-go" aria-hidden="true">详情 ▸</span></div>'
     }).join('')
     host.innerHTML = rows
@@ -432,7 +457,7 @@
         e.stopPropagation()
         var open = btn.getAttribute('aria-expanded') !== 'true'
         btn.setAttribute('aria-expanded', String(open))
-        btn.textContent = open ? 'agent 未采集 ▾' : 'agent 未采集 ▸'
+        btn.textContent = membersOf(btn.getAttribute('data-org-agents')).length ? (open ? 'agent ' + membersOf(btn.getAttribute('data-org-agents')).length + ' ▾' : 'agent ' + membersOf(btn.getAttribute('data-org-agents')).length + ' ▸') : (open ? 'agent 未采集 ▾' : 'agent 未采集 ▸')
         var row = btn.closest('.bd-org-role-row')
         var next = row && row.nextElementSibling
         if (open) {
@@ -448,6 +473,8 @@
         }
       })
     })
+    var orgSrc = $('#bd-org-source')
+    if (orgSrc) orgSrc.textContent = '数据时刻 ' + fmtDateTime(data && data.generatedAt) + ' · 角色线=' + lines.length + ' 条（lines[]）· agent 实例=' + (membersKnown ? members.length + '（team-board.members[]）' : '未采集') + ' · 负载=team-metrics.activity（无源未采集）· 只读'
     // 点行开抽屉（角色信息；只读）
     $$('.bd-org-role-row', host).forEach(function (row) {
       row.addEventListener('click', function () {
@@ -471,6 +498,40 @@
   function taskBadge(status) {
     var cls = status === 'done' ? 'bd-badge-ok' : status === 'paused' ? 'bd-badge-paused' : status === 'cancelled' ? 'bd-badge-muted' : 'bd-badge-info'
     return '<span class="bd-badge ' + cls + '">' + esc(TASK_STATUS[status] || '未采集') + '</span>'
+  }
+  function renderRecentMessages(data) {
+    var host = $('#bd-tasks-recent-list'); if (!host) return
+    var recent = (data && data.lineTasks && Array.isArray(data.lineTasks.recent)) ? data.lineTasks.recent : null
+    if (!recent) { host.innerHTML = '<p class="bd-empty">最近消息流未采集（lineTasks.recent 不可得）</p>'; return }
+    if (!recent.length) { host.innerHTML = '<p class="bd-empty">暂无消息</p>'; return }
+    host.innerHTML = '<ol class="bd-tasks-recent-ol">' + recent.slice(0, 10).map(function (m) {
+      var st = String(m.state || '未采集')
+      var ref = m.taskRef ? '<span class="bd-tasks-ref">' + esc(m.taskRef) + '</span>' : '<span class="bd-tasks-ref bd-ov-na">无 taskRef</span>'
+      return '<li class="bd-tasks-recent-item"><span class="bd-tasks-recent-time num">' + esc(fmtDateTime(m.createdAt)) + '</span>' +
+        '<span class="bd-tasks-recent-flow">' + esc(m.from) + ' -> ' + esc(m.to) + '</span>' + ref +
+        '<span class="bd-badge bd-badge-muted">' + esc(st) + '</span>' +
+        '<span class="bd-tasks-recent-summary">' + esc(m.summary || '（无摘要）') + '</span></li>'
+    }).join('') + '</ol>'
+  }
+  function renderHistoryPane(by) {
+    var host = $('#bd-tasks-history-list'); if (!host) return
+    if (!by) { host.innerHTML = '<p class="bd-empty">历史任务未采集（byTaskRef 不可得）</p>'; return }
+    var closed = []
+    by.forEach(function (t) {
+      var states = t.byState || {}
+      var open = false
+      Object.keys(states).forEach(function (k) { if (k !== 'acked' && Number(states[k]) > 0) open = true })
+      if (!open) closed.push(t)
+    })
+    if (!closed.length) { host.innerHTML = '<p class="bd-empty">暂无历史任务（按消息终态近似 · 非任务完成态）</p>'; return }
+    host.innerHTML = '<ul class="bd-tasks-history-ul">' + closed.slice(0, 20).map(function (t) {
+      return '<li class="bd-tasks-history-item"><span class="bd-tasks-ref">' + esc(t.taskRef) + '</span>' +
+        '<span class="bd-meta">消息 ' + (t.messageCount == null ? '未采集' : t.messageCount) + ' 条 · 最近 ' + esc(fmtDateTime(t.latestAt)) + ' · 按消息终态近似 · 非任务完成态</span></li>'
+    }).join('') + '</ul>'
+  }
+  function renderTasksSource(data) {
+    var el = $('#bd-tasks-source'); if (!el) return
+    el.textContent = ['数据时刻 ' + fmtDateTime(data && data.generatedAt), '任务数=distinct taskRef / 消息数单列', '历史任务=按消息终态近似 · 非任务完成态（仅事实陈述）', '最近消息流=lineTasks.recent（摘要截断 120 字，不含正文全文）', '只读 · 无写控件'].join(' · ')
   }
   function renderTasks(data) {
     var host = $('#bd-tasks-list'); if (!host) return
@@ -530,6 +591,9 @@
           '<span class="bd-badge bd-badge-info">按消息状态</span><span class="bd-tasks-metric">消息 ' + (x.messageCount || 0) + ' 条</span></div></div></div>'
       }).join('') + '</div>' : ''
       host.innerHTML = groups + unlinkedHtml + '<div class="bd-tasks-official" hidden><p class="bd-tasks-empty-l3">官方·L3 任务：未采集（0.13 契约后提供，不伪造）</p></div>'
+      renderRecentMessages(data)
+      renderHistoryPane(by)
+      renderTasksSource(data)
       // L3 展开
       $$('.bd-tasks-toggle[data-l3]', host).forEach(function (btn) {
         btn.addEventListener('click', function (e) {
@@ -564,11 +628,16 @@
           var linePane = host
           linePane.hidden = pane === 'official'
           var off = host.querySelector('.bd-tasks-official'); if (off) off.hidden = pane !== 'official'
+          var hw = $('#bd-tasks-history')
           if (pane === 'history') {
             $$('.bd-tasks-wisection', host).forEach(function (s) { s.hidden = true })
+            $$('.bd-tasks-recent', host).forEach(function (x) { x.hidden = true })
+            if (hw) hw.hidden = false
           } else if (pane === 'line') {
             $$('.bd-tasks-wisection', host).forEach(function (s) { s.hidden = false })
-          }
+            $$('.bd-tasks-recent', host).forEach(function (x) { x.hidden = false })
+            if (hw) hw.hidden = true
+          } else if (hw) hw.hidden = true
         })
       })
       // chips: 全部/进行中/阻塞/未关联
