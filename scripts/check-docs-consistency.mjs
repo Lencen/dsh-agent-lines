@@ -386,17 +386,23 @@ const PAIRS = [
   } catch { tags = [] }
   const released = new Set([pkgVersion, ...tags])
   const bad = []
+  let scanned = 0
+  let releasedHit = 0
   for (const file of ['README.md', 'README.en.md']) {
     const lines = read(file).split(String.fromCharCode(10))
     for (const line of lines) {
       const m = line.match(/^###\s+(\d+\.\d+\.\d+)(?:-[0-9A-Za-z.-]+)?/)
       if (!m) continue
+      scanned += 1
+      if (released.has(m[1])) releasedHit += 1
       if (!/未发布候选|unreleased candidate/i.test(line)) continue
       if (released.has(m[1])) bad.push(file + ': ' + m[1] + ' 已是发布版本（package/tag），不得标「未发布候选」')
     }
   }
-  if (bad.length === 0) ok('C16 README unreleased-candidate only for unreleased versions')
-  else fail('C16 README unreleased-candidate only for unreleased versions', bad.join('; '))
+  if (bad.length > 0) fail('C16 README unreleased-candidate only for unreleased versions', bad.join('; '))
+  else if (scanned < 1) fail('C16 未扫到任何版本小节（README 结构可能已变），判据空扫', 'scanned=0')
+  else if (releasedHit < 1) fail('C16 未扫到任何已发布版本小节，判据可能假绿', 'scanned=' + scanned + ' releasedHit=0')
+  else ok('C16 README unreleased-candidate only for unreleased versions (scanned=' + scanned + ', releasedHit=' + releasedHit + ')')
 }
 
 // ---------- 输出 ----------
