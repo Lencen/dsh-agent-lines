@@ -359,6 +359,23 @@ const PAIRS = [
   else fail('D1 error-code table covers code', bad.join('; '))
 }
 
+// ---------- C15 README 当前发布版本 == package.json version（防状态描述过期） ----------
+{
+  const pkgVersion = JSON.parse(read('package.json')).version
+  const targets = [
+    ['README.md', /当前发布[：:]\s*v?(\d+\.\d+\.\d+)/],
+    ['README.en.md', /Current release[：:]\s*v?(\d+\.\d+\.\d+)/],
+  ]
+  const bad = []
+  for (const [file, re] of targets) {
+    const m = read(file).match(re)
+    if (!m) bad.push(file + ': 未找到「当前发布/Current release」版本行')
+    else if (m[1] !== pkgVersion) bad.push(file + ': ' + m[1] + '（expect ' + pkgVersion + '）')
+  }
+  if (bad.length === 0) ok('C15 README current release matches package.json (' + pkgVersion + ')')
+  else fail('C15 README current release matches package.json', bad.join('; '))
+}
+
 // ---------- 输出 ----------
 const json = process.argv.includes('--json')
 if (json) {

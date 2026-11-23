@@ -6,11 +6,11 @@
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> 当前发布：v0.12.0（2026-11-13）——Board 2.0 看板重设计、线层任务分层、负责人交接自动化。
+> 当前发布：v0.13.0（2026-11-14）——Board 2.0 完整对齐（总览 5 区块 / 组织角色与 agent / 任务 L1.5→L2 / 大任务详情 v2 / 成员页 v2 / Board 2.0 tokens 与窄屏）；v0.12.0 为回退位。
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
-> **100% Vibe Coding、快速迭代期。**
+> **100% Vibe Coding、维护期。**
 >
 > 范围与稳定面见 [使用边界](docs/USAGE-BOUNDARY.md)：负责长期角色/消息/交接/只读看板；不负责 DAG、跨机、多团队。
 
@@ -396,7 +396,7 @@ L1 管理线会话（用户只说目标）
 
 离线或 npm 不可用时，用本地 tarball：
 
-    bash install.sh ./dsh-agent-lines-0.12.0.tgz
+    bash install.sh ./dsh-agent-lines-0.13.0.tgz
 
 安装并重启后，不写配置也可以直接使用；需要固定管理线/worker 时，再把下面“管理线配置”粘贴到脚本打印的配置文件。
 
@@ -682,7 +682,7 @@ claim 不会对每个新会话自动执行：需要用户明确要求，或运�
 
 ## 状态
 
-当前发布 `0.12.0`（快速迭代期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
+当前发布 `0.13.0`（维护期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
 
 ## 致谢
 

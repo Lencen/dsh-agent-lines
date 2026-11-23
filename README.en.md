@@ -10,7 +10,7 @@ GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
-> **100% Vibe Coding, fast iteration phase.**
+> **100% Vibe Coding, maintenance phase.**
 >
 > Scope and stable surface: [usage boundaries](docs/en/USAGE-BOUNDARY.md). It owns long-lived roles/messages/handoffs and a read-only board; it does not own DAGs, cross-machine sync, or multiple teams.
 
@@ -379,7 +379,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.12.0.tgz
+    bash install.sh ./dsh-agent-lines-0.13.0.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -672,7 +672,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current release `0.12.0` (fast iteration phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current release `0.13.0` (maintenance phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 
