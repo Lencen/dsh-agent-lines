@@ -140,6 +140,19 @@ try {
     await sleep(700)
     check('board2 data：390 无横向溢出', (await evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 1)
     await send('Emulation.clearDeviceMetricsOverride')
+    writeFileSync(join(dir, 'team-metrics.json'), JSON.stringify({ schemaVersion: 1, generatedAt: Date.now(), tasks: { byLine: [] }, sessions: { lines: 3 }, messages: { total: 3 }, tokens: { total: 12345678, today: 3456789, window: 3456789, outputTotal: 120000, samples: 42, perDay: [{ date: '2026-11-22', tokens: 1000000 }, { date: '2026-11-23', tokens: 3456789 }], perDayOutput: [{ date: '2026-11-22', tokens: 50000 }, { date: '2026-11-23', tokens: 68000 }], byLine: [{ line: 'writer', today: 2222222, totalTokens: 2345678 }] } }))
+    await send('Page.navigate', { url: b2.url + '?view=cost' })
+    let costReady = false
+    for (let i = 0; i < 100; i++) { costReady = await evaluate('!!(document.querySelector("#bd-cost-kpis") && document.querySelector("#bd-cost-kpis").children.length)').catch(() => false); if (costReady) break; await sleep(200) }
+    check('board2 cost：KPI 3 卡', await evaluate('document.querySelectorAll("#bd-cost-kpis .bd-kpi").length') === 3)
+    check('board2 cost：badges 非空', String(await evaluate('(document.querySelector("#bd-cost-badges")||{}).textContent||""')).length > 5)
+    check('board2 cost：2 图表容器为 canvas 或显式未采集', await evaluate('(function(){var ids=["bd-cost-chart-day","bd-cost-chart-line"];return ids.every(function(id){var n=document.getElementById(id);return !!n && (!!n.querySelector("canvas") || !!n.querySelector(".bd-chart-na"))})})()') === true)
+    check('board2 cost：member 不可得块', /不可得/.test(String(await evaluate('(document.querySelector("#bd-view-cost .bd-cost-member")||{}).textContent||""'))))
+    check('board2 cost：source line 非空', String(await evaluate('(document.querySelector("#bd-cost-source")||{}).textContent||""')).length > 10)
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
+    await sleep(700)
+    check('board2 cost：390 无横向溢出', (await evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 1)
+    await send('Emulation.clearDeviceMetricsOverride')
     check('board2 runtime：无 console 异常', exceptions.length === 0)
   } finally {
     await new Promise((resolve) => b2.server.close(resolve))

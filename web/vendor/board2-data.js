@@ -78,8 +78,8 @@
     if (linesAvail) lt.byLine.forEach(function (l) { if (!isNum(l.taskCount)) lineCountAvail = false; else if (l.taskCount > 0) lineCount++ })
     var items = [
       { label: '线任务', value: taskAvail ? fmtNum(lt.taskCount) : null, reason: 'lineTasks.taskCount 未采集', hint: '任务数（distinct taskRef）' },
-      { label: '完成', value: st.available ? fmtNum(st.done) : null, reason: '缺 byTaskRef[].byState', hint: '任务内消息全部 acked（近似口径）' },
-      { label: '进行中', value: st.available ? fmtNum(st.progress) : null, reason: '缺 byTaskRef[].byState', hint: '仍有未确认消息（近似口径）' },
+      { label: '完成', value: st.available ? fmtNum(st.done) : null, reason: '缺 byTaskRef[].byState', hint: '按消息终态近似 · 非任务完成态' },
+      { label: '进行中', value: st.available ? fmtNum(st.progress) : null, reason: '缺 byTaskRef[].byState', hint: '按消息终态近似 · 非任务完成态' },
       { label: '阻塞', value: null, reason: 'lineTasks 不提供 blocked 字段', hint: '未采集 · 不显示 0' },
       { label: '超时', value: null, reason: 'lineTasks 不提供 stale 字段', hint: '未采集 · 不显示 0' },
       { label: '参与线数', value: lineCountAvail ? fmtNum(lineCount) : null, reason: '缺 byLine[].taskCount', hint: 'byLine[].taskCount > 0 的 L2 线数' }
@@ -150,7 +150,7 @@
     })
     var sum = 0
     order.forEach(function (line) { var r = st.byLine[line]; if (r) sum += r.done + r.progress })
-    if (note) note.textContent = '采样时刻 ' + dt(data && data.generatedAt) + ' · 任务状态口径：任务内消息全部 acked＝完成，仍有未确认消息＝进行中（byTaskRef[].byState 归并，近似） · 阻塞/超时：未采集 · 按线之和 ' + fmtNum(sum) + ' > 任务总数 ' + fmtNum(lt.taskCount) + '（任务可跨线）'
+    if (note) note.textContent = '采样时刻 ' + dt(data && data.generatedAt) + ' · 任务状态口径：按消息终态近似 · 非任务完成态（acked=完成、仍有未确认=进行中，byTaskRef[].byState 归并） · 阻塞/超时：未采集 · 按线之和 ' + fmtNum(sum) + ' > 任务总数 ' + fmtNum(lt.taskCount) + '（任务可跨线）'
     if (badge) { badge.hidden = false; badge.textContent = '阻塞 / 超时：未采集' }
   }
 

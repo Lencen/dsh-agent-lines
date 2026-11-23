@@ -230,7 +230,32 @@
   </section>
 
   <section class="bd-view" id="bd-view-cost" data-view="cost" role="tabpanel" aria-labelledby="bd-tab-cost" hidden>
-    <div class="bd-card"><div class="bd-card-h">消耗总览</div><div class="bd-card-b" id="bd-cost-body"><p class="bd-empty">加载中…</p></div></div>
+    <section class="bd-view-head">
+      <h1 class="bd-view-title">消耗</h1>
+      <p class="bd-view-sub">token 估算口径 · 非计费 · 快照非实时 · 缺失显示「未采集」</p>
+    </section>
+    <section class="bd-card bd-section bd-cost-overview" aria-labelledby="bd-cost-overview-title">
+      <div class="bd-card-head"><h2 class="bd-card-title" id="bd-cost-overview-title">总览</h2><span class="bd-card-sub">今日 / 近 7 天 / 累计</span></div>
+      <div class="bd-kpi-grid bd-cost-kpis" id="bd-cost-kpis"></div>
+      <div class="bd-cost-badges" id="bd-cost-badges"></div>
+      <div class="bd-cost-stats" id="bd-cost-stats"></div>
+    </section>
+    <section class="bd-card bd-section bd-cost-chart-card" aria-labelledby="bd-cost-day-title">
+      <div class="bd-card-head"><h2 class="bd-card-title" id="bd-cost-day-title">按日消耗</h2><span class="bd-card-sub">折线 + 面积 · 总 token / 输出 token</span></div>
+      <div class="bd-chart bd-chart-tall" id="bd-cost-chart-day" role="img" aria-label="按日期统计的总 token 折线面积图与输出 token 折线"></div>
+      <p class="bd-chart-note" id="bd-cost-day-note"></p>
+    </section>
+    <section class="bd-card bd-section bd-cost-chart-card" aria-labelledby="bd-cost-line-title">
+      <div class="bd-card-head"><h2 class="bd-card-title" id="bd-cost-line-title">按线消耗（k）</h2><span class="bd-card-sub">tokens.byLine[].today / 1000 · 估算</span></div>
+      <div class="bd-chart" id="bd-cost-chart-line" role="img" aria-label="按 L2 线统计的今日 token 消耗柱状图，单位 k"></div>
+      <p class="bd-chart-note" id="bd-cost-line-note"></p>
+      <div class="bd-cost-member">
+        <span class="bd-cost-member-label">成员级 token</span>
+        <span class="bd-unavailable" title="成员级 token 归因未在 /api/team-metrics 暴露；Phase 2 由 DSH 投影提供">不可得 · 需 DSH 投影（Phase 2）</span>
+        <span class="bd-meta">按线值为 session 级归属，不含成员归因；不显示假数。</span>
+      </div>
+    </section>
+    <p class="bd-source-line" id="bd-cost-source"></p>
   </section>
 </main>
 
@@ -247,6 +272,7 @@
 
 <script src="/vendor/echarts.min.js"></script>
 <script src="/vendor/board2-data.js"></script>
+<script src="/vendor/board2-cost.js"></script>
 <script src="/vendor/board2-core.js"></script>
 </body>
 </html>
