@@ -2,9 +2,9 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.14.1 (2026-11-24, unreleased)
+## 0.14.1 (2026-11-24, released)
 
-> **Unreleased**: candidate; three design deltas from prototype 8134b73db plus one vendored CSS truncation fix; **fallback v0.14.0**.
+> **Released 2026-11-24**: npm dsh-agent-lines@0.14.1 (latest) · GitHub Release v0.14.1 · tag 2732a39 · **fallback v0.14.0**.
 
 ### Design deltas (prototype 8134b73db)
 

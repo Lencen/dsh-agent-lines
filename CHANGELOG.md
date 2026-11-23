@@ -2,9 +2,9 @@
 
 [English](CHANGELOG.en.md) | 中文
 
-## 0.14.1 (2026-11-24，未发布)
+## 0.14.1 (2026-11-24，已发布)
 
-> **未发布**：候选版本；按原型 8134b73db 补齐 3 处设计 delta，并修复一次 vendored CSS 截断；**回退位 v0.14.0**。
+> **已发布 2026-11-24**：npm dsh-agent-lines@0.14.1（latest）· GitHub Release v0.14.1 · tag 指向 2732a39 · **回退位 v0.14.0**。
 
 ### 设计 delta 补齐（原型 8134b73db）
 
