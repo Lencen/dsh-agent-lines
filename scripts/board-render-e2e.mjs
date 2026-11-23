@@ -167,6 +167,22 @@ try {
     await sleep(600)
     check('board2 member：390 无横向溢出', (await evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 1)
     await send('Emulation.clearDeviceMetricsOverride')
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
+    const pages390 = ['', '?view=org', '?view=tasks', '?view=data', '?view=cost', 'workitem?id=wi-demo-1', 'member?id=dev']
+    for (const path of pages390) {
+      await send('Page.navigate', { url: b2.url + path })
+      await sleep(2200)
+      const info = JSON.parse(String(await evaluate('(function(){var d=document.documentElement;return JSON.stringify({scroll:d.scrollWidth,client:d.clientWidth})})()')))
+      console.log('390 ' + (path || '/') + ' scroll=' + info.scroll + ' client=' + info.client)
+      check('board2 390 无横溢 ' + (path || '/'), info.scroll <= info.client + 1, 'scroll=' + info.scroll + ' client=' + info.client)
+    }
+    await send('Page.navigate', { url: b2.url + '?view=data' })
+    await sleep(1800)
+    check('board2 390 data 图表容器可横滚', /(auto|scroll)/.test(String(await evaluate('getComputedStyle(document.getElementById("bd-data-chart-stack")).overflowX'))))
+    await send('Page.navigate', { url: b2.url + 'workitem?id=wi-demo-1' })
+    await sleep(1800)
+    check('board2 390 workitem 甘特容器可横滚', /(auto|scroll)/.test(String(await evaluate('getComputedStyle(document.querySelector(".bd-wi-page-gantt-wrap")).overflowX'))))
+    await send('Emulation.clearDeviceMetricsOverride')
     await send('Page.navigate', { url: b2.url + 'workitem?id=wi-demo-1' })
     let wiReady = false
     for (let i = 0; i < 100; i++) { wiReady = await evaluate('(function(){var a=document.querySelectorAll("#bd-wi-sec-nav .bd-wi-navlink").length === 2').catch(() => false); if (wiReady) break; await sleep(200) }

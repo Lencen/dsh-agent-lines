@@ -98,3 +98,12 @@ body { margin: 0; background: var(--bd-bg); color: var(--bd-text); font: 14px/22
 @media (max-width: 480px) {
   .bd-wi-metrics, .bd-wi-fields { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* S8 窄屏：图表/甘特/表格容器自身横滚（页面不横溢） */
+.bd-chart, .bd-wi-page-gantt-wrap, .bd-wi-tablewrap { overflow-x: auto; }
+@media (max-width: 480px) {
+  .bd-tasks-filters { row-gap: 6px; }
+  .bd-tasks-filters .bd-tasks-reset { flex: 0 0 auto; }
+  .bd-tasks-kpi { grid-template-columns: minmax(0, 1fr); }
+  .bd-org-kpi-bar { grid-template-columns: minmax(0, 1fr); }
+}

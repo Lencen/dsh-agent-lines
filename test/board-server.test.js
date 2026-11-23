@@ -69,6 +69,26 @@ test('board server /api/live reads lines.db read-only', async () => {
   }
 })
 
+test('board server tolerates malformed double-slash path without crashing', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-slash-'))
+  const { server, url } = await startBoardServer({ dir, host: '127.0.0.1', port: 0 })
+  try {
+    const { request } = await import('node:http')
+    const status = await new Promise((resolve, reject) => {
+      const u = new URL(url)
+      const req = request({ host: u.hostname, port: u.port, path: '//' }, (res) => { res.resume(); res.on('end', () => resolve(res.statusCode)) })
+      req.on('error', reject)
+      req.end()
+    })
+    assert.ok(status === 404 || status === 405 || status === 200, 'status=' + status)
+    const alive = await fetch(new URL('/api/health', url))
+    assert.equal(alive.status, 200)
+  } finally {
+    await new Promise((resolve) => server.close(resolve))
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
 test('board server /api/members exposes line identity fields read-only', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-members-'))
   const dbPath = join(dir, 'lines.db')
