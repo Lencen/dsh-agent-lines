@@ -54,10 +54,46 @@ test('board server /api/live reads lines.db read-only', async () => {
     assert.deepEqual(payload.lines.map(line => line.label).sort(), ['manager', 'writer'])
     assert.equal(payload.messages.total, 1)
     assert.ok(Array.isArray(payload.messages.trend))
+    // S1 只读派生字段：按日全量 + 按线按日（参与口径 = from + to 双向计数）
+    assert.ok(Array.isArray(payload.messages.byDay))
+    assert.equal(payload.messages.byDay.reduce((n, d) => n + Number(d.count), 0), payload.messages.total)
+    assert.ok(Array.isArray(payload.messages.byLineDay))
+    assert.equal(payload.messages.byLineDay.reduce((n, d) => n + Number(d.count), 0), payload.messages.total * 2)
     const etag = live.headers.get('etag')
     assert.ok(etag)
     const cached = await fetch(new URL('/api/live', url), { headers: { 'if-none-match': etag } })
     assert.equal(cached.status, 304)
+  } finally {
+    await new Promise(resolve => server.close(resolve))
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+test('board server /api/members exposes line identity fields read-only', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-lines-board-members-'))
+  const dbPath = join(dir, 'lines.db')
+  const store = new LineStore(dbPath)
+  store.acquire({ agentId: 'agent-id-1', line: 'manager', sessionId: 'sess-m-1', instanceId: 'inst-1', ttlMs: 60000 })
+  store.acquire({ agentId: 'agent-id-1', line: 'writer', sessionId: 'sess-w-1', instanceId: 'inst-2', ttlMs: 60000 })
+  store.close()
+  const { server, url } = await startBoardServer({ dir, dbPath, host: '127.0.0.1', port: 0 })
+  try {
+    const res = await fetch(new URL('/api/members', url))
+    assert.equal(res.status, 200)
+    const body = await res.json()
+    assert.equal(body.available, true)
+    assert.equal(body.members.length, 2)
+    const m = body.members.find(x => x.label === 'manager')
+    assert.equal(m.sessionId, 'sess-m-1')
+    assert.equal(m.agentId, 'agent-id-1')
+    assert.equal(m.instanceId, 'inst-1')
+    assert.equal(typeof m.createdAt, 'number')
+    // 字段白名单（fail-closed）：不得泄漏消息正文 / token / prompt 等
+    const allowed = new Set(['kind', 'id', 'label', 'title', 'role', 'lifecycle', 'generation', 'lastSeen', 'sessionId', 'agentId', 'instanceId', 'createdAt'])
+    for (const member of body.members) {
+      for (const key of Object.keys(member)) assert.ok(allowed.has(key), 'unexpected member field: ' + key)
+    }
+    assert.equal(/"(body|text|token|tokens|decodeTokens|prompt)"/.test(JSON.stringify(body)), false)
   } finally {
     await new Promise(resolve => server.close(resolve))
     rmSync(dir, { recursive: true, force: true })
