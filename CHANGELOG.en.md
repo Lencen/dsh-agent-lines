@@ -2,9 +2,9 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.14.0 (2026-11-24, unreleased)
+## 0.14.0 (2026-11-24, released)
 
-> **Unreleased**: candidate; publish after UIUX final sign-off / full QA / Lead GO (tag v0.14.0). **Fallback v0.13.0**.
+> **Released 2026-11-24**: npm dsh-agent-lines@0.14.0 (latest) · GitHub Release v0.14.0 · tag 0bbe755 · **fallback v0.13.0**.
 
 ### Board 2.0 prototype 100% parity (all 35 GAPs closed)
 

@@ -207,7 +207,7 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 - 全站 Board 2.0 tokens + 窄屏 390；旧样式零残留；BOARD2 默认 on，显式 off 回退 0.12.0 旧视图（legacy 冻结）。
 - 无 schema / protocol 变更；工具数 27。
 
-### 0.12.0: Board enhancements (L1.5 list / standalone detail / member page / 4 metrics) + line-task layering (historical; fallback for 0.13.0)
+### 0.12.0: Board enhancements (L1.5 list / standalone detail / member page / 4 metrics) + line-task layering (historical; fallback for 0.13.0; from 0.14.0 the fallback is 0.13.0)
 
 - **Board enhancements**: a full L1.5 work-item list at the top of the tasks view (four metrics: L2/L3 counts, agent runs, token usage); a standalone work-item detail page (gantt with timeline / table views); a standalone member page with shared avatars; the old detail drawer is kept as a fallback.
 - **Not in this release**: the five-block overview redesign (goal / plan / workflow / rhythm / L1.5), planned for 0.13 (see KNOWN_ISSUES).

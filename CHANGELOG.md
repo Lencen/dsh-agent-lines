@@ -2,9 +2,9 @@
 
 [English](CHANGELOG.en.md) | 中文
 
-## 0.14.0 (2026-11-24，未发布)
+## 0.14.0 (2026-11-24，已发布)
 
-> **未发布**：候选版本，待 UIUX 终验 / QA 全量 / Lead GO 后由发布线打 tag v0.14.0 并 publish；**回退位 v0.13.0**。
+> **已发布 2026-11-24**：npm dsh-agent-lines@0.14.0（latest）· GitHub Release v0.14.0 · tag 指向 0bbe755 · **回退位 v0.13.0**。
 
 ### Board 2.0 原型 100% 对齐（GAP 35 全关）
 
