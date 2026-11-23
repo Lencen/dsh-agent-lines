@@ -63,6 +63,17 @@ for (const rel of ['web/board.html', 'web/workitem.html', 'web/member.html']) {
   check('B11 无旧类残留 ' + rel, !/(?:class="(?:card|kpis|missions?|tab|chips|view)|id="missions"|line-tasks-list)/.test(h))
   check('B12 无旧 CSS 引用 ' + rel, !/board-l15\.css/.test(h) && !/<style>[\s\S]*?<\/style>/.test(h))
 }
+// B13-B15: Board 2.0 数据/消耗脚本（0.14）：语法 / 只读 / 数据源
+for (const [name, rel] of [['board2-data', 'web/vendor/board2-data.js'], ['board2-cost', 'web/vendor/board2-cost.js']]) {
+  const p = resolve(ROOT, rel)
+  if (!existsSync(p)) { check('B13 board2 脚本语法 ' + name, false, rel + ' missing'); continue }
+  const src = readFileSync(p, 'utf8')
+  const bad3 = []
+  try { vm.compileFunction(src, ['window', 'document', 'fetch', 'getComputedStyle'], { filename: rel }) } catch (e) { bad3.push(String((e && e.message) || e)) }
+  check('B13 board2 脚本语法 ' + name, bad3.length === 0, bad3.join(' | '))
+  check('B14 board2 只读（无写方法/无写接口） ' + name, !/method\s*:\s*['"](?:POST|PUT|PATCH|DELETE)/i.test(src) && !/\/api\/actions/.test(src))
+  check('B15 board2 数据源仅只读端点 ' + name, /\/api\/team-metrics/.test(src) && !/new\s+EventSource|WebSocket/.test(src))
+}
 const failures = checks.filter(c => !c.pass)
 if (json) console.log(JSON.stringify({ ok: failures.length === 0, file: target, checks }, null, 1))
 else {

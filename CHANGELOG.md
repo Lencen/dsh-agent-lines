@@ -2,6 +2,43 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.14.0 (2026-11-24，未发布)
+
+> **未发布**：候选版本，待 UIUX 终验 / QA 全量 / Lead GO 后由发布线打 tag v0.14.0 并 publish；**回退位 v0.13.0**。
+
+### Board 2.0 原型 100% 对齐（GAP 35 全关）
+
+- 总览：运行摘要区（KPI 4 卡 / L2 线健康 / 待决策 / 最近交接 / 异常 / 成本摘要 / banners / source-line）
+- 数据视图整页：时间窗 chips（7/30/全部）、KPI 6 卡、msgline、按线任务堆叠柱、按线消息·日、按线消耗·日、消息数·日、token·日（ECharts，tooltip/legend/grid 齐）
+- 消耗视图整页：KPI 今日/7天/累计、badges/stats（输入/缓存读/缓存写/输出/样本，缺字段显式未采集）、按日消耗折线+面积、按线消耗 k 柱状、成员级 token 不可得块
+- 任务页：最近消息流（≤10 条，摘要截断）、历史任务 pane（按消息终态近似 · 非任务完成态，仅事实陈述）、source-line；tabs/KPI 真实值
+- 大任务详情：证据区接 live.lineTasks.recent（最近 5 条，空态写原因）、完成率统一术语、甘特仅真实 firstAt..latestAt（无数据显式空态，不合成；短跨度保留真实刻度并标注）
+- 成员页：身份区接 /api/members（sessionId/agentId/instanceId/createdAt，入队时间标 basis）、完成率统一术语、最近交接 rebinds[0]、头像 a11y role=img/aria-label
+- 窄屏：9 页 × 390 逐页无横向溢出（含壳），图表/甘特/表格容器自身可横滚
+
+### 数据缺口（显式未采集，不伪造；详见 KNOWN_ISSUES）
+
+- D1 work-items 实体契约（id/title/status/stage/linkedRefs/sourceMessageId/planStartEnd）
+- D2 逐角色 agent 实例归属（team-board.members[] 增 line/label）
+- D3 成员级执行次数/token 投影（不得按线分摊）
+- D4 工作时长/并行语义字段
+- D5 官方 L3 任务 API 视图
+- D6 任务完成/取消终态字段（当前只能用消息终态近似）
+- D7 104 旧版对照快照
+
+### 口径
+
+- 完成/进行中 = **按消息终态近似 · 非任务完成态**（acked=完成、仍有未确认=进行中；由 byTaskRef[].byState 归并）
+- token = session 级采样估算，非计费；快照非实时；不可横向加总
+
+### 判据扩展
+
+- board2-views-smoke V11–V40（runtime/data/cost/tasks/org/workitem/member/390/O3 术语）
+- check-board-scripts B13+（board2-data.js / board2-cost.js 语法、只读、无写 fetch）
+- check-bento-alignment 覆盖 runtime/data/cost 容器
+- docs consistency 19（C15 README 版本一致性）
+- 无 schema / protocol 变更；工具数 27
+
 ## 0.13.0 (2026-11-14)
 
 > **已发布 2026-11-14**：npm dsh-agent-lines@0.13.0（latest）· GitHub Release v0.13.0 · tag 指向 19638b7 · **回退位 v0.12.0**。

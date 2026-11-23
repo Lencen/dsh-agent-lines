@@ -81,3 +81,27 @@
 
 - 0.12.0 的看板集成范围是「任务视图顶部 L1.5 列表 + 独立 workitem/member 页 + 4 指标」，**不含总览 5 独立区块重构**（目标/计划/工作流/节奏/L1.5 五区块重排）。
 - 该重构计划在 0.13 单独评估；在此之前总览保持现状。
+
+## 八、0.14 数据缺口（显式「未采集」，不伪造）
+
+| 编号 | 缺口 | 现状 / 所需字段 | owner 建议 |
+|---|---|---|---|
+| D1 | work-items 实体契约 | /api/work-items 仍为 stub（available:false）；需 id/title/status/stage/linkedRefs/sourceMessageId/planStartEnd | 插件（契约 v0.7） |
+| D2 | 逐角色 agent 实例归属 | team-board.members[] 仅 lead、无 line/label 归属；需 line 字段 | macs/官方投影 |
+| D3 | 成员级执行次数 / token | 只能按线（session 级）采样，禁止按线分摊到成员；需成员级 token 投影 | 插件 + DSH 投影 |
+| D4 | 工作时长 / 并行语义 | 无采样时长与并行语义字段 | 插件（采样） |
+| D5 | 官方 L3 任务视图 | 官方 Agent Teams 任务 API 无 L3 视图 | macs/official |
+| D6 | 任务完成/取消终态 | 无任务态字段；当前只能按消息终态近似 | 插件（契约 v0.7） |
+| D7 | 104 旧版对照快照 | 缺可用的 104 快照 fixture（samples/104-* 仅静态对照） | uiux |
+
+### D6 消息终态近似口径（必须知道）
+
+- **完成 / 进行中 = 按消息终态近似 · 非任务完成态**：任务内消息全部 acked 视为完成，仍有未确认消息视为进行中（由 byTaskRef[].byState 归并）。
+- 该值用于数据页/任务历史/详情完成率的**事实陈述与近似展示**；它不是任务完成态，不能对外当作验收结论。
+- 需要真实任务态字段（D6）才能替代近似。
+
+### 0.14 新增只读字段（S1）
+
+- /api/members：sessionId / agentId / instanceId / createdAt（来自 lines.session_id/agent_id/instance_id/created_at）。
+- /api/live：messages.byDay（按日全量）与 messages.byLineDay（最近 30 天按线按日，参与口径 = from_line + to_line 双向）。
+- 字段白名单测试：禁止泄漏 body/text/token/prompt 等。

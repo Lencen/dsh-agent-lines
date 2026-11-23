@@ -81,3 +81,27 @@ For failed messages (until G1 is fixed): `dsh-agent-lines --json tail --line <li
 
 - The 0.12.0 board integration covers the L1.5 list in the tasks view, standalone work-item/member pages and four metrics; it does **not** include the five-block overview redesign (goal / plan / workflow / rhythm / L1.5).
 - That redesign is planned for 0.13; the overview stays as-is until then.
+
+## 8. 0.14 data gaps (explicit 未采集, never fabricated)
+
+| ID | Gap | Current state / required fields | Suggested owner |
+|---|---|---|---|
+| D1 | work-items entity contract | /api/work-items is still a stub (available:false); needs id/title/status/stage/linkedRefs/sourceMessageId/planStartEnd | plugin (contract v0.7) |
+| D2 | per-role agent ownership | team-board.members[] only has lead, no line/label ownership; needs a line field | macs/official projection |
+| D3 | member-level runs / tokens | only per-line (session-level) sampling; must not be split per member; needs a member-level token projection | plugin + DSH projection |
+| D4 | work duration / parallel semantics | no sampled duration or parallel-semantics field | plugin (sampling) |
+| D5 | official L3 task view | official Agent Teams task API has no L3 view | macs/official |
+| D6 | task completion/cancel terminal state | no task-state field; only message-terminal approximation is possible today | plugin (contract v0.7) |
+| D7 | 104 legacy reference snapshot | no usable 104 snapshot fixture (samples/104-* is static reference only) | uiux |
+
+### D6 message-terminal approximation semantics (must know)
+
+- done / in-progress = message-terminal approximation, not task completion state: a task whose messages are all acked is treated as done; tasks with unconfirmed messages are in progress (merged from byTaskRef[].byState).
+- Used for factual/approximate display on the data page, task history and work-item completion rate; it is not a task completion state and must not be used as an acceptance conclusion.
+- Real task-state fields (D6) are required to replace the approximation.
+
+### 0.14 new read-only fields (S1)
+
+- /api/members: sessionId / agentId / instanceId / createdAt (from lines.session_id/agent_id/instance_id/created_at).
+- /api/live: messages.byDay (all days) and messages.byLineDay (last 30 days per line per day; participation = from_line + to_line).
+- Field whitelist test: body/text/token/prompt must not leak.

@@ -56,6 +56,13 @@ check('B8 只读边界显式标注', count(/只读/g) >= 2, 'count=' + count(/�
 check('B9 无写操作控件 (允许刷新 checkbox)', !/api\/actions/.test(html) && !/<input[^>]+type="text"/i.test(html))
 
 }
+const rd = (rel) => { const p = resolve(ROOT, rel); return existsSync(p) ? readFileSync(p, 'utf8') : '' }
+const css20 = rd('web/vendor/board-2.0.css')
+const dataJs = rd('web/vendor/board2-data.js')
+const costJs = rd('web/vendor/board2-cost.js')
+check('B10 runtime/data/cost 容器齐备', ['bd-ov-runtime', 'bd-ov-kpi', 'bd-ov-lines', 'bd-data-kpi', 'bd-data-chart-stack', 'bd-data-chart-tokenday', 'bd-cost-kpis', 'bd-cost-chart-line'].every(id => html.includes('id="' + id + '"')))
+check('B11 runtime/data/cost 使用 bd-* 类与 --bd-* tokens', /\.bd-ov-runtime/.test(css20) && /\.bd-chart/.test(css20) && /var\(--bd-/.test(css20))
+check('B12 新脚本无旧类/旧变量', [dataJs, costJs].every(src => !/class="(?:card|kpis|missions?|tab|chips|view)"/.test(src) && !/var\(--(?:bg|surface|border|accent|muted)/.test(src)))
 const failures = checks.filter(c => !c.pass)
 if (json) console.log(JSON.stringify({ ok: failures.length === 0, file: target, checks }, null, 1))
 else {

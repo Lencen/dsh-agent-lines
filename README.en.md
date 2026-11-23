@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current release: v0.13.0 (2026-11-14) — Board 2.0 full alignment (overview 5 blocks / org roles+agents / tasks L1.5→L2 / work-item detail v2 / member page v2 / Board 2.0 tokens & narrow screens); v0.12.0 is the fallback.
+> Current release: v0.14.0 (2026-11-24) — Board 2.0 100% prototype parity (overview runtime summary / full data & cost views / tasks recent feed & history / work-item real gantt & evidence / member identity & handoff / site-wide 390 narrow layout); v0.13.0 is the fallback.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -195,6 +195,12 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.14.0: Board 2.0 prototype 100% parity (unreleased candidate)
+
+- Overview runtime summary; full data/cost views; tasks recent feed & history; work-item real gantt & evidence; member identity & handoff; site-wide 390 narrow layout
+- done/in-progress = message-terminal approximation, not task completion state (D6 in KNOWN_ISSUES)
+- Gates: views-smoke V11-V40, board-scripts B13+, bento covers new containers, docs 19 (C15)
+
 ### 0.13.0：Board 2.0 完整对齐（已发布 2026-11-14）
 
 - 总览 5 独立区块（目标+计划双栏 / 工作流 7 阶段 / 节奏 / L1.5 独立 section）；组织页角色与 agent（不挂 L3）；任务页 L1.5→L2 分组；大任务详情 v2 八分区；成员页 v2。
@@ -379,7 +385,7 @@ The script picks the DSH Web profile, installs the plugin, and verifies agent-li
 
 Offline or when npm is unavailable, use the local tarball:
 
-    bash install.sh ./dsh-agent-lines-0.13.0.tgz
+    bash install.sh ./dsh-agent-lines-0.14.0.tgz
 
 After install and restart, it works without a config. When you want a fixed manager/worker setup, paste the "Manager config" block below into the file printed by the installer.
 
@@ -672,7 +678,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current release `0.13.0` (maintenance phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current release `0.14.0` (maintenance phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 

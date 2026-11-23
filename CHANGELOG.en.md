@@ -2,6 +2,33 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.14.0 (2026-11-24, unreleased)
+
+> **Unreleased**: candidate; publish after UIUX final sign-off / full QA / Lead GO (tag v0.14.0). **Fallback v0.13.0**.
+
+### Board 2.0 prototype 100% parity (all 35 GAPs closed)
+
+- Overview runtime summary (KPI x4 / L2 line health / decisions / recent handoffs / alerts / cost summary / banners / source-line)
+- Full data view: window chips (7/30/all), KPI x6, msgline, per-line task stacked bars, per-line messages/day, per-line cost/day, messages/day, token/day (ECharts with tooltip/legend/grid)
+- Full cost view: KPI today/7d/total, badges/stats (input/cache read/cache write/output/samples; missing fields explicit 未采集), daily cost line+area, per-line cost (k) bars, member-level token unavailable block
+- Tasks page: recent feed (<=10, truncated summaries), history pane (approximate message-terminal semantics, factual only), source-line; tabs/KPI real values
+- Work-item detail: evidence linked to live.lineTasks.recent (last 5; empty state states reason), unified completion term, gantt real firstAt..latestAt only (explicit empty state when no data; short spans keep real scale and are annotated)
+- Member page: identity from /api/members (sessionId/agentId/instanceId/createdAt with basis), unified completion term, latest handoff rebinds[0], avatar a11y role=img/aria-label
+- Narrow: 9 pages x 390 verified no horizontal overflow; charts/gantt/tables scroll inside their own containers
+
+### Data gaps (explicit 未采集, never fabricated; see KNOWN_ISSUES)
+
+- D1 work-items entity contract; D2 per-role agent ownership; D3 member-level runs/tokens; D4 work duration/parallel semantics; D5 official L3 task view; D6 task completion/cancel terminal state; D7 104 legacy reference snapshot
+
+### Semantics
+
+- done/in-progress = **message-terminal approximation, not task completion state** (acked=done; pending=in progress; merged from byTaskRef[].byState)
+- token = session-level sampled estimate, not billing; snapshot is not real-time; never sum across lines/work-items horizontally
+
+### Gates
+
+- board2-views-smoke V11-V40; check-board-scripts B13+ (board2-data.js / board2-cost.js syntax, read-only, no write fetch); check-bento-alignment covers runtime/data/cost containers; docs consistency 19 (C15); no schema/protocol change; 27 tools
+
 ## 0.13.0 (2026-11-14)
 
 > **Released 2026-11-14**: npm dsh-agent-lines@0.13.0 (latest) · GitHub Release v0.13.0 · tag at 19638b7 · **fallback v0.12.0**.
