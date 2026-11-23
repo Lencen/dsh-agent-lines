@@ -48,6 +48,7 @@
       <h2 class="bd-view-title">总览</h2>
       <p class="bd-view-sub">团队信息（目标 / 计划 / 工作流 / 节奏）→ L1.5 大任务</p>
     </div>
+    <div class="bd-ov-banners" id="bd-ov-banners"></div>
     <section class="bd-ov-team-info" aria-labelledby="bd-ov-team-info-h">
       <h2 class="bd-ov-section-title" id="bd-ov-team-info-h">团队信息</h2>
       <div class="bd-ov-toprow" id="bd-ov-toprow">
@@ -75,6 +76,45 @@
         <div class="bd-ov-l15-body" id="bd-ov-l15-body"><p class="bd-empty">加载中…</p></div>
       </section>
     </section>
+    <section class="bd-ov-runtime" id="bd-ov-runtime" aria-labelledby="bd-ov-runtime-h">
+      <div class="bd-ov-runtime-head">
+        <h3 class="bd-ov-runtime-title" id="bd-ov-runtime-h">运行摘要</h3>
+        <span class="bd-card-sub">KPI / L2 线健康 / 待决策 / 最近交接 / 异常 / 成本摘要</span>
+      </div>
+      <div class="bd-card bd-ov-runtime-card">
+        <h4 class="bd-section-title">关键指标 <span class="bd-count">任务数与消息数分列</span></h4>
+        <div class="bd-kpi-grid" id="bd-ov-kpi"></div>
+      </div>
+      <div class="bd-card bd-ov-runtime-card">
+        <h4 class="bd-section-title">L2 线健康
+          <span class="bd-count" id="bd-ov-lines-count"></span>
+          <span class="bd-legend" aria-label="层级图例">
+            <span class="bd-legend-item"><span class="bd-legend-swatch bd-l1-swatch"></span>L1 负责人</span>
+            <span class="bd-legend-item"><span class="bd-legend-swatch bd-l2-swatch"></span>L2 线·岗位</span>
+          </span>
+        </h4>
+        <div class="bd-ov-line-grid" id="bd-ov-lines"></div>
+      </div>
+      <div class="bd-grid bd-grid-3 bd-ov-bottom">
+        <section class="bd-card bd-ov-panel" aria-labelledby="bd-ov-dec-h">
+          <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-dec-h">需要我决策</h3><span class="bd-card-sub" id="bd-ov-dec-count"></span></div>
+          <div class="bd-ov-list" id="bd-ov-decisions"></div>
+        </section>
+        <section class="bd-card bd-ov-panel" aria-labelledby="bd-ov-dlv-h">
+          <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-dlv-h">最近交接</h3><span class="bd-card-sub" id="bd-ov-dlv-count"></span></div>
+          <div class="bd-ov-list" id="bd-ov-deliveries"></div>
+        </section>
+        <section class="bd-card bd-ov-panel" aria-labelledby="bd-ov-alert-h">
+          <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-alert-h">异常清单</h3><span class="bd-card-sub" id="bd-ov-alert-count"></span></div>
+          <div class="bd-ov-list" id="bd-ov-alerts"></div>
+        </section>
+      </div>
+      <section class="bd-card bd-ov-cost" aria-labelledby="bd-ov-cost-h">
+        <div class="bd-card-head"><h3 class="bd-card-title" id="bd-ov-cost-h">成本摘要</h3><span class="bd-card-sub" id="bd-ov-cost-sub"></span></div>
+        <div class="bd-ov-cost-body" id="bd-ov-cost-body"></div>
+      </section>
+    </section>
+    <p class="bd-source-line" id="bd-ov-source"></p>
   </section>
 
   <section class="bd-view" id="bd-view-org" data-view="org" role="tabpanel" aria-labelledby="bd-tab-org" hidden>

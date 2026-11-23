@@ -34,6 +34,18 @@ const baseline = (read('web/board-legacy.html.sha256') || '').trim().split(/\s+/
 const legacySha = legacy ? createHash('sha256').update(legacy).digest('hex') : ''
 check('V10 legacy 冻结 sha 一致', !!baseline && baseline === legacySha, 'baseline=' + baseline.slice(0, 12) + ' actual=' + legacySha.slice(0, 12))
 
+const css20 = read('web/vendor/board-2.0.css')
+const runtimeIds = ['bd-ov-runtime', 'bd-ov-kpi', 'bd-ov-lines', 'bd-ov-decisions', 'bd-ov-deliveries', 'bd-ov-alerts', 'bd-ov-cost-body', 'bd-ov-banners', 'bd-ov-source']
+check('V11 总览 runtime 元素齐备且位于 L1.5 之后', runtimeIds.every((id) => board.includes('id="' + id + '"')) && board.indexOf('id="bd-ov-runtime"') > board.indexOf('id="bd-ov-l15"'))
+check('V12 core 有 renderRuntime 且接成本/团队快照', /function renderRuntime\(data\)/.test(core) && /renderRuntime\(data\)/.test(core) && /\/api\/team-metrics/.test(core) && /\/api\/team-board/.test(core))
+check('V13 runtime 无源显式未采集 + 无 0 兜底', (function () {
+  const start = core.indexOf('function renderRuntime(data)')
+  const end = core.indexOf('function renderRhythm(data)')
+  const body = start >= 0 && end > start ? core.slice(start, end) : ''
+  const naCount = (body.match(/未采集/g) || []).length
+  return naCount >= 6 && !/\|\| 0/.test(body) && /\.bd-kpi/.test(body)
+})())
+check('V14 runtime CSS 齐备', ['\.bd-ov-runtime', '\.bd-ov-line-grid', '\.bd-ov-kpi-na', '\.bd-kpi-grid'].every((re) => new RegExp(re).test(css20)))
 const failures = checks.filter((c) => !c.pass)
 for (const c of checks) console.log((c.pass ? 'PASS ' : 'FAIL ') + c.name + (c.detail ? '  ' + c.detail : ''))
 console.log('')

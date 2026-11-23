@@ -108,6 +108,29 @@ try {
   check('计数快照：tasksDiagnostic 可见', /缺少任务明细/.test(String(await evaluate('DATA.tasksDiagnostic'))))
   check('计数快照：页面提示缺少明细', /缺少任务明细/.test(String(await evaluate('(document.querySelector("#missions")||{}).textContent'))))
   check('计数快照：不伪造任务', await evaluate('(DATA.missions||[]).length') === 0)
+  // 0.14 S2：board2 总览 runtime 区（DOM 级：元素存在 + 非空或显式未采集）
+  const b2 = await startBoardServer({ dir, dbPath, teamRoot, host: '127.0.0.1', port: 0, board2: true })
+  try {
+    await send('Page.navigate', { url: b2.url + '?view=overview' })
+    let ready = false
+    for (let i = 0; i < 100; i++) { ready = await evaluate('!!(document.querySelector("#bd-ov-kpi") && document.querySelector("#bd-ov-kpi").children.length)').catch(() => false); if (ready) break; await sleep(200) }
+    check('board2 runtime：KPI 4 卡', await evaluate('document.querySelectorAll("#bd-ov-kpi .bd-kpi").length') === 4)
+    check('board2 runtime：线卡非空', (await evaluate('document.querySelectorAll("#bd-ov-lines .bd-ov-line-card").length')) >= 1)
+    check('board2 runtime：决策卡非空或显式未采集', /未采集|暂无待决策|查看/.test(String(await evaluate('(document.querySelector("#bd-ov-decisions")||{}).textContent'))))
+    check('board2 runtime：交接卡非空或显式未采集', /未采集|暂无交接|交接/.test(String(await evaluate('(document.querySelector("#bd-ov-deliveries")||{}).textContent'))))
+    check('board2 runtime：异常卡非空或显式未采集', /未采集|暂无异常|failed|blocked|expired/.test(String(await evaluate('(document.querySelector("#bd-ov-alerts")||{}).textContent'))))
+    check('board2 runtime：成本摘要非空或显式未采集', /未采集|今日|快照/.test(String(await evaluate('(document.querySelector("#bd-ov-cost-body")||{}).textContent'))))
+    check('board2 runtime：source line 非空', String(await evaluate('(document.querySelector("#bd-ov-source")||{}).textContent||""')).length > 10)
+    check('board2 runtime：无显示加载中', !/加载中/.test(String(await evaluate('document.body.innerText'))))
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
+    await sleep(600)
+    check('board2 runtime：390 无横向溢出', (await evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 1)
+    await send('Emulation.clearDeviceMetricsOverride')
+    check('board2 runtime：无 console 异常', exceptions.length === 0)
+  } finally {
+    await new Promise((resolve) => b2.server.close(resolve))
+  }
+
 } catch (error) {
   failures.push(String(error && error.message ? error.message : error))
   console.log('FAIL ' + String(error && error.message ? error.message : error))

@@ -42,6 +42,13 @@
       'bd-ov-workflow-body': '工作流未采集',
       'bd-ov-rhythm-body': '节奏未采集',
       'bd-ov-l15-body': 'L1.5 大任务未采集',
+      'bd-ov-kpi': '运行摘要 KPI 未采集',
+      'bd-ov-lines': 'L2 线健康未采集',
+      'bd-ov-decisions': '待决策未采集',
+      'bd-ov-deliveries': '最近交接未采集',
+      'bd-ov-alerts': '异常清单未采集',
+      'bd-ov-cost-body': '成本摘要未采集',
+      'bd-ov-source': '数据来源未采集',
       'bd-org-roles': '角色与 agent 未采集',
       'bd-tasks-list': '任务未采集',
       'bd-tasks-summary': '任务摘要未采集',
@@ -116,6 +123,154 @@
       return { name: cols[0], owner: cols[1] || null, output: cols[2] || null, status: st }
     })
     return stages
+  }
+  // ---------- 运行摘要（0.14 S2 / P3-1..P3-6） ----------
+  function fmtDateTime(ms) { if (!ms) return '未采集'; try { return new Date(ms).toLocaleString('zh-CN', { hour12: false }) } catch (e) { return '未采集' } }
+  function kfmt(n) { if (typeof n !== 'number' || !isFinite(n)) return '未采集'; var v = Number(n); if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(1) + 'M'; if (Math.abs(v) >= 1e3) return (v / 1e3).toFixed(1) + 'k'; return String(Math.round(v)) }
+  function ovNa() { return '<span class="bd-ov-kpi-na">未采集</span>' }
+  function ovKpi(label, valueHtml, hint) { return '<div class="bd-kpi"><div class="bd-kpi-label">' + esc(label) + '</div><div class="bd-kpi-value num">' + valueHtml + '</div><div class="bd-kpi-hint">' + esc(hint) + '</div></div>' }
+  function ovByLine(data) { var out = {}; var lt = data && data.lineTasks; ((lt && lt.byLine) || []).forEach(function (x) { out[x.line] = x }); return out }
+  function ovLatestRebind(l) { var at = null; ((l && l.rebinds) || []).forEach(function (r) { if (r && r.at && (!at || r.at > at)) at = r.at }); return at }
+  function ovAlerts(data) {
+    var list = []
+    var by = (data && data.lineTasks && data.lineTasks.byState) || null
+    if (by) {
+      if (by.failed) list.push({ kind: 'danger', text: '失败消息 ' + by.failed + ' 条' })
+      if (by.blocked) list.push({ kind: 'warn', text: '阻塞消息 ' + by.blocked + ' 条' })
+      if (by.expired) list.push({ kind: 'muted', text: '过期消息 ' + by.expired + ' 条' })
+    }
+    var LIFE = { active: '活跃', hibernating: '休眠', retired: '退役' }
+    ;((data && data.lines) || []).forEach(function (l) {
+      if (l.status && l.status !== 'online') list.push({ kind: 'warn', text: (l.title || l.label) + '（' + l.label + '）状态 ' + (l.status === 'offline' ? '离线' : String(l.status)) })
+      else if (l.lifecycle && l.lifecycle !== 'active') list.push({ kind: 'muted', text: (l.title || l.label) + '（' + l.label + '）生命周期 ' + (LIFE[l.lifecycle] || String(l.lifecycle)) })
+    })
+    return { list: list, byState: !!by }
+  }
+  function renderRuntime(data) {
+    if (!data) return
+    var banners = $('#bd-ov-banners')
+    var kpiEl = $('#bd-ov-kpi')
+    var linesEl = $('#bd-ov-lines')
+    var linesCount = $('#bd-ov-lines-count')
+    var decEl = $('#bd-ov-decisions')
+    var decCount = $('#bd-ov-dec-count')
+    var dlvEl = $('#bd-ov-deliveries')
+    var dlvCount = $('#bd-ov-dlv-count')
+    var alEl = $('#bd-ov-alerts')
+    var alCount = $('#bd-ov-alert-count')
+    var costEl = $('#bd-ov-cost-body')
+    var costSub = $('#bd-ov-cost-sub')
+    var srcEl = $('#bd-ov-source')
+    if (!kpiEl && !linesEl && !costEl) return
+    var lines = (data && data.lines) || []
+    var lt = (data && data.lineTasks) || {}
+    var byLine = ovByLine(data)
+    var manager = 'manager'
+    lines.forEach(function (l) { if (l.role === '负责人' || l.role === 'manager') manager = l.label })
+    var l2 = lines.filter(function (l) { return l.label !== manager }).length
+    var alerts = ovAlerts(data)
+    var tasks = lt.taskCount == null ? null : lt.taskCount
+    var msgs = lt.total == null ? null : lt.total
+
+    if (kpiEl) {
+      kpiEl.innerHTML =
+        ovKpi('L2 线数', String(l2), 'lines[] 去掉 L1 负责人（' + manager + '）共 ' + lines.length + ' 条线') +
+        ovKpi('L2 线任务', tasks == null ? ovNa() : String(tasks), '任务数（distinct taskRef）· 消息 ' + (msgs == null ? '未采集' : msgs + ' 条')) +
+        ovKpi('L3 拆分任务', ovNa(), '官方 team-board.tasks 计数 · 无快照时未采集（KNOWN_ISSUES D5）') +
+        ovKpi('异常 · 阻塞', alerts.byState ? String(alerts.list.length) : ovNa(), alerts.byState ? (alerts.list.length ? 'failed/blocked/expired + 线状态非 online' : '暂无异常') : 'lineTasks.byState 不可得')
+    }
+
+    if (linesEl) {
+      if (!lines.length) linesEl.innerHTML = '<p class="bd-ov-empty">' + ovNa() + ' lines[] 为空；只读视图不编造线。</p>'
+      else linesEl.innerHTML = lines.map(function (l) {
+        var stat = byLine[l.label] || {}
+        var handoff = ovLatestRebind(l)
+        return '<a class="bd-line-card bd-ov-line-card" href="/member?id=' + encodeURIComponent(l.label) + '">' +
+          '<span class="bd-line-card-head"><span class="bd-dot' + (l.status === 'online' ? ' bd-dot-online' : '') + '" aria-hidden="true"></span>' +
+          '<span class="bd-line-name">' + esc(l.title || l.registryName || l.label) + '</span>' +
+          (l.label === manager ? '<span class="bd-badge bd-badge-info">L1 负责人</span>' : '<span class="bd-badge bd-badge-muted">L2</span>') + '</span>' +
+          '<span class="bd-ov-line-sub">' + esc(l.label) + (l.role ? ' · ' + esc(l.role) : '') + '</span>' +
+          '<span class="bd-ov-line-stats">参与消息 <b class="num">' + (stat.total == null ? '未采集' : stat.total) + '</b> · 任务 <b class="num">' + (stat.taskCount == null ? '未采集' : stat.taskCount) + '</b> · 负载 未采集</span>' +
+          '<span class="bd-ov-line-foot">最近交接 <span class="num">' + (handoff ? esc(fmtDateTime(handoff)) : '未采集') + '</span><span class="bd-ov-line-go">查看 →</span></span></a>'
+      }).join('')
+    }
+    if (linesCount) linesCount.textContent = lines.length ? '（' + lines.length + ' 条线）' : ''
+
+    var decisions = (data && Array.isArray(data.decisions)) ? data.decisions : null
+    if (decCount) decCount.textContent = decisions ? (decisions.length ? '（' + decisions.length + '）' : '') : ''
+    if (decEl) {
+      if (!decisions) decEl.innerHTML = '<p class="bd-ov-empty">' + ovNa() + ' 决策列表不可得（decisions/ 无记录）</p>'
+      else if (!decisions.length) decEl.innerHTML = '<p class="bd-ov-empty">暂无待决策</p>'
+      else decEl.innerHTML = decisions.slice(0, 10).map(function (x) {
+        var meta = [fmtDateTime(x.updatedAt || x.at), x.status || null].filter(Boolean).join(' · ')
+        return '<div class="bd-ov-item"><div class="bd-ov-item-main"><p class="bd-ov-item-title">' + esc(x.title || x.decision || x.id || '待决策') + '</p>' +
+          (meta ? '<p class="bd-ov-item-meta">' + esc(meta) + '</p>' : '') + '</div></div>'
+      }).join('')
+    }
+
+    var deliveries = (function () {
+      var list = []
+      lines.forEach(function (l) {
+        ((l.rebinds) || []).forEach(function (r) { list.push({ label: l.label, at: r.at, from: r.from, to: r.to, reason: r.reason || null }) })
+      })
+      return list.sort(function (a, b) { return (b.at || 0) - (a.at || 0) }).slice(0, 5)
+    })()
+    if (dlvCount) dlvCount.textContent = deliveries.length ? '（' + deliveries.length + '）' : '（0）'
+    if (dlvEl) {
+      dlvEl.innerHTML = deliveries.length
+        ? deliveries.map(function (x) {
+          var meta = [fmtDateTime(x.at), (x.from ? String(x.from).slice(0, 8) : '?') + ' → ' + (x.to ? String(x.to).slice(0, 8) : '?')].join(' · ')
+          return '<div class="bd-ov-item"><div class="bd-ov-item-main"><p class="bd-ov-item-title">' + esc(x.label) + ' 交接' + (x.reason ? '（' + esc(x.reason) + '）' : '') + '</p><p class="bd-ov-item-meta">' + esc(meta) + '</p></div></div>'
+        }).join('')
+        : '<p class="bd-ov-empty">暂无交接记录（rebinds 为空）</p>'
+    }
+
+    if (alCount) alCount.textContent = alerts.byState ? (alerts.list.length ? '（' + alerts.list.length + '）' : '') : ''
+    if (alEl) {
+      if (!alerts.byState) alEl.innerHTML = '<p class="bd-ov-empty">' + ovNa() + ' lineTasks.byState 不可得，无法判断消息级异常</p>'
+      else if (!alerts.list.length) alEl.innerHTML = '<p class="bd-ov-empty">暂无异常</p>'
+      else alEl.innerHTML = alerts.list.map(function (x) {
+        var badge = x.kind === 'danger' ? 'failed' : x.kind === 'muted' ? 'expired' : 'blocked'
+        return '<div class="bd-ov-item"><div class="bd-ov-item-main"><p class="bd-ov-item-title"><span class="bd-badge bd-badge-warn">' + esc(badge) + '</span> ' + esc(x.text) + '</p></div></div>'
+      }).join('')
+    }
+
+    if (banners) {
+      var bh = ''
+      if (!data || data.available !== true) bh += '<p class="bd-error-banner">读取失败：/api/live 不可用，显示的是上次快照或空数据。</p>'
+      bh += '<p class="bd-info-banner">L1.5 大任务为示例（workItems 契约未实现 · KNOWN_ISSUES D1）；本区仅显示可派生数据。</p>'
+      banners.innerHTML = bh
+    }
+    if (srcEl) srcEl.textContent = ['数据时刻 ' + fmtDateTime(data && data.generatedAt), '任务数（distinct taskRef）与消息数分列不混用', '官方 L3 未采集', '按线参与任务数之和可大于任务总数（任务可跨线）', '只读 · 无发消息/审批/交接控件'].join(' · ')
+
+    Promise.all([
+      fetch('/api/team-metrics', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).catch(function () { return null }),
+      fetch('/api/team-board', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).catch(function () { return null })
+    ]).then(function (out) {
+      var metrics = out[0]
+      var board = out[1]
+      if (kpiEl && board && Array.isArray(board.tasks)) {
+        var l3 = board.tasks.filter(function (t) { return !!t.ownerLine }).length
+        var kpi = kpiEl.querySelectorAll('.bd-kpi')[2]
+        if (kpi) kpi.querySelector('.bd-kpi-value').innerHTML = String(l3)
+      }
+      var tk = (metrics && metrics.tokens) || null
+      if (costEl) {
+        if (!tk) {
+          if (costSub) costSub.textContent = '不可得 · 需 team-metrics 快照'
+          costEl.innerHTML = '<p class="bd-ov-empty">' + ovNa() + ' team-metrics.json 缺失，token 消耗不显示 0。</p>'
+        } else {
+          if (costSub) costSub.textContent = '估算口径（非计费）· 快照 · 非实时'
+          var today = typeof tk.today === 'number' ? tk.today : (typeof tk.todayOutput === 'number' ? tk.todayOutput : null)
+          var win = typeof tk.window === 'number' ? tk.window : (typeof tk.windowOutput === 'number' ? tk.windowOutput : null)
+          var total = typeof tk.total === 'number' ? tk.total : null
+          var rows = '<div class="bd-ov-cost-row"><span><b class="num">' + kfmt(today) + '</b> 今日</span><span><b class="num">' + kfmt(win) + '</b> 近 7 天</span><span><b class="num">' + kfmt(total) + '</b> 累计</span><span class="bd-muted">快照时刻 ' + esc(fmtDateTime(metrics.generatedAt)) + '</span></div>'
+          if (Array.isArray(tk.byLine) && tk.byLine.length) rows += '<p class="bd-meta">按线（累计）：' + tk.byLine.map(function (x) { return esc(x.line || '?') + ' ' + kfmt(x.totalTokens == null ? null : x.totalTokens) }).join(' · ') + '</p>'
+          rows += '<p class="bd-source-line">口径：session 级采样估算，非计费；快照非实时；缺失字段显示「未采集」。</p>'
+          costEl.innerHTML = rows
+        }
+      }
+    }).catch(function () {})
   }
   function renderRhythm(data) {
     var body = $('#bd-ov-rhythm-body'); if (!body) return
@@ -456,6 +611,7 @@
     renderWorkflow(data)
     renderRhythm(data)
     renderL15(data)
+    renderRuntime(data)
     renderOrg(data)
     renderTasks(data)
     var dt = $('#bd-data-body')
