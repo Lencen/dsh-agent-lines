@@ -62,6 +62,7 @@ check('V25 core 有 recent/history/source 渲染', /function renderRecentMessage
 check('V26 tasks 历史 pane 可见近似术语且仅事实陈述', /历史任务 · 按消息终态近似 · 非任务完成态/.test(board) && /按消息终态近似 · 非任务完成态/.test(core) && /不参与任何完成率\/完成数 KPI/.test(board))
 check('V27 org agent KPI 用 members.length', /cnt\.agents\.textContent = membersKnown \? String\(members\.length\)/.test(core) && /membersOf\(key\)\.length/.test(core))
 check('V28 org 负载接 team-metrics.activity（无源未采集）', /ovActivityOf\(metrics, l\.label\)/.test(core) && /\/api\/team-metrics/.test(core) && /未采集（team-metrics\.activity 无该线）/.test(core))
+check('V29 cost stats 5 项始终显式（缺字段未采集）+ 双图 legend', (costJs.match(/pill\('/g) || []).length >= 5 && /缺字段，不显示 0/.test(costJs) && (costJs.match(/legend:/g) || []).length >= 2)
 const failures = checks.filter((c) => !c.pass)
 for (const c of checks) console.log((c.pass ? 'PASS ' : 'FAIL ') + c.name + (c.detail ? '  ' + c.detail : ''))
 console.log('')

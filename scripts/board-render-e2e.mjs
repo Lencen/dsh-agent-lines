@@ -151,7 +151,7 @@ try {
     check('board2 tasks：source line 非空', String(await evaluate('(document.querySelector("#bd-tasks-source")||{}).textContent||""')).length > 10)
     await send('Page.navigate', { url: b2.url + '?view=org' })
     let orgReady = false
-    for (let i = 0; i < 100; i++) { orgReady = await evaluate('document.querySelectorAll("#bd-org-roles") && document.querySelector("#bd-org-roles").children.length)').catch(() => false); if (orgReady) break; await sleep(200) }
+    for (let i = 0; i < 100; i++) { orgReady = await evaluate('document.querySelectorAll("#bd-org-roles .bd-org-role-row").length > 0').catch(() => false); if (orgReady) break; await sleep(200) }
     check('board2 org：agent KPI 为数字（members.length）', /^[0-9]+$/.test(String(await evaluate('(document.querySelector("#bd-org-kpi-agents")||{}).textContent||""')).trim()))
     check('board2 org：负载显示 turns/steps 或未采集', /turns|未采集/.test(String(await evaluate('(document.querySelector("#bd-org-roles")||{}).textContent||""'))))
     check('board2 org：source line 非空', String(await evaluate('(document.querySelector("#bd-org-source")||{}).textContent||""')).length > 10)
@@ -161,6 +161,7 @@ try {
     for (let i = 0; i < 100; i++) { costReady = await evaluate('!!(document.querySelector("#bd-cost-kpis") && document.querySelector("#bd-cost-kpis").children.length)').catch(() => false); if (costReady) break; await sleep(200) }
     check('board2 cost：KPI 3 卡', await evaluate('document.querySelectorAll("#bd-cost-kpis .bd-kpi").length') === 3)
     check('board2 cost：badges 非空', String(await evaluate('(document.querySelector("#bd-cost-badges")||{}).textContent||""')).length > 5)
+    check('board2 cost：stats 5 项齐（缺字段未采集）', await evaluate('document.querySelectorAll("#bd-cost-stats .bd-pill").length') === 5 && /未采集/.test(String(await evaluate('(document.querySelector("#bd-cost-stats")||{}).textContent||""'))))
     check('board2 cost：2 图表容器为 canvas 或显式未采集', await evaluate('(function(){var ids=["bd-cost-chart-day","bd-cost-chart-line"];return ids.every(function(id){var n=document.getElementById(id);return !!n && (!!n.querySelector("canvas") || !!n.querySelector(".bd-chart-na"))})})()') === true)
     check('board2 cost：member 不可得块', /不可得/.test(String(await evaluate('(document.querySelector("#bd-view-cost .bd-cost-member")||{}).textContent||""'))))
     check('board2 cost：source line 非空', String(await evaluate('(document.querySelector("#bd-cost-source")||{}).textContent||""')).length > 10)
