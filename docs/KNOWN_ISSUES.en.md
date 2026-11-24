@@ -107,3 +107,14 @@ For failed messages (until G1 is fixed): `dsh-agent-lines --json tail --line <li
 - /api/members: sessionId / agentId / instanceId / createdAt (from lines.session_id/agent_id/instance_id/created_at).
 - /api/live: messages.byDay (all days) and messages.byLineDay (last 30 days per line per day; participation = from_line + to_line).
 - Field whitelist test: body/text/token/prompt must not leak.
+
+## 9. Design deviations (DESIGN-DEVIATION)
+
+> Intentional deviations from the prototype/upstream are registered here in one place (no separate parity file).
+> The Criteria column points at the 0.14.2 acceptance criteria.
+
+| Item | Deviation | Reason | Approved by / date | Criteria |
+|---|---|---|---|---|
+| 5 KPI cards | the task page KPI grows from 4 (prototype) to 5 (adds "completed") | explicit user request, 2026-11-24 09:30 | user / 2026-11-24 | C6 (0.14.2) |
+| No L1.5 samples in the default view | the overview L1.5 area shows 0 rows by default; samples appear only with ?demo=1 | user asked for "real data first, never fake it with samples" | user / 2026-11-24 | C1, C2 (0.14.2) |
+| Three-element empty state | the "reason + next step + source" empty state is NOT landed in this round (batch B) | depends on the KPI definition (C6) and UIUX review; honesty first, actionability next | user / 2026-11-24 (pending) | C5 (0.14.2, not landed) |

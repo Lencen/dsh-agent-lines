@@ -18,9 +18,9 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 // 参数 fail-closed 守卫必须早于任何读文件/检查（0.14.2 C7.1/C7.2）
 guardArgs({
   script: 'check-docs-consistency.mjs',
-  known: ['--json', '--package <path>'],
+  known: ['--json'],
   description: '文档一致性门禁：中英配对、版本序列、错误码表、README/CHANGELOG/站点声明与代码一致（fail-closed）',
-  argHelp: { '--json': '以 JSON 输出全部检查项与失败明细', '--package': '指定被解析的 package.json（C17 派生清单用；默认仓库根 package.json）' },
+  argHelp: { '--json': '以 JSON 输出全部检查项与失败明细' },
   examples: [
     'node scripts/check-docs-consistency.mjs',
     'node scripts/check-docs-consistency.mjs --json',
@@ -430,13 +430,9 @@ const PAIRS = [
   const isProbeInvocation = probeArgv.some((a) => a === '--bogus-arg' || a === '--help' || a === '-h')
   if (!isProbeInvocation) {
     // 1) 脚本清单从 package.json 派生（不硬编码，QA C7.8①）：npm test / test:unit / test:board-e2e 三段按 && 拆分去重。
-    //    链上新接一个门禁脚本就自动纳入本判据。--package=<path> / --package <path> 只改「读哪份 package.json」
-    //    （QA 用临时副本加 check-fake 反向验，不改仓库）；路径不存在已由 args-guard 拦成 exit 3。
-    const pkgFlag = probeArgv.findIndex((a) => a === '--package' || a.startsWith('--package='))
-    const pkgPath = pkgFlag < 0
-      ? 'package.json'
-      : (probeArgv[pkgFlag].includes('=') ? probeArgv[pkgFlag].slice(probeArgv[pkgFlag].indexOf('=') + 1) : probeArgv[pkgFlag + 1])
-    const pkgScripts = JSON.parse(read(pkgPath)).scripts ?? {}
+    //    链上新接一个门禁脚本就自动纳入本判据。**不引入 --package**（QA v0.8 / Lead 11:56:57：
+    //    「外部喂一份改过的 package.json」本身是作弊面，门禁参数面最小化）；反向验改用 git worktree（C7.8③）。
+    const pkgScripts = JSON.parse(read('package.json')).scripts ?? {}
     const CHAIN_KEYS = ['test', 'test:unit', 'test:board-e2e']
     const derived = []
     for (const key of CHAIN_KEYS) {
@@ -455,7 +451,7 @@ const PAIRS = [
       const chain = pkgScripts[key]
       if (typeof chain !== 'string' || chain.trim() === '') problems.push('package.json scripts.' + key + ' 缺失或为空（派生链被掏空，判据空扫）')
     }
-    if (derived.length === 0) problems.push('派生脚本数=0（' + pkgPath + ' 的 scripts 链未解析到任何 node scripts/*.mjs，判据空扫）')
+    if (derived.length === 0) problems.push('派生脚本数=0（package.json 的 scripts 链未解析到任何 node scripts/*.mjs，判据空扫）')
     else if (derived.length < MIN_DERIVED) problems.push('派生脚本数=' + derived.length + ' < 下限 ' + MIN_DERIVED + '（链结构可能被改，判据接近空扫）')
     const jsonMode = probeArgv.includes('--json')
     if (!jsonMode) console.log('C17 派生门禁脚本数: ' + derived.length + ' -> ' + derived.join(', '))

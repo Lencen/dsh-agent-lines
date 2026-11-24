@@ -195,6 +195,13 @@ Known breakage and open gaps: [docs/KNOWN_ISSUES.en.md](docs/KNOWN_ISSUES.en.md)
 
 ## What each version adds (business scenarios)
 
+### 0.14.2: no sample data in the default views + gate argument fail-closed (unreleased)
+
+- Overview L1.5 / work-item detail / member page trust real data only: explicit 未采集 when there is no source; samples appear only with `?demo=1` (banner + per-row 「示例」 badge); the legacy board is registered as D9
+- All 9 gate scripts on the npm test chain are argument fail-closed: unknown argument / nonexistent `--file` → exit 3 with no verdict line; `--help` prints usage only; C17 derives the script list from `package.json`
+- docs criteria 22; KNOWN_ISSUES gains D8 / D9 and the design-deviation registry
+- Not done yet: the 5th KPI and the three-element empty state (later batch)
+
 ### 0.14.1: prototype 8134b73db deltas (released 2026-11-24)
 
 - owner styles / 390 cost-row wrap / cost chart legend; restored a vendored CSS truncation and added B16-B20 anti-truncation gates

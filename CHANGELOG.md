@@ -2,6 +2,28 @@
 
 [English](CHANGELOG.en.md) | 中文
 
+## 0.14.2 (2026-11-24，未发布)
+
+> **未发布**：本条为候选版本（latest 仍是 0.14.1，回退位 0.14.1）；发布由 github-maintenance-line 执行。
+
+### 默认视图移除示意数据（用户 2026-11-24 要求）
+
+- 总览 L1.5 大任务区 / 大任务详情 / 成员页：示例数据改为 `?demo=1` 惰性构造，默认路径只认真实 API items，无源显式「未采集」；示例态加全页横幅「示例数据（非真实）」与每条「示例」badge
+- 空态文案显式：`大任务（L1.5）未接入 · workItems 契约未实现（KNOWN_ISSUES D1）· 本区不显示示意数据`
+- legacy 板（`web/board-legacy.html:700-702`）保留示意数据，登记 KNOWN_ISSUES D9
+- e2e 加双态断言（默认 0 行 + `?demo=1` 3 行 / 横幅 / 每条标记 / 往返隔离），未删旧断言
+
+### 门禁参数 fail-closed（npm test 链 9 个脚本）
+
+- 新增 `scripts/lib/args-guard.mjs`：未知参数 / 缺值 / `--file` 指向不存在文件 → exit 3 且不打印判定行；`--help` → exit 0 只打用法；`--file=<path>` 解析（存在 rc=0，不存在 rc=3）
+- 9 个脚本全部接线：check-test-set / board-line-tasks-fixtures / check-docs-consistency / check-bento-alignment / business-smoke / board-business-smoke / check-board-scripts / board2-views-smoke / board-render-e2e
+- docs 判据 20 → 22：C17 门禁脚本清单从 `package.json` 派生（不硬编码，实测 9 个）、C18 args-guard 入参自校验
+
+### 文档
+
+- KNOWN_ISSUES：D1 更新；D5 补「快照过期 >24h 不得展示数字」；新增 D8（回执须原样带回 taskRef）、D9（legacy 板）；新增「设计偏差登记（DESIGN-DEVIATION）」
+- **未完成（明确登记，不假装已做）**：KPI 5 项与空态三要素属后续批次；workItems 契约仍是 stub（D1）
+
 ## 0.14.1 (2026-11-24，已发布)
 
 > **已发布 2026-11-24**：npm dsh-agent-lines@0.14.1（latest）· GitHub Release v0.14.1 · tag 指向 2732a39 · **回退位 v0.14.0**。

@@ -2,6 +2,28 @@
 
 English | [中文](CHANGELOG.md)
 
+## 0.14.2 (2026-11-24, unreleased)
+
+> **Unreleased**: this is a candidate (latest is still 0.14.1; fallback 0.14.1). Release is executed by github-maintenance-line.
+
+### Sample data removed from the default views (user request, 2026-11-24)
+
+- Overview L1.5 area / work-item detail / member page: sample data now lives behind a lazy `?demo=1` path; the default path only trusts real API items and shows explicit 未采集 when there is no source; demo mode adds a full-page 「示例数据（非真实）」 banner and a per-row 「示例」 badge
+- Explicit empty-state copy: `大任务（L1.5）未接入 · workItems 契约未实现（KNOWN_ISSUES D1）· 本区不显示示意数据`
+- The legacy board (`web/board-legacy.html:700-702`) keeps its sample data and is registered as KNOWN_ISSUES D9
+- e2e gained dual-state assertions (default 0 rows + `?demo=1` 3 rows / banner / per-row badge / round-trip isolation); no existing assertion was deleted
+
+### Gate argument fail-closed (9 scripts on the npm test chain)
+
+- New `scripts/lib/args-guard.mjs`: unknown argument / missing value / `--file` pointing at a nonexistent file → exit 3 with no verdict line; `--help` → exit 0, usage only; `--file=<path>` is parsed (rc=0 when it exists, rc=3 when it does not)
+- Wired into all 9 scripts: check-test-set / board-line-tasks-fixtures / check-docs-consistency / check-bento-alignment / business-smoke / board-business-smoke / check-board-scripts / board2-views-smoke / board-render-e2e
+- docs criteria 20 → 22: C17 derives the gate-script list from `package.json` (no hardcoded list; 9 observed), C18 self-validates args-guard input
+
+### Docs
+
+- KNOWN_ISSUES: D1 updated; D5 gains the "a snapshot older than 24h must not show numbers" rule; new D8 (receipts must carry taskRef verbatim) and D9 (legacy board); new "Design deviations" registry
+- **Not done (registered honestly)**: the 5th KPI and the three-element empty state belong to a later batch; the workItems contract is still a stub (D1)
+
 ## 0.14.1 (2026-11-24, released)
 
 > **Released 2026-11-24**: npm dsh-agent-lines@0.14.1 (latest) · GitHub Release v0.14.1 · tag 2732a39 · **fallback v0.14.0**.
