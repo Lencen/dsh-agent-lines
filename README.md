@@ -6,7 +6,7 @@
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> 当前发布：v0.14.2（**未发布候选**；npm latest 仍为 v0.14.1）——0.14.2 = 默认视图移除示意数据 + npm test 链 9 个门禁脚本参数 fail-closed，详见 CHANGELOG；回退位 v0.14.1（其内容为原型 8134b73db 三处设计 delta 补齐）。
+> 当前发布：v0.14.2（2026-11-24；回退位 v0.14.1）——0.14.2 = 默认视图移除示意数据 + npm test 链 9 个门禁脚本参数 fail-closed，详见 CHANGELOG；回退位 v0.14.1（其内容为原型 8134b73db 三处设计 delta 补齐）。
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
@@ -700,7 +700,7 @@ claim 不会对每个新会话自动执行：需要用户明确要求，或运�
 
 ## 状态
 
-当前发布 `0.14.2`（**未发布候选**；npm latest 仍为 `0.14.1`）（维护期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
+当前发布 `0.14.2`（2026-11-24；回退位 `0.14.1`）（维护期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
 
 ## 致谢
 

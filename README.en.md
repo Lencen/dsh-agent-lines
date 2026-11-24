@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current release: v0.14.2 (**unreleased candidate**; npm latest is still v0.14.1) — 0.14.2 = no sample data in the default views + argument fail-closed gates across the 9 scripts on the npm test chain, see CHANGELOG; fallback v0.14.1 (its content: three prototype deltas from 8134b73db).
+> Current release: v0.14.2 (2026-11-24; fallback v0.14.1) — 0.14.2 = no sample data in the default views + argument fail-closed gates across the 9 scripts on the npm test chain, see CHANGELOG; fallback v0.14.1 (its content: three prototype deltas from 8134b73db).
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -690,7 +690,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current release `0.14.2` (**unreleased candidate**; npm latest is still `0.14.1`) (maintenance phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current release `0.14.2` (2026-11-24; fallback `0.14.1`) (maintenance phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 
