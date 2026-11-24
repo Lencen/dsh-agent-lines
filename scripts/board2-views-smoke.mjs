@@ -2,14 +2,22 @@
 /**
  * board2-views-smoke.mjs — 0.13.0 Board 2.0 视图覆盖静态门禁
  * 覆盖：新壳 5 视图骨架 / 三页 tokens 引用 / 详情八分区 / 成员页分区 / legacy 冻结 sha
- * 退出码：0 PASS / 1 FAIL
+ * 退出码：0 PASS / 1 FAIL / 3 参数错误
  */
 import { readFileSync, existsSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { guardArgs } from './lib/args-guard.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+// 参数 fail-closed 守卫必须早于任何读文件/检查（0.14.2 C7.6；本脚本无已知参数）
+guardArgs({
+  script: 'board2-views-smoke.mjs',
+  known: [],
+  description: 'Board 2.0 视图覆盖静态门禁：新壳五视图 / 三页 tokens / 详情八分区 / 成员页分区 / legacy 冻结 sha',
+  examples: ['node scripts/board2-views-smoke.mjs'],
+})
 const read = (p) => (existsSync(resolve(ROOT, p)) ? readFileSync(resolve(ROOT, p), 'utf8') : '')
 const checks = []
 const check = (name, pass, detail = '') => checks.push({ name, pass, detail })

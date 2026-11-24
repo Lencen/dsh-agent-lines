@@ -2,14 +2,27 @@
 /**
  * check-bento-alignment.mjs — 插件包内 Bento UI 静态门禁（0.8.0 S1c / R9）
  * 校验 web/board.html 是否满足 UIUX 线的 Bento 规范（DESIGN-SPEC §11）的结构要求。
- * 用法：node scripts/check-bento-alignment.mjs [--file <html>] [--json]
- * 退出码：0 PASS / 1 FAIL / 2 参数或读取失败
+ * 用法：node scripts/check-bento-alignment.mjs [--file <html>] [--json] [-h|--help]
+ * 退出码：0 PASS / 1 FAIL / 2 读取被检文件失败 / 3 参数错误
  */
 import { readFileSync, existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { guardArgs } from './lib/args-guard.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+// 参数 fail-closed 守卫必须早于任何读文件/检查（0.14.2 C7）
+guardArgs({
+  script: 'check-bento-alignment.mjs',
+  known: ['--json', '--file <path>'],
+  description: '插件包内 Bento UI 静态门禁：校验 board.html 是否满足 DESIGN-SPEC §11 的结构要求',
+  argHelp: { '--json': '以 JSON 输出全部检查项与结果', '--file': '指定被检查的 HTML 文件（默认 web/board.html）' },
+  examples: [
+    'node scripts/check-bento-alignment.mjs',
+    'node scripts/check-bento-alignment.mjs --file web/board.html',
+    'node scripts/check-bento-alignment.mjs --json',
+  ],
+})
 const args = process.argv.slice(2)
 const json = args.includes('--json')
 const fileArg = args.indexOf('--file')

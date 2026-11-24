@@ -11,6 +11,23 @@ import { join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import { LineStore } from '../lib/store.js'
 import { startBoardServer } from '../lib/board-server.js'
+import { guardArgs } from './lib/args-guard.mjs'
+
+// 参数 fail-closed 守卫必须早于任何读 fixture / 建库 / 起服务（0.14.2 C7.1/C7.2）
+guardArgs({
+  script: 'board-line-tasks-fixtures.mjs',
+  known: ['--fixtures <dir>', '--require-all'],
+  description: 'PARENT-REF v0.4 fixture runner：投影/live 两组用例，隔离 DB、只读（发版前必跑）',
+  argHelp: {
+    '--fixtures': 'fixture 目录（默认 test/fixtures/parent-ref，读取其中的 cases.json）',
+    '--require-all': 'fixture 缺失或用例为空时 exit 2，而不是 SKIP/PASS',
+  },
+  examples: [
+    'node scripts/board-line-tasks-fixtures.mjs',
+    'node scripts/board-line-tasks-fixtures.mjs --require-all',
+    'node scripts/board-line-tasks-fixtures.mjs --fixtures test/fixtures/parent-ref --require-all',
+  ],
+})
 
 const argv = process.argv.slice(2)
 const arg = (k, d) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d }

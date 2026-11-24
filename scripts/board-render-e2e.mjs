@@ -11,6 +11,20 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { LineStore } from '../lib/store.js'
 import { startBoardServer } from '../lib/board-server.js'
+import { guardArgs } from './lib/args-guard.mjs'
+
+// 0.14.2 C7.1/C7.2：参数 fail-closed 守卫必须早于 Chrome 探测与任何检查
+// （--help 要 exit 0 且不跑检查；--bogus-arg 要 exit 3 且不打印判定行）。
+guardArgs({
+  script: 'board-render-e2e.mjs',
+  known: ['--require-chrome'],
+  description: 'headless 看板渲染回归：默认态 / ?demo=1 双态断言 + 容器回归（release gate 用 --require-chrome）',
+  argHelp: { '--require-chrome': 'release gate 语义：缺 Chrome 时 exit 2（不设则 SKIP exit 0）' },
+  examples: [
+    'node scripts/board-render-e2e.mjs',
+    'node scripts/board-render-e2e.mjs --require-chrome',
+  ],
+})
 
 const requireChrome = process.argv.includes('--require-chrome')
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))

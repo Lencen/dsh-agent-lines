@@ -9,6 +9,15 @@ import { join } from 'node:path'
 import { LineStore } from '../lib/store.js'
 import { initTeamWorkspace } from '../lib/team-init.js'
 import { startBoardServer } from '../lib/board-server.js'
+import { guardArgs } from './lib/args-guard.mjs'
+
+// 参数 fail-closed 守卫必须早于任何建库/起服务（0.14.2 C7.1/C7.2）；本脚本无已知参数
+guardArgs({
+  script: 'board-business-smoke.mjs',
+  known: [],
+  description: '0.11.0 看板业务冒烟：init 团队工作区 -> 起 board -> 读 /api/live 断言目标/决策/视图/vendor',
+  examples: ['node scripts/board-business-smoke.mjs'],
+})
 
 const checks = []
 const check = (name, pass, detail = '') => checks.push({ name, pass, detail })

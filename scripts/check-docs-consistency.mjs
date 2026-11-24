@@ -11,9 +11,21 @@
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import { dirname, resolve, basename } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { guardArgs } from './lib/args-guard.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+// 参数 fail-closed 守卫必须早于任何读文件/检查（0.14.2 C7.1/C7.2）
+guardArgs({
+  script: 'check-docs-consistency.mjs',
+  known: ['--json', '--package <path>'],
+  description: '文档一致性门禁：中英配对、版本序列、错误码表、README/CHANGELOG/站点声明与代码一致（fail-closed）',
+  argHelp: { '--json': '以 JSON 输出全部检查项与失败明细', '--package': '指定被解析的 package.json（C17 派生清单用；默认仓库根 package.json）' },
+  examples: [
+    'node scripts/check-docs-consistency.mjs',
+    'node scripts/check-docs-consistency.mjs --json',
+  ],
+})
 const failures = []
 const checks = []
 function ok(name, detail = '') { checks.push({ name, pass: true, detail }) }
@@ -404,6 +416,149 @@ const PAIRS = [
   else if (scanned < 1) fail('C16 未扫到任何版本小节（README 结构可能已变），判据空扫', 'scanned=0')
   else if (releasedHit < 1) fail('C16 未扫到任何已发布版本小节，判据可能假绿', 'scanned=' + scanned + ' releasedHit=0')
   else ok('C16 README unreleased-candidate only for unreleased versions (scanned=' + scanned + ', releasedHit=' + releasedHit + ')')
+}
+
+// ---------- C17 门禁脚本参数 fail-closed（0.14.2 QA C7.1/C7.2/C7.6/C7.8：清单从 package.json 派生，N 脚本 x {--bogus-arg,--help} + 路径取值 fail-closed；不写死任何脚本名单） ----------
+{
+  // 探针会再起这些脚本的子进程；若某脚本的守卫将来被删（回归），子进程会跑完整检查并可能再次进入本段
+  // -> 递归 fork（docs 探 docs 无限套）。故：本进程若本身是「探针调用」（argv 带探针参数），说明参数解析已经
+  // 失效（否则守卫早就 exit 3/0 了），此时跳过 C17 —— 回归表现为父层 C17 红，而不是进程风暴。
+  // 正常调用（无参数 / --json）不带探针参数，C17 必然执行，无法被环境变量或开关绕过。
+  // 子进程额外带 DSH_GATE_ARGS_PROBE=1 仅作探针标记（便于排查），**不作为跳过条件** —— 否则等于给 C17 开后门。
+  const PROBE_ENV = 'DSH_GATE_ARGS_PROBE'
+  const probeArgv = process.argv.slice(2)
+  const isProbeInvocation = probeArgv.some((a) => a === '--bogus-arg' || a === '--help' || a === '-h')
+  if (!isProbeInvocation) {
+    // 1) 脚本清单从 package.json 派生（不硬编码，QA C7.8①）：npm test / test:unit / test:board-e2e 三段按 && 拆分去重。
+    //    链上新接一个门禁脚本就自动纳入本判据。--package=<path> / --package <path> 只改「读哪份 package.json」
+    //    （QA 用临时副本加 check-fake 反向验，不改仓库）；路径不存在已由 args-guard 拦成 exit 3。
+    const pkgFlag = probeArgv.findIndex((a) => a === '--package' || a.startsWith('--package='))
+    const pkgPath = pkgFlag < 0
+      ? 'package.json'
+      : (probeArgv[pkgFlag].includes('=') ? probeArgv[pkgFlag].slice(probeArgv[pkgFlag].indexOf('=') + 1) : probeArgv[pkgFlag + 1])
+    const pkgScripts = JSON.parse(read(pkgPath)).scripts ?? {}
+    const CHAIN_KEYS = ['test', 'test:unit', 'test:board-e2e']
+    const derived = []
+    for (const key of CHAIN_KEYS) {
+      const chain = pkgScripts[key]
+      if (typeof chain !== 'string') continue
+      for (const part of chain.split('&&')) {
+        for (const m of part.matchAll(/node scripts\/([\w.-]+\.mjs)/g)) {
+          if (!derived.includes(m[1])) derived.push(m[1])
+        }
+      }
+    }
+    // 防空扫（不写死名单，QA C7.8①）：三条派生链必须都存在且非空；派生数下限拦住「链被掏空」。
+    const MIN_DERIVED = 4
+    const problems = []
+    for (const key of CHAIN_KEYS) {
+      const chain = pkgScripts[key]
+      if (typeof chain !== 'string' || chain.trim() === '') problems.push('package.json scripts.' + key + ' 缺失或为空（派生链被掏空，判据空扫）')
+    }
+    if (derived.length === 0) problems.push('派生脚本数=0（' + pkgPath + ' 的 scripts 链未解析到任何 node scripts/*.mjs，判据空扫）')
+    else if (derived.length < MIN_DERIVED) problems.push('派生脚本数=' + derived.length + ' < 下限 ' + MIN_DERIVED + '（链结构可能被改，判据接近空扫）')
+    const jsonMode = probeArgv.includes('--json')
+    if (!jsonMode) console.log('C17 派生门禁脚本数: ' + derived.length + ' -> ' + derived.join(', '))
+
+    const scriptPath = (script) => resolve(ROOT, 'scripts', script)
+    const isGuarded = (script) => existsSync(scriptPath(script)) && /guardArgs\s*\(/.test(read('scripts/' + script))
+    // 判定行：行首 PASS/FAIL，或 "X: PASS (n checks)" 汇总行（0.14.1 的假绿形态）
+    const hasVerdictLine = (text) => /^(?:PASS|FAIL) /m.test(text) || /: (?:PASS|FAIL) \(/.test(text)
+    const probe = (script, argv) => {
+      try {
+        const stdout = execFileSync(process.execPath, [scriptPath(script), ...argv], {
+          cwd: ROOT,
+          encoding: 'utf8',
+          timeout: 120000,
+          stdio: ['ignore', 'pipe', 'pipe'],
+          env: { ...process.env, [PROBE_ENV]: '1' },
+        })
+        return { status: 0, stdout: String(stdout), stderr: '' }
+      } catch (error) {
+        return {
+          status: typeof error.status === 'number' ? error.status : -1,
+          stdout: String(error.stdout ?? ''),
+          stderr: String(error.stderr ?? ''),
+        }
+      }
+    }
+
+    // 2) 每个派生脚本都必须已接守卫：--bogus-arg -> exit 3 且无判定行；--help -> exit 0 且无判定行。
+    //    未接守卫不做「静默跳过」（跳过 = 永远绿），而是显式 FAIL 并点名。
+    for (const script of derived) {
+      if (!existsSync(scriptPath(script))) {
+        problems.push(script + ' 在 scripts/ 下不存在（package.json 链与文件不一致）')
+        continue
+      }
+      if (!isGuarded(script)) {
+        problems.push(script + ' 未接 guard（脚本顶部没有调用 args-guard.mjs 的 guardArgs）')
+        continue
+      }
+      const bogus = probe(script, ['--bogus-arg'])
+      const bogusAll = bogus.stdout + bogus.stderr
+      if (bogus.status !== 3) problems.push(script + ' --bogus-arg exit=' + bogus.status + '（期望 3）')
+      if (!/未知参数/.test(bogusAll)) problems.push(script + ' --bogus-arg 未提示「未知参数」')
+      if (hasVerdictLine(bogus.stdout)) problems.push(script + ' --bogus-arg 仍打印 PASS/FAIL 判定行（假绿）')
+      const help = probe(script, ['--help'])
+      if (help.status !== 0) problems.push(script + ' --help exit=' + help.status + '（期望 0）')
+      if (!help.stdout.includes(script)) problems.push(script + ' --help stdout 未含脚本名')
+      if (!help.stdout.includes('--help')) problems.push(script + ' --help stdout 未含 --help')
+      if (hasVerdictLine(help.stdout)) problems.push(script + ' --help 仍打印判定行（说明参数解析晚于检查）')
+    }
+
+    // 3) C7.4 取值是路径也必须 fail-closed，且「= 形式」必须解析（QA v0.7）：
+    //    --file=<存在的文件> -> rc=0；--file=<不存在> 与空格形式不存在 -> rc=3（不得静默回落默认被检文件，也不得用 2）。
+    //    目标不写死：从派生脚本源码里找「guardArgs 白名单声明了 --file <path>」的脚本，自动纳入矩阵。
+    const FILE_FLAG_RE = /['"]--file\s+<[^>]+>['"]/
+    const fileTargets = derived.filter((script) => existsSync(scriptPath(script)) && FILE_FLAG_RE.test(read('scripts/' + script)))
+    if (fileTargets.length === 0) problems.push('未从派生脚本里推导出任何声明 --file <path> 的脚本（判据空扫）')
+    for (const script of fileTargets) {
+      const fileCases = [
+        [['--file=web/nope.html'], 3],
+        [['--file', 'web/nope.html'], 3],
+        [['--file=web/board.html'], 0],
+      ]
+      for (const [fileArgv, expect] of fileCases) {
+        const res = probe(script, fileArgv)
+        const label = script + ' ' + fileArgv.join(' ')
+        if (res.status !== expect) problems.push(label + ' exit=' + res.status + '（期望 ' + expect + '：= 形式必须解析，路径不存在必须 3 且不回落默认文件）')
+        if (expect === 3 && hasVerdictLine(res.stdout)) problems.push(label + ' 仍打印 PASS/FAIL 判定行（静默回落默认文件=假绿）')
+      }
+    }
+
+    if (problems.length === 0) ok('C17 门禁脚本参数 fail-closed（' + derived.length + ' scripts x 2 modes + --file 取值）')
+    else fail('C17 门禁脚本参数 fail-closed', problems.join('; '))
+  }
+}
+
+// ---------- C18 args-guard 入参自校验（0.14.2 QA C7.7 / Lead C18：防「脚本都调 guard、guard 自己不校验」的新假绿入口） ----------
+{
+  const probeArgv = process.argv.slice(2)
+  const isProbeInvocation = probeArgv.some((a) => a === '--bogus-arg' || a === '--help' || a === '-h')
+  if (!isProbeInvocation) {
+    // 判据对象是 guard 本身：直接 import 后传非法声明，必须在子进程里非 0 退出且报错来自入参自校验。
+    const guardUrl = pathToFileURL(resolve(ROOT, 'scripts/lib/args-guard.mjs')).href
+    const cases = [
+      ['guardArgs() 无入参', 'm.guardArgs()'],
+      ['guardArgs({}) 缺 script', 'm.guardArgs({})'],
+      ['guardArgs known 条目畸形', "m.guardArgs({ script: 'x.mjs', known: ['--ok <v>', 'not a flag'] })"],
+    ]
+    const problems = []
+    for (const [label, expr] of cases) {
+      const code = 'import(' + JSON.stringify(guardUrl) + ').then((m) => { ' + expr + ' })'
+      let res
+      try {
+        execFileSync(process.execPath, ['-e', code], { cwd: ROOT, encoding: 'utf8', timeout: 20000, stdio: ['ignore', 'pipe', 'pipe'] })
+        res = { status: 0, stderr: '' }
+      } catch (error) {
+        res = { status: typeof error.status === 'number' ? error.status : -1, stderr: String(error.stderr ?? '') }
+      }
+      if (res.status === 0) problems.push('args-guard 入参自校验缺失：' + label + ' 仍以 0 退出（假绿入口）')
+      else if (!/guardArgs:/.test(res.stderr)) problems.push('args-guard 入参自校验异常路径不符：' + label + ' exit=' + res.status)
+    }
+    if (problems.length === 0) ok('C18 args-guard 入参自校验（' + cases.length + ' 条非法声明必须非 0 退出）')
+    else fail('C18 args-guard 入参自校验', problems.join('; '))
+  }
 }
 
 // ---------- 输出 ----------

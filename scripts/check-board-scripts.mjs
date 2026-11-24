@@ -4,16 +4,29 @@
  * 1) web/board.html 每个内联 <script> 语法检查（vm.compileFunction，等价 node --check）
  * 2) 无原型演示数据残留（DATA.missions / 演示值 / 高保真演示）
  * 3) 无写接口调用（/api/actions）
- * 用法：node scripts/check-board-scripts.mjs [--file <html>] [--json]
- * 退出码：0 PASS / 1 FAIL / 2 读取失败
+ * 用法：node scripts/check-board-scripts.mjs [--file <html>] [--json] [-h|--help]
+ * 退出码：0 PASS / 1 FAIL / 2 读取被检文件失败 / 3 参数错误
  */
 import { readFileSync, existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import vm from 'node:vm'
 import { execFileSync } from 'node:child_process'
+import { guardArgs } from './lib/args-guard.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+// 参数 fail-closed 守卫必须早于任何读文件/检查（0.14.2 C7）
+guardArgs({
+  script: 'check-board-scripts.mjs',
+  known: ['--json', '--file <path>'],
+  description: '看板静态门禁：内联脚本语法 / 无演示数据残留 / 无写接口 / board-2.0.css 完整性',
+  argHelp: { '--json': '以 JSON 输出全部检查项与结果', '--file': '指定被检查的 HTML 文件（默认 web/board.html）' },
+  examples: [
+    'node scripts/check-board-scripts.mjs',
+    'node scripts/check-board-scripts.mjs --file web/board.html',
+    'node scripts/check-board-scripts.mjs --json',
+  ],
+})
 const args = process.argv.slice(2)
 const json = args.includes('--json')
 const fileArg = args.indexOf('--file')

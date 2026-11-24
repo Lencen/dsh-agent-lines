@@ -11,6 +11,19 @@ import { join, dirname, resolve } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { LineStore } from '../lib/store.js'
+import { guardArgs } from './lib/args-guard.mjs'
+
+// 参数 fail-closed 守卫必须早于任何建库/检查（0.14.2 C7.1/C7.2）
+guardArgs({
+  script: 'business-smoke.mjs',
+  known: ['--json'],
+  description: '0.8.0 业务冒烟：send/claim/fail/trace/redeliver/deliver/ack/purge/doctor 全链路（发版前必跑）',
+  argHelp: { '--json': '以 JSON 输出全部检查项与结果' },
+  examples: [
+    'node scripts/business-smoke.mjs',
+    'node scripts/business-smoke.mjs --json',
+  ],
+})
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const json = process.argv.includes('--json')

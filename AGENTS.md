@@ -113,10 +113,11 @@ Lifecycle three states (0.10.0+): `active` (delivering), `hibernating` (parked: 
 ## 6. Versioning and gates (before any release)
 
 ```bash
-npm test             # unit tests + docs consistency 20 + bento 15 + business smoke 9 + board smoke 8 + board scripts 30 + views smoke 40
+npm test             # unit tests + docs consistency 22 + bento 15 + business smoke 9 + board smoke 8 + board scripts 30 + views smoke 40
 npm run test:board-e2e -- --require-chrome  # release gate: headless board render; missing Chrome fails (exit 2)
 ```
 
+- Gate scripts are argument fail-closed (0.14.2): unknown flag / malformed value / `--file` pointing at a nonexistent file → exit **3** (and no PASS line is printed); `--help` → exit **0** and prints usage only (no checks run); exit **2** stays reserved for "the default target file cannot be read".
 - Breaking = envelope fields, state-machine semantics, error-code meaning, invariants → CHANGELOG "breaking" section + minor bump.
 - Release execution belongs to **github-maintenance-line**; this line ships candidate package + execution sheet only (never push/tag/Release/npm publish).
 
