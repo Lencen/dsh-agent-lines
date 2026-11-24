@@ -6,7 +6,7 @@ English | [中文](README.md)
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> Current release: v0.14.1 (2026-11-24) — three prototype deltas from 8134b73db (owner styles / 390 cost-row wrap / cost chart legend); Board 2.0 100% prototype parity; v0.14.0 is the fallback.
+> Current release: v0.14.2 (candidate, unreleased) — three prototype deltas from 8134b73db (owner styles / 390 cost-row wrap / cost chart legend); Board 2.0 100% prototype parity; v0.14.0 is the fallback.
 
 > Community plugin for DeepSeek Harness. Not an official DeepSeek product.
 
@@ -690,7 +690,7 @@ This is transport-level protection. It does not guarantee that two agents will n
 
 ## Status
 
-Current release `0.14.1` (maintenance phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
+Current release `0.14.2` (candidate, unreleased) (maintenance phase). Pin both the DSH version and this plugin's version; read CHANGELOG / KNOWN_ISSUES before upgrading.
 
 ## Credits
 

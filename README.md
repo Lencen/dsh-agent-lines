@@ -6,7 +6,7 @@
 
 GitHub: [Lencen/dsh-agent-lines](https://github.com/Lencen/dsh-agent-lines)
 
-> 当前发布：v0.14.1（2026-11-24）——按原型 8134b73db 补齐 3 处设计 delta（owner 样式 / 390 cost 行换行 / cost 图 legend）；Board 2.0 原型 100% 对齐；v0.14.0 为回退位。
+> 当前发布：v0.14.2（候选，未发布）——按原型 8134b73db 补齐 3 处设计 delta（owner 样式 / 390 cost 行换行 / cost 图 legend）；Board 2.0 原型 100% 对齐；v0.14.0 为回退位。
 
 > DeepSeek Harness 社区插件，不是 DeepSeek 官方产品。
 
@@ -700,7 +700,7 @@ claim 不会对每个新会话自动执行：需要用户明确要求，或运�
 
 ## 状态
 
-当前发布 `0.14.1`（维护期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
+当前发布 `0.14.2`（候选，未发布）（维护期）。请同时锁定 DSH 与插件版本；升级前读 CHANGELOG / KNOWN_ISSUES。
 
 ## 致谢
 
