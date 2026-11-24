@@ -96,6 +96,7 @@
 | D8 | 回执须原样带回 taskRef | 回执不带 taskRef → byTaskRef 聚合不到 → 看板任务消失（用户 2026-11-24 09:33 实测）；回执必须原样带回 taskRef | 各线（协议） |
 | D9 | legacy 板保留示意数据 | web/board-legacy.html:700-702 仍有 3 条示意任务；0.14.2 已把它移出主路径（默认入口不再进入），本版不修但必须登记；不得用 D9 给默认 board2 路径的假数据开脱 | 插件（0.15.x） |
 | D10 | 判据编号无中心登记 | 同一功能被多套编号指代（判据侧 C1–C9 / 门禁侧 C17、C18 / views-smoke 的 V 编号 / docs checks 计数），全仓没有一份「编号 ↔ 功能 ↔ 证据」登记表：对账时容易把 C7.8 与 C17、C7.7 与 C18 当成两件事，或把 docs checks 数（20/21/22）当成版本差异。判据本身不改，本版只在文档里点名此风险 | 文档线（0.14.3 或独立文档项） |
+| D12 | 站点「最新版本」行与 package.json 无一致性判据 | docs/index.html 与 docs/en/index.html 的版本声明**没有任何判据**约束它与 package.json 同步：C14 只保证站内声明互一致（index×2 + market-index×2），C14b 只保证 == 最高 git tag，C15 只查 README 的两处「当前发布」行。后果：候选期 package.json=0.14.2 与站点 v0.14.1 并存却无人告警（本版正是如此，属有意为之但无判据兜底），长期必然漂移。0.14.3 补 C19：版本声明点清单从文件系统派生（不手写路径），统一校验「声明点 ↔ package.json ↔ 最高 tag」三者关系 | 文档线（0.14.3） |
 
 > **D9 补充（Lead 12:06 任务E 结论）**：`web/board-legacy.html` 为**人工参照基线**——唯一读方是 `scripts/board2-views-smoke.mjs:41` 的 V10 判据，无任何写方；入库于 74b8368「S1 基建 legacy 冻结」，实测 sha256 与基线一致（MATCH=true）。因此**非机器改写**：不做 `git rm --cached`、不加忽略规则、不改动该文件本身。
 
