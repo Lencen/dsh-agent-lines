@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="/vendor/board2-plugin.css">
 </head>
 <body>
+<!-- 0.14.2：示例数据全页横幅（仅 ?demo=1 显示；默认 hidden） -->
+<div id="bd-demo-banner" class="bd-demo-banner" hidden>示例数据（非真实）</div>
 <main id="bd-wi-page" data-wi-page-view="detail" class="bd-wi-page">
 <div class="bd-wi-page-inner">
 <div class="bd-wi-page-top">
@@ -22,7 +24,7 @@
 <span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span>
 <span class="bd-badge bd-badge-warn">示例关联</span>
 </div>
-<p class="bd-wi-page-meta">owner manager · 创建 2026-11-12 15:36:40 · 更新 2026-11-12 17:46:40</p>
+<p class="bd-wi-page-meta">owner 未采集（该字段未接入）· 创建 未采集（无创建时刻）· 更新 未采集（无更新时刻）· workItems 契约未实现（D1）</p>
 <p class="bd-wi-source">来源：用户提出 · 目标 · sourceMessageId 未采集 · 目标归属：目标内（goal-0120）</p>
 </header>
 <section class="bd-wi-sec bd-wi-sec-metrics" id="bd-wi-sec-metrics">
@@ -316,7 +318,7 @@
 <span>estimate：估算（非计费） · basis：session-level · coverage：覆盖线数 1 / 样本 3 / 采样 60000ms / 保留 30天 · overlapWarning：各 workItem token 不可横向加总 · agent：示例 12 次</span>
 </div>
 <p class="bd-wi-notes">固定口径：各 workItem token 不可横向加总；示例数据标「示例 · 待 0.13 契约」，缺失字段标「未采集（待 0.13 契约）」；完成率分母 0 显示「—/未拆解」，不显示 0%。字段来源：workItems 契约 v0.4 / lineTasks.byTaskRef（真实）。</p>
-<p class="bd-source-line">数据快照 2026-11-13 09:28:52 · 只读视图 · 不提供消息/审批/写操作。</p>
+<p class="bd-source-line" id="bd-wi-snapshot">数据快照 未采集（无快照时刻）· 该字段未接入 · 只读视图 · 不提供消息/审批/写操作。</p>
 </section>
 <nav class="bd-wi-sec bd-wi-sec-nav" id="bd-wi-sec-nav" aria-label="大任务导航">
 <a href="#" class="bd-wi-back" data-wi-back="">← 返回总览</a>
@@ -332,10 +334,17 @@
   var STATUS = { proposed: '待确认', confirmed: '未拆解', decomposing: '拆解中', active: '进行中', paused: '暂停', done: '完成', cancelled: '已取消' }
   var ORIGIN = { goal: '目标内', plan: '计划内', rhythm: '节奏内', 'ad-hoc': '目标外临时' }
   var DEFAULT_WF = ['设定', '拆解', '排期', '执行', '审阅', '验收', '交付']
-  var EXAMPLE = {
-    'wi-demo-1': { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', origin: 'goal', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200, updatedAt: 1794555937000, linked: ['V60-T6d', 'V60-T7c'], currentStage: '执行', synthetic: true },
-    'wi-demo-2': { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', origin: 'ad-hoc', l2: 0, l3: 0, agentRuns: null, tokenTotal: null, updatedAt: 1794547000000, linked: [], currentStage: null, synthetic: true },
-    'wi-demo-3': { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', origin: 'goal', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500, updatedAt: 1794538000000, linked: ['V60-T9b'], currentStage: '交付', synthetic: true }
+  // 0.14.2 C1：示例数据不再是默认路径常量，只在 ?demo=1 时惰性构造（默认路径不执行、不回落）。
+  var DEMO_ITEMS = null
+  function demoItems() {
+    if (!DEMO_ITEMS) {
+      DEMO_ITEMS = [
+        { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', origin: 'goal', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200, updatedAt: 1794555937000, linked: ['V60-T6d', 'V60-T7c'], currentStage: '执行', synthetic: true },
+        { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', origin: 'ad-hoc', l2: 0, l3: 0, agentRuns: null, tokenTotal: null, updatedAt: 1794547000000, linked: [], currentStage: null, synthetic: true },
+        { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', origin: 'goal', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500, updatedAt: 1794538000000, linked: ['V60-T9b'], currentStage: '交付', synthetic: true }
+      ]
+    }
+    return DEMO_ITEMS
   }
   function q(n) { var m = location.search.match(new RegExp('[?&]' + n + '=([^&]*)')); return m ? decodeURIComponent(m[1]) : '' }
   function $(s, r) { return (r || document).querySelector(s) }
@@ -367,7 +376,12 @@
     var head = $('.bd-wi-page-head'); var badges = $$('.bd-badge', head || document)
     if (badges[0]) badge(badges[0], STATUS[it.status] || '未采集', it.status === 'active' ? 'bd-badge-info' : it.status === 'paused' ? 'bd-badge-warn' : 'bd-badge-l2')
     if (badges[1]) badge(badges[1], it.priority || '优先级未采集', 'bd-badge-priority')
-    $('.bd-wi-page-meta').textContent = 'owner ' + (it.owner || '未采集') + ' · 更新 ' + tfull(it.updatedAt)
+    // 0.14.2 C4.4：顶部 meta 与数据一致——有 created_at/updated_at 显示时刻，无则显式「未采集（无…时刻）」+ 原因；
+    // demo 示例数据若带值则标「（示例）」，不把示例时刻冒充真实时刻。
+    var demoMark = it.synthetic === true ? '（示例）' : ''
+    $('.bd-wi-page-meta').textContent = 'owner ' + (it.owner || '未采集（该字段未接入）') +
+      ' · 创建 ' + (it.createdAt ? tfull(it.createdAt) + demoMark : '未采集（无创建时刻）· workItems 契约未实现 D1' + demoMark) +
+      ' · 更新 ' + (it.updatedAt ? tfull(it.updatedAt) + demoMark : '未采集（无更新时刻）· workItems 契约未实现 D1' + demoMark)
     var src = $('.bd-wi-source'); if (src) src.textContent = '来源：示例 · 待 0.13 契约 · sourceMessageId 未采集 · 目标归属：' + (ORIGIN[it.origin] || '未采集')
   }
   function renderEvidence(it, live) {
@@ -533,7 +547,7 @@
     function setLink(a, item, label, emptyText) {
       if (!a) return
       if (item) {
-        a.href = '/workitem?id=' + encodeURIComponent(item.id)
+        a.href = '/workitem?id=' + encodeURIComponent(item.id) + (demoOn() ? '&demo=1' : '')
         a.textContent = label(item)
         a.removeAttribute('aria-disabled')
         a.classList.remove('bd-wi-empty')
@@ -552,19 +566,67 @@
     var g = $('#bd-wi-page-gantt'); if (g) g.innerHTML = '<p class="bd-wi-empty">' + esc(msg) + '</p>'
     var tw = $('#bd-wi-page-tablewrap'); if (tw) tw.innerHTML = '<p class="bd-wi-empty">' + esc(msg) + '</p>'
   }
+  // 0.14.2：?demo=1 显式示例开关（只读 location.search，不用 storage，每次加载重算）
+  function demoOn() { return /[?&]demo=1(?:&|$)/.test(location.search) }
+  // 0.14.2 默认路径：先清掉 HTML 里原型期的示例脚手架（8 分区数字/7 阶段工作流/6 行甘特表），
+  // 之后再按真实 API 数据渲染；无数据则保持显式「未采集（D1）」而不是示例。
+  function clearExampleScaffold() {
+    // 面包屑也来自原型示例标题，默认路径必须一起清掉（否则 /workitem?id=<真实 id> 仍留示例标题）
+    var crumb = $('.bd-wi-crumb'); if (crumb) crumb.textContent = '总览 / L1.5 大任务 / 未接入（D1）'
+    var head = $('.bd-wi-page-head')
+    if (head) $$('.bd-badge', head).forEach(function (b) { b.textContent = '未采集'; b.className = 'bd-badge bd-badge-muted' })
+    var meta = $('.bd-wi-page-meta'); if (meta) meta.textContent = 'owner 未采集（该字段未接入）· 创建 未采集（无创建时刻）· 更新 未采集（无更新时刻）· workItems 契约未实现 D1'
+    var src = $('.bd-wi-source'); if (src) src.textContent = '来源：未采集（workItems 契约未实现 · KNOWN_ISSUES D1）'
+    $$('#bd-wi-sec-metrics .bd-wi-metric').forEach(function (m) {
+      var v = $('.bd-wi-metricv', m); if (v) v.textContent = '未采集'
+      var k = $('.bd-wi-mark', m); if (k) k.textContent = '未采集'
+    })
+    var strip = $('.bd-wi-wfstrip'); if (strip) strip.innerHTML = '<p class="bd-wi-empty">工作流未采集（workItems 契约未实现 · KNOWN_ISSUES D1）；不按消息推断</p>'
+    var wfsub = $('#bd-wi-sec-workflow .bd-wi-secsub'); if (wfsub) wfsub.textContent = '工作流未采集（workItems 契约未实现 · KNOWN_ISSUES D1）；不按消息推断'
+    var g = $('#bd-wi-page-gantt'); if (g) g.innerHTML = '<p class="bd-wi-empty">无时间数据：workItems 契约未实现（KNOWN_ISSUES D1），不伪造时间轴。</p>'
+    var tw = $('#bd-wi-page-tablewrap'); if (tw) tw.innerHTML = '<p class="bd-wi-empty">表格未采集（workItems 契约未实现 · KNOWN_ISSUES D1）；不显示示意行。</p>'
+    var gn = $('#bd-wi-gantt-note'); if (gn) gn.textContent = '甘特未绘制：真实首末消息时间未采集（不伪造时间轴）'
+    var board = $('.bd-wi-board'); if (board) board.innerHTML = '<div class="bd-wi-unlinked"><b>未拆解</b><span class="bd-wi-empty">拆解未采集（workItems 契约未实现 · KNOWN_ISSUES D1）；不显示示意行。</span></div>'
+    var ev = $('#bd-wi-evidence-list'); if (ev) ev.innerHTML = '<p class="bd-wi-empty">时间线证据未采集（workItems 契约未实现 · KNOWN_ISSUES D1）</p>'
+    var est = $('.bd-wi-estimate span'); if (est) est.textContent = 'estimate：未采集（workItems 契约未实现 · KNOWN_ISSUES D1） · basis：— · coverage：—；不显示示意数字'
+    var notes = $('.bd-wi-notes'); if (notes) notes.textContent = '默认视图不显示示意数据：workItems 契约未实现（KNOWN_ISSUES D1）；缺失字段显示「未采集」，不显示 0 或示例数字。'
+    $$('.bd-wi-sec-nav .bd-wi-navlink').forEach(function (a) { a.textContent = '无可导航项'; a.removeAttribute('href'); a.setAttribute('aria-disabled', 'true'); a.classList.add('bd-wi-empty') })
+  }
   function install() {
     fetch('/api/board-config', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (cfg) {
       if (!cfg || !cfg.board2) { emptyAll('功能未启用（BOARD2 off）· 只读'); return }
       $$('.bd-wi-back').forEach(function (a) { a.href = '/' })
       var id = q('id')
       if (!id) { emptyAll('未指定大任务（空态）'); return }
+      var demo = demoOn()
+      if (demo) { var banner = document.getElementById('bd-demo-banner'); if (banner) banner.hidden = false }
+      // 默认路径：清掉原型示例脚手架；wi-demo-* 直接给明确状态，不加载示例、不渲染示例甘特
+      if (!demo) clearExampleScaffold()
+      if (!demo && /^wi-demo/.test(id)) {
+        var dh = $('.bd-wi-page-title'); if (dh) dh.textContent = '该大任务为示例数据，已移出默认视图'
+        var dc = $('.bd-wi-crumb'); if (dc) dc.textContent = '总览 / L1.5 大任务 / 未接入（D1）'
+        var dm = $('.bd-wi-page-meta'); if (dm) dm.textContent = '该大任务为示例数据，已移出默认视图（workItems 契约未实现 · KNOWN_ISSUES D1）；不渲染示例甘特/工作流'
+        var ds = $('.bd-wi-source'); if (ds) ds.textContent = '来源：该大任务为示例数据，已移出默认视图；?demo=1 可复现原型对齐截图（非真实数据）'
+        return
+      }
       fetch('/api/work-items', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (j) {
-        var items = (j && j.available && Array.isArray(j.items) && j.items.length) ? j.items : Object.keys(EXAMPLE).map(function (k) { return EXAMPLE[k] })
-        var it = items.filter(function (x) { return x.id === id })[0] || EXAMPLE[id]
-        if (!it) { emptyAll('未找到该大任务（空态）'); return }
+        // demo：恢复原示例渲染（API 有真实 items 时仍优先真实）；默认：只认 API，绝不回落示例
+        var items = demo
+          ? ((j && j.available && Array.isArray(j.items) && j.items.length) ? j.items : demoItems())
+          : ((j && j.available && Array.isArray(j.items)) ? j.items : [])
+        var it = items.filter(function (x) { return x.id === id })[0] || (demo ? demoItems().filter(function (x) { return x.id === id })[0] : null)
+        if (!it) {
+          if (demo) { emptyAll('未找到该大任务（空态）'); return }
+          var nh = $('.bd-wi-page-title'); if (nh) nh.textContent = '大任务未接入（workItems 契约未实现 · KNOWN_ISSUES D1）'
+          return
+        }
         renderHeader(it); renderMetrics(it, null); renderEvidence(it, null); renderNav(items, id)
         fetch('/api/live', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (live) {
           var by = (live && live.lineTasks && live.lineTasks.byTaskRef) || []
+          var snap = document.getElementById('bd-wi-snapshot')
+          if (snap) snap.textContent = (live && (live.generatedAt || live.snapshotAt))
+            ? ('数据快照 ' + tfull(live.generatedAt || live.snapshotAt) + ' · 只读视图 · 不提供消息/审批/写操作。')
+            : '数据快照 未采集（无快照时刻）· 该字段未接入 · 只读视图 · 不提供消息/审批/写操作。'
           renderMetrics(it, by)
           renderEvidence(it, live)
           renderWorkflow(live, it)

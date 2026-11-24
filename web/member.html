@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="/vendor/board2-plugin.css">
 </head>
 <body>
+<!-- 0.14.2：示例数据全页横幅（仅 ?demo=1 显示；默认 hidden） -->
+<div id="bd-demo-banner" class="bd-demo-banner" hidden>示例数据（非真实）</div>
 <main id="bd-member-page" class="bd-member-page">
 <div class="bd-member-page-inner">
 <div class="bd-member-top">
@@ -277,21 +279,30 @@
 </details>
 </div>
 </section>
-<p class="bd-source-line">只读视图 · 缺失数据均显示「未采集（待 0.13 契约）」；成员执行次数/token 无成员级契约，不按线/会话分摊。数据时刻 2026-11-13 09:28:52。</p>
+<p class="bd-source-line" id="bd-member-snapshot">只读视图 · 缺失数据均显示「未采集（待 0.13 契约）」；成员执行次数/token 无成员级契约，不按线/会话分摊。数据时刻 未采集（无快照时刻）· 该字段未接入。</p>
 </div>
 </main>
 <script>
 (function () {
   'use strict'
   var PAL = ['bd-av-c0', 'bd-av-c1', 'bd-av-c2', 'bd-av-c3', 'bd-av-c4', 'bd-av-c5', 'bd-av-c6', 'bd-av-c7', 'bd-av-c8']
-  var EXAMPLE_WI = [
-    { id: 'wi-demo-1', title: '0.12.0 发布准备', linked: ['V60-T6d', 'V60-T7c'] },
-    { id: 'wi-demo-2', title: '官网文案改版', linked: [] },
-    { id: 'wi-demo-3', title: '视频 v2 收尾', linked: ['V60-T9b'] }
-  ]
+  // 0.14.2 C1：示例归组不再是默认路径常量，只在 ?demo=1 时惰性构造（默认路径不执行）。
+  var DEMO_WI = null
+  function demoWorkItemGroups() {
+    if (!DEMO_WI) {
+      DEMO_WI = [
+        { id: 'wi-demo-1', title: '0.12.0 发布准备', linked: ['V60-T6d', 'V60-T7c'] },
+        { id: 'wi-demo-2', title: '官网文案改版', linked: [] },
+        { id: 'wi-demo-3', title: '视频 v2 收尾', linked: ['V60-T9b'] }
+      ]
+    }
+    return DEMO_WI
+  }
   var STATUS = { active: '进行中', paused: '暂停', done: '完成', cancelled: '已取消' }
   function fnv1a(s) { var h = 0x811c9dc5; s = String(s || ''); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) } return h >>> 0 }
   function q(n) { var m = location.search.match(new RegExp('[?&]' + n + '=([^&]*)')); return m ? decodeURIComponent(m[1]) : '' }
+  // 0.14.2：?demo=1 显式示例开关（只读 location.search，不用 storage，每次加载重算）
+  function demoOn() { return /[?&]demo=1(?:&|$)/.test(location.search) }
   function $(s, r) { return (r || document).querySelector(s) }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)) }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] }) }
@@ -304,10 +315,12 @@
     col.innerHTML = '<h3>' + heading + '</h3>' + body + '<p class="bd-member-src">' + esc(srcPath ? srcPath + '#' + refs.join('；#') : '引用：未采集（缺 charter）') + '</p>'
   }
   function renderTasks(tasks, refs, byMap) {
+    var demo = demoOn()
     if (!refs.length) { tasks.innerHTML = '<p class="bd-wi-empty">未采集（无可归并 taskRef）</p>'; return }
     var groups = []
     var used = {}
-    EXAMPLE_WI.forEach(function (w) {
+    // 0.14.2：默认路径不按示例归组（任务一律走「未关联 / 空态」）；?demo=1 才恢复 L1.5 归组
+    if (demo) demoWorkItemGroups().forEach(function (w) {
       var mine = (w.linked || []).filter(function (r) { return refs.indexOf(r) >= 0 })
       if (mine.length) { groups.push({ title: w.title, id: w.id, refs: mine }); mine.forEach(function (r) { used[r] = true }) }
     })
@@ -321,10 +334,12 @@
           '<span class="bd-member-taskname">' + (hit ? 'L2 线任务 · 消息 ' + (hit.messageCount || 0) + ' 条' : 'L2 线任务') + '</span>' +
           '<span class="bd-member-taskat">' + (hit ? new Date(hit.latestAt).toLocaleString('zh-CN', { hour12: false }) : '未采集') + '</span>' +
           '<span class="bd-member-taskn">' + l3 + '</span></summary>' +
-          '<div class="bd-member-l3group"><b class="bd-member-l3title">L3 拆分任务 · 1（示例/未采集）</b><div class="bd-member-l3row"><span class="mono">' + esc(ref) + '#L3</span> <span class="bd-badge bd-badge-warn">示例</span><span>L3 拆分任务未采集（0.13 契约）</span><span class="bd-member-taskat">—</span></div></div></details>'
+          (demo
+            ? '<div class="bd-member-l3group"><b class="bd-member-l3title">L3 拆分任务 · 1（示例/未采集）</b><div class="bd-member-l3row"><span class="mono">' + esc(ref) + '#L3</span> <span class="bd-badge bd-badge-warn">示例</span><span>L3 拆分任务未采集（0.13 契约）</span><span class="bd-member-taskat">—</span></div></div>'
+            : '<div class="bd-member-l3group"><b class="bd-member-l3title">L3 拆分任务未采集（workItems 契约未实现 · KNOWN_ISSUES D1）</b></div>') + '</details>'
       }).join('')
       var badge = g.title ? '<span class="bd-badge bd-badge-l15">L1.5</span>' : '<span class="bd-badge bd-badge-muted">未关联 L1.5</span>'
-      var title = g.title ? '<a class="bd-member-taskname" href="/workitem?id=' + encodeURIComponent(g.id) + '">' + esc(g.title) + '</a>' : ''
+      var title = g.title ? '<a class="bd-member-taskname" href="/workitem?id=' + encodeURIComponent(g.id) + (demo ? '&demo=1' : '') + '">' + esc(g.title) + '</a>' : ''
       return '<details class="bd-member-taskgroup" open><summary>' + badge + title + '<span class="bd-member-taskn">L2 ' + g.refs.length + '</span></summary>' + items + '</details>'
     }).join('')
   }
@@ -332,6 +347,7 @@
     fetch('/api/board-config', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (cfg) {
       if (!cfg || !cfg.board2) { document.body.innerHTML = '<p style="padding:24px;color:#6b6f76">功能未启用（BOARD2 off）· 只读</p>'; return }
       $$('.bd-member-back').forEach(function (a) { a.href = '/' })
+      if (demoOn()) { var banner = document.getElementById('bd-demo-banner'); if (banner) banner.hidden = false }
       var key = q('id')
       if (!key) { $('.bd-member-name').textContent = '未指定成员（空态）'; return }
       Promise.all([
@@ -340,6 +356,9 @@
       ]).then(function (bundle) {
         var live = bundle[0]
         var membersResp = bundle[1]
+        // 0.14.2 C4.4：数据时刻取自 /api/live.generatedAt|snapshotAt，缺失显式「未采集（无快照时刻）」，不写死日期
+        var snapEl = document.getElementById('bd-member-snapshot')
+        if (snapEl) snapEl.textContent = '只读视图 · 缺失数据均显示「未采集（待 0.13 契约）」；成员执行次数/token 无成员级契约，不按线/会话分摊。数据时刻 ' + ((live && (live.generatedAt || live.snapshotAt)) ? new Date(live.generatedAt || live.snapshotAt).toLocaleString('zh-CN', { hour12: false }) : '未采集（无快照时刻）· 该字段未接入')
         var member = (membersResp && Array.isArray(membersResp.members)) ? membersResp.members.filter(function (m) { return m.label === key })[0] : null
         var lines = (live && live.lines) || []
         var ws = ((live && live.teamWorkspace) || {}).lines || []

@@ -86,13 +86,15 @@ For failed messages (until G1 is fixed): `dsh-agent-lines --json tail --line <li
 
 | ID | Gap | Current state / required fields | Suggested owner |
 |---|---|---|---|
-| D1 | work-items entity contract | /api/work-items is still a stub (available:false); needs id/title/status/stage/linkedRefs/sourceMessageId/planStartEnd | plugin (contract v0.7) |
+| D1 | work-items entity contract | /api/work-items is still a stub (available:false); needs id/title/status/stage/linkedRefs/sourceMessageId/planStartEnd. Sample data has been removed from the default view; the page now shows "未接入" (workItems contract v0.7) | plugin (contract v0.7) |
 | D2 | per-role agent ownership | team-board.members[] only has lead, no line/label ownership; needs a line field | macs/official projection |
 | D3 | member-level runs / tokens | only per-line (session-level) sampling; must not be split per member; needs a member-level token projection | plugin + DSH projection |
 | D4 | work duration / parallel semantics | no sampled duration or parallel-semantics field | plugin (sampling) |
-| D5 | official L3 task view | official Agent Teams task API has no L3 view | macs/official |
+| D5 | official L3 task view | official Agent Teams task API has no L3 view; snapshot-expiry rule: a team-board.json whose generatedAt is older than 24h must not show numbers — show "未采集（快照过期 · 最近更新 <date>）" explicitly | macs/official |
 | D6 | task completion/cancel terminal state | no task-state field; only message-terminal approximation is possible today | plugin (contract v0.7) |
 | D7 | 104 legacy reference snapshot | no usable 104 snapshot fixture (samples/104-* is static reference only) | uiux |
+| D8 | receipts must carry taskRef verbatim | a receipt without taskRef is not aggregated by byTaskRef, so the board task disappears (user-reported 2026-11-24 09:33); receipts must carry taskRef verbatim | all lines (protocol) |
+| D9 | legacy board keeps sample data | web/board-legacy.html:700-702 still holds 3 sample tasks; 0.14.2 removed it from the main path (default entry no longer routes here) — registered, not fixed in this version; D9 must not be used to excuse fake data on the default board2 path | plugin (0.15.x) |
 
 ### D6 message-terminal approximation semantics (must know)
 

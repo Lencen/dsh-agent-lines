@@ -5,6 +5,8 @@
   function $(s, r) { return (r || document).querySelector(s) }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)) }
   function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] }) }
+  // 0.14.2：?demo=1 显式示例开关（仅用于原型对齐截图复现）。只读 location.search，不用 storage，每次加载重算。
+  function demoOn() { return /[?&]demo=1(?:&|$)/.test(location.search) }
   // 计划文本 → 步骤列表（支持 P1 xx / - a / 1) a / 单段视为 1 步）
   function parsePlan(raw) {
     var text = String(raw == null ? '' : raw).trim()
@@ -31,7 +33,8 @@
   function fmtTime(ms) { try { return new Date(ms).toLocaleTimeString('zh-CN', { hour12: false }) } catch (e) { return '--:--' } }
   function renderHeader(data) {
     state.live = data
-    var t = $('#bd-data-time'); if (t) t.textContent = data && (data.generatedAt || data.snapshotAt) ? fmtTime(data.generatedAt || data.snapshotAt) : fmtTime(Date.now())
+    // 0.14.2 C4.2：无 generatedAt/snapshotAt 时不得拿当前时钟冒充数据时刻
+    var t = $('#bd-data-time'); if (t) t.textContent = data && (data.generatedAt || data.snapshotAt) ? fmtTime(data.generatedAt || data.snapshotAt) : '未采集（无快照时刻）'
     var team = $('#bd-team-name'); if (team) team.textContent = (data && data.teamName) || '团队'
     var v = $('#bd-version'); if (v) v.textContent = '版本 ' + (state.version || (data && data.version) || '未采集')
   }
@@ -43,7 +46,6 @@
       'bd-ov-plan-body': '计划未采集',
       'bd-ov-workflow-body': '工作流未采集',
       'bd-ov-rhythm-body': '节奏未采集',
-      'bd-ov-l15-body': 'L1.5 大任务未采集',
       'bd-ov-kpi': '运行摘要 KPI 未采集',
       'bd-ov-lines': 'L2 线健康未采集',
       'bd-ov-decisions': '待决策未采集',
@@ -83,6 +85,7 @@
       var el = document.getElementById(id); if (el) el.textContent = '未采集'
     })
     var t = document.getElementById('bd-data-time'); if (t) t.textContent = '未采集'
+    var l15 = document.getElementById('bd-ov-l15-body'); if (l15) l15.innerHTML = l15EmptyHtml(reason)
   }
   function renderWorkflow(data) {
     var body = $('#bd-ov-workflow-body'); if (!body) return
@@ -167,6 +170,7 @@
     return { list: list, byState: !!by }
   }
   function renderRuntime(data) {
+    var demo = demoOn()
     if (!data) return
     var banners = $('#bd-ov-banners')
     var kpiEl = $('#bd-ov-kpi')
@@ -263,7 +267,7 @@
     if (banners) {
       var bh = ''
       if (!data || data.available !== true) bh += '<p class="bd-error-banner">读取失败：/api/live 不可用，显示的是上次快照或空数据。</p>'
-      bh += '<p class="bd-info-banner">L1.5 大任务为示例（workItems 契约未实现 · KNOWN_ISSUES D1）；本区仅显示可派生数据。</p>'
+      bh += '<p class="bd-info-banner">' + (demo ? '示例数据（非真实）：仅用于原型对齐截图复现，默认视图不显示。' : 'L1.5 大任务未接入（workItems 契约未实现 · KNOWN_ISSUES D1）；本区仅显示可派生数据。') + '</p>'
       banners.innerHTML = bh
     }
     if (srcEl) srcEl.textContent = ['数据时刻 ' + fmtDateTime(data && data.generatedAt), '任务数（distinct taskRef）与消息数分列不混用', '官方 L3 未采集', '按线参与任务数之和可大于任务总数（任务可跨线）', '只读 · 无发消息/审批/交接控件'].join(' · ')
@@ -308,11 +312,17 @@
       return '<li class="bd-ov-rhythm-row"><span class="bd-ov-rhythm-no" aria-hidden="true">' + (i + 1) + '</span><span>' + esc(t) + '</span></li>'
     }).join('') + '</ol>'
   }
-  var L15_EXAMPLE = [
-    { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', concurrent: 2, stage: '执行', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200, linked: ['V60-T6d', 'V60-T7c'], l2list: ['V60-T6d', 'V60-T7c'], l3list: ['V60-T6d#L3a', 'V60-T6d#L3b', 'V60-T7c#L3a', 'V60-T7c#L3b'], l2done: 1, l3done: 1 },
-    { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', concurrent: 0, stage: null, l2: 0, l3: 0, agentRuns: null, tokenTotal: null, linked: [], l2list: [], l3list: [], l2done: 0, l3done: 0 },
-    { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', concurrent: 0, stage: '交付', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500, linked: ['V60-T9b'], l2list: ['V60-T9b'], l3list: ['V60-T9b#L3a', 'V60-T9b#L3b'], l2done: 1, l3done: 2 }
-  ]
+  // 0.14.2 C1：示例数据不再是默认路径常量，只在 ?demo=1 时惰性构造（默认路径不执行、不回落）。
+  var DEMO_ITEMS = null
+  function demoWorkItems() {
+    if (DEMO_ITEMS) return DEMO_ITEMS
+    DEMO_ITEMS = [
+      { id: 'wi-demo-1', title: '0.12.0 发布准备', status: 'active', priority: 'P0', concurrent: 2, stage: '执行', l2: 2, l3: 4, agentRuns: 12, tokenTotal: 48200, linked: ['V60-T6d', 'V60-T7c'], l2list: ['V60-T6d', 'V60-T7c'], l3list: ['V60-T6d#L3a', 'V60-T6d#L3b', 'V60-T7c#L3a', 'V60-T7c#L3b'], l2done: 1, l3done: 1 },
+      { id: 'wi-demo-2', title: '官网文案改版', status: 'paused', priority: 'P2', concurrent: 0, stage: null, l2: 0, l3: 0, agentRuns: null, tokenTotal: null, linked: [], l2list: [], l3list: [], l2done: 0, l3done: 0 },
+      { id: 'wi-demo-3', title: '视频 v2 收尾', status: 'done', priority: 'P1', concurrent: 0, stage: '交付', l2: 1, l3: 2, agentRuns: 8, tokenTotal: 20500, linked: ['V60-T9b'], l2list: ['V60-T9b'], l3list: ['V60-T9b#L3a', 'V60-T9b#L3b'], l2done: 1, l3done: 2 }
+    ]
+    return DEMO_ITEMS
+  }
   var L15_STATUS = { active: '进行中', paused: '暂停', done: '完成', cancelled: '已取消' }
   var L15_STAGES = ['设定', '拆解', '排期', '执行', '审阅', '验收', '交付']
   function miniwf(cur) {
@@ -344,13 +354,48 @@
       '<span class="bd-wi-f">token <b>' + (it.tokenTotal == null ? '未采集' : (it.tokenTotal / 1000).toFixed(1) + 'k') + '</b></span></div>' +
       '</div><div class="bd-wi-col"><span class="bd-wi-detail-link">详情 →</span></div></a>'
   }
+  var L15_EMPTY_TEXT = '大任务（L1.5）未接入 · workItems 契约未实现（KNOWN_ISSUES D1）· 本区不显示示意数据'
+  function l15HeadHtml(countText) {
+    return '<div class="bd-l15-head"><div class="bd-l15-chips" role="group" aria-label="L1.5 筛选">' +
+      '<button type="button" class="bd-chip" data-filter="all" aria-pressed="true">全部当前</button>' +
+      '<button type="button" class="bd-chip" data-filter="active" aria-pressed="false">进行中</button>' +
+      '<button type="button" class="bd-chip" data-filter="paused" aria-pressed="false">暂停</button>' +
+      '<button type="button" class="bd-chip" data-filter="concurrent" aria-pressed="false">并发</button></div>' +
+      '<span class="bd-l15-count">' + esc(countText) + '</span></div>'
+  }
+  function l15NoteHtml(demo) {
+    return demo
+      ? '<p class="bd-l15-note">示例 · 待 0.13 契约；L2 时间来自真实消息；计划时间未采集；各 workItem 的 token 不可横向加总。</p>'
+      : '<p class="bd-l15-note">workItems 契约未实现（KNOWN_ISSUES D1）；本区不显示示意数据；L2 时间来自真实消息；计划时间未采集。</p>'
+  }
+  function l15EmptyHtml(reason) {
+    return l15HeadHtml('当前 0 个') +
+      '<p class="bd-empty bd-l15-empty">' + esc(L15_EMPTY_TEXT) + (reason ? '（' + esc(reason) + '）' : '') + '</p>' +
+      l15NoteHtml(false)
+  }
+  function bindL15Chips(host) {
+    $$('.bd-chip', host).forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        $$('.bd-chip', host).forEach(function (x) { x.setAttribute('aria-pressed', String(x === chip)) })
+        var f = chip.getAttribute('data-filter')
+        $$('.bd-wi-row', host).forEach(function (row) {
+          var show = f === 'all' || (f === 'concurrent' ? row.getAttribute('data-concurrent') === '1' : row.getAttribute('data-status') === f)
+          row.style.display = show ? '' : 'none'
+        })
+      })
+    })
+  }
   function renderL15(data) {
     var host = $('#bd-ov-l15-body'); if (!host) return
+    var demo = demoOn()
     function draw(items) {
-      var visible = items.filter(function (it) { return it.status !== 'done' && it.status !== 'cancelled' })
-      var hidden = items.length - visible.length
+      // 0.14.2：默认路径只认 API；无数据 → 显式空态，不回落示例数据
+      if (!items.length) { host.innerHTML = l15EmptyHtml(''); return }
+      // 0.14.2 C1.4/C4.3：行数与计数一律以 API items 为准，不再按状态二次过滤（避免「当前 N 个」与实际行数不一致）
+      var visible = items
+      var hidden = 0
       var rows = visible.map(function (it) {
-        var syn = it.synthetic !== false
+        var syn = demo || it.synthetic === true
         var l2 = it.l2list || []
         var l3 = it.l3list || []
         var st = L15_STATUS[it.status] || '未采集'
@@ -366,7 +411,7 @@
           '<span class="bd-wi-col"><span class="bd-wi-stage">' + miniwf(it.currentStage || it.stage) + ' 当前阶段 <b>' + esc(it.currentStage || it.stage || '未采集') + '</b></span></span>' +
           '<span class="bd-wi-col bd-wi-col-board">' +
           '<span class="bd-l15-board"><span class="bd-l15-boardk">L2 拆解</span><b>' + l2.length + '</b>' + (l2chips ? '<span class="bd-l15-minis">' + l2chips + '</span>' : '<span class="bd-l15-none">未拆解</span>') + '</span>' +
-          '<span class="bd-l15-board"><span class="bd-l15-boardk">L3 拆分</span><b>' + l3.length + '</b>' + (l3.length ? '<span class="bd-l15-minis"><span class="bd-l15-mini">示例</span></span>' : '<span class="bd-l15-none">未采集</span>') + '</span>' +
+          '<span class="bd-l15-board"><span class="bd-l15-boardk">L3 拆分</span><b>' + l3.length + '</b>' + (l3.length ? (syn ? '<span class="bd-l15-minis"><span class="bd-l15-mini">示例</span></span>' : '<span class="bd-l15-minis"><span class="bd-l15-mini">已采集</span></span>') : '<span class="bd-l15-none">未采集</span>') + '</span>' +
           '<span class="bd-wi-rowmetrics">' +
           '<span class="bd-wi-f">L2 完成 <b>' + (it.l2done == null ? '未采集' : it.l2done + '/' + l2.length) + '</b><i class="bd-badge bd-badge-muted">' + (syn ? '示例' : '真实') + '</i></span>' +
           '<span class="bd-wi-f">L3 完成 <b>' + (it.l3done == null ? '未采集' : it.l3done + '/' + l3.length) + '</b><i class="bd-badge bd-badge-muted">' + (syn ? '示例' : '真实') + '</i></span>' +
@@ -374,29 +419,15 @@
           '<span class="bd-wi-f">token <b>' + (it.tokenTotal == null ? '未采集' : (it.tokenTotal / 1000).toFixed(1) + 'k') + '</b><i class="bd-badge bd-badge-muted">' + (it.tokenTotal == null ? '未采集' : '估计') + '</i></span>' +
           '</span><span class="bd-wi-detail-link">详情 →</span></span></a>'
       }).join('')
-      host.innerHTML = '<div class="bd-l15-head"><div class="bd-l15-chips" role="group" aria-label="L1.5 筛选">' +
-        '<button type="button" class="bd-chip" data-filter="all" aria-pressed="true">全部当前</button>' +
-        '<button type="button" class="bd-chip" data-filter="active" aria-pressed="false">进行中</button>' +
-        '<button type="button" class="bd-chip" data-filter="paused" aria-pressed="false">暂停</button>' +
-        '<button type="button" class="bd-chip" data-filter="concurrent" aria-pressed="false">并发</button></div>' +
-        '<span class="bd-l15-count">当前 ' + visible.length + ' 个' + (hidden ? ' · 已隐藏 ' + hidden + ' 个（完成/已取消）' : '') + '</span></div>' +
-        '<div class="bd-l15-rows">' + rows + '</div>' +
-        '<p class="bd-l15-note">示例 · 待 0.13 契约；L2 时间来自真实消息；计划时间未采集；各 workItem 的 token 不可横向加总。</p>'
-      $$('.bd-chip', host).forEach(function (chip) {
-        chip.addEventListener('click', function () {
-          $$('.bd-chip', host).forEach(function (x) { x.setAttribute('aria-pressed', String(x === chip)) })
-          var f = chip.getAttribute('data-filter')
-          $$('.bd-wi-row', host).forEach(function (row) {
-            var show = f === 'all' || (f === 'concurrent' ? row.getAttribute('data-concurrent') === '1' : row.getAttribute('data-status') === f)
-            row.style.display = show ? '' : 'none'
-          })
-        })
-      })
+      host.innerHTML = l15HeadHtml('当前 ' + visible.length + ' 个' + (hidden ? ' · 已隐藏 ' + hidden + ' 个（完成/已取消）' : '')) +
+        '<div class="bd-l15-rows">' + rows + '</div>' + l15NoteHtml(demo)
+      bindL15Chips(host)
     }
     fetch('/api/work-items', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (j) {
-      var items = (j && j.available && Array.isArray(j.items) && j.items.length) ? j.items : L15_EXAMPLE
+      // demo：惰性构造示例（截图复现）；默认：只认 available:true 的 items，否则空数组
+      var items = demo ? demoWorkItems() : ((j && j.available && Array.isArray(j.items)) ? j.items : [])
       draw(items)
-    }).catch(function () { draw(L15_EXAMPLE) })
+    }).catch(function () { draw(demo ? demoWorkItems() : []) })
   }
 
   var AV_PAL = ['bd-av-c0', 'bd-av-c1', 'bd-av-c2', 'bd-av-c3', 'bd-av-c4', 'bd-av-c5', 'bd-av-c6', 'bd-av-c7', 'bd-av-c8']
@@ -553,6 +584,7 @@
   }
   function renderTasks(data) {
     var host = $('#bd-tasks-list'); if (!host) return
+    var demo = demoOn()
     var by = (data && data.lineTasks && data.lineTasks.byTaskRef) || []
     var byMap = {}; by.forEach(function (x) { byMap[x.taskRef] = x })
     var byLine = (data && data.lineTasks && data.lineTasks.byLine) || []
@@ -586,7 +618,7 @@
         '<span class="bd-tasks-metric">消息 ' + (hit ? (hit.messageCount || 0) : '未采集') + ' 条</span>' +
         '<span class="bd-tasks-metric-note bd-tasks-recent-time">最近 ' + (hit ? new Date(hit.latestAt).toLocaleTimeString('zh-CN', { hour12: false }).slice(0, 5) : '未采集') + '</span></span>' +
         '</div><div class="bd-tasks-gacts">' + (l3 == null ? '<span class="bd-tasks-toggle bd-tasks-toggle-empty">L3 未采集</span>' : '<button type="button" class="bd-btn bd-tasks-toggle" data-l3="' + esc(ref) + '" aria-expanded="false">L3 ' + l3 + ' ▸</button>') + '</div></div>' +
-        (l3 ? '<div class="bd-tasks-l3wrap" data-l3wrap="' + esc(ref) + '" hidden>' + (w.l3list || []).map(function (x) { return '<div class="bd-tasks-l3"><span class="mono">' + esc(x) + '</span> <span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span></div>' }).join('') + '</div>' : '') +
+        (l3 ? '<div class="bd-tasks-l3wrap" data-l3wrap="' + esc(ref) + '" hidden>' + (w.l3list || []).map(function (x) { return '<div class="bd-tasks-l3"><span class="mono">' + esc(x) + '</span>' + (demo ? ' <span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span>' : '') + '</div>' }).join('') + '</div>' : '') +
         '</div>'
     }
     function draw(items) {
@@ -596,8 +628,8 @@
         var head = '<div class="bd-tasks-wihead" role="button" tabindex="0" data-wi="' + esc(w.id) + '" data-title="' + esc(w.title) + '">' +
           '<span class="bd-pill bd-badge-l15">L1.5 大任务</span><b class="bd-tasks-wi-title">' + esc(w.title) + '</b>' +
           '<span class="bd-badge ' + (w.status === 'active' ? 'bd-badge-info' : 'bd-badge-muted') + '">' + esc(L15_STATUS[w.status] || '未采集') + '</span>' +
-          '<span class="bd-meta">来源未采集 · 目标归属未采集 · 示例关联 ' + refsAll.length + ' 个 L2</span>' +
-          '<span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span>' +
+          '<span class="bd-meta">来源未采集 · 目标归属未采集 · ' + (demo ? '示例关联' : '关联') + ' ' + refsAll.length + ' 个 L2</span>' +
+          (demo ? '<span class="bd-badge bd-badge-warn">示例 · 待 0.13 契约</span>' : '') +
           '<span class="bd-tasks-wi-go">查看大任务甘特 ▸</span></div>'
         return '<div class="bd-tasks-wisection" data-wi="' + esc(w.id) + '" data-l3="' + (w.l3list && w.l3list.length ? 1 : 0) + '">' + head + (cards || '<p class="bd-tasks-wi-empty">暂无 L2；点开大任务详情查看甘特。</p>') + '</div>'
       }).join('')
@@ -677,9 +709,10 @@
       var reset = $('#bd-tasks-reset'); if (reset) reset.onclick = function () { $$('.bd-tasks-wisection', host).forEach(function (s) { s.hidden = false }); if (wiSel) wiSel.value = ''; if (lnSel) lnSel.value = ''; if (hasl3) hasl3.checked = false; $$('.bd-tasks-unlinked', host).forEach(function (u) { u.hidden = false }); $$('.bd-tasks-wisection', host).forEach(function (s) { s.hidden = false }) }
     }
     fetch('/api/work-items', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null }).then(function (j) {
-      var items = (j && j.available && Array.isArray(j.items) && j.items.length) ? j.items : L15_EXAMPLE
+      // demo：惰性构造示例；默认：只认 available:true 的 items，否则空数组（下拉只剩「全部大任务」）
+      var items = demo ? demoWorkItems() : ((j && j.available && Array.isArray(j.items)) ? j.items : [])
       draw(items)
-    }).catch(function () { draw(L15_EXAMPLE) })
+    }).catch(function () { draw(demo ? demoWorkItems() : []) })
   }
 
   function renderPlaceholders(data) {
@@ -736,7 +769,25 @@
   function closeDrawer() { var d = $('#bd-drawer'); if (d) { d.hidden = true; d.setAttribute('aria-hidden', 'true') } }
   window.bdOpenDrawer = openDrawer
   window.bdCloseDrawer = closeDrawer
+  function applyDemoChrome() {
+    var demo = demoOn()
+    // 0.14.2 C3.1：页面级横幅（首屏）。HTML 若未提供则由核心脚本兜底创建，避免依赖页面外壳改动。
+    var banner = document.getElementById('bd-demo-banner')
+    if (!banner) {
+      banner = document.createElement('div')
+      banner.id = 'bd-demo-banner'
+      banner.textContent = '示例数据（非真实）'
+      if (document.body && document.body.firstChild) document.body.insertBefore(banner, document.body.firstChild)
+      else if (document.body) document.body.appendChild(banner)
+    }
+    banner.className = 'bd-info-banner bd-demo-banner'
+    banner.hidden = !demo
+    var badge = document.getElementById('bd-ov-l15-badge'); if (badge) badge.hidden = !demo
+    var sub = document.getElementById('bd-ov-l15-sub')
+    if (sub) sub.textContent = demo ? '用户意图 · 示例 · 待 0.13 契约' : '用户意图 · 契约未实现（D1）'
+  }
   function install() {
+    applyDemoChrome()
     $$('.bd-tab').forEach(function (b) { b.addEventListener('click', function () { setView(b.getAttribute('data-view')) }) })
     var refresh = $('#bd-refresh'); if (refresh) refresh.addEventListener('click', load)
     var auto = $('#bd-auto'); if (auto) auto.addEventListener('click', function () { var on = auto.getAttribute('aria-pressed') !== 'true'; auto.setAttribute('aria-pressed', String(on)); if (on) startAuto(); else stopAuto() })

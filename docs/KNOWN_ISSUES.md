@@ -86,13 +86,15 @@
 
 | 编号 | 缺口 | 现状 / 所需字段 | owner 建议 |
 |---|---|---|---|
-| D1 | work-items 实体契约 | /api/work-items 仍为 stub（available:false）；需 id/title/status/stage/linkedRefs/sourceMessageId/planStartEnd | 插件（契约 v0.7） |
+| D1 | work-items 实体契约 | /api/work-items 仍为 stub（available:false）；需 id/title/status/stage/linkedRefs/sourceMessageId/planStartEnd。默认视图已移除示意数据，页面显示未接入（workItems 契约 v0.7） | 插件（契约 v0.7） |
 | D2 | 逐角色 agent 实例归属 | team-board.members[] 仅 lead、无 line/label 归属；需 line 字段 | macs/官方投影 |
 | D3 | 成员级执行次数 / token | 只能按线（session 级）采样，禁止按线分摊到成员；需成员级 token 投影 | 插件 + DSH 投影 |
 | D4 | 工作时长 / 并行语义 | 无采样时长与并行语义字段 | 插件（采样） |
-| D5 | 官方 L3 任务视图 | 官方 Agent Teams 任务 API 无 L3 视图 | macs/official |
+| D5 | 官方 L3 任务视图 | 官方 Agent Teams 任务 API 无 L3 视图；快照过期判定：team-board.json 的 generatedAt 超过 24h 不得展示数字，显式显示「未采集（快照过期 · 最近更新 <日期>）」 | macs/official |
 | D6 | 任务完成/取消终态 | 无任务态字段；当前只能按消息终态近似 | 插件（契约 v0.7） |
 | D7 | 104 旧版对照快照 | 缺可用的 104 快照 fixture（samples/104-* 仅静态对照） | uiux |
+| D8 | 回执须原样带回 taskRef | 回执不带 taskRef → byTaskRef 聚合不到 → 看板任务消失（用户 2026-11-24 09:33 实测）；回执必须原样带回 taskRef | 各线（协议） |
+| D9 | legacy 板保留示意数据 | web/board-legacy.html:700-702 仍有 3 条示意任务；0.14.2 已把它移出主路径（默认入口不再进入），本版不修但必须登记；不得用 D9 给默认 board2 路径的假数据开脱 | 插件（0.15.x） |
 
 ### D6 消息终态近似口径（必须知道）
 
