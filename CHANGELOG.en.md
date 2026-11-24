@@ -2,9 +2,9 @@
 
 English | [中文](CHANGELOG.md)
 
-## 0.14.2 (2026-11-24, unreleased)
+## 0.14.2 (2026-11-24, released)
 
-> **Unreleased**: this is a candidate (latest is still 0.14.1; fallback 0.14.1). Release is executed by github-maintenance-line.
+> **Released 2026-11-24**: npm dsh-agent-lines@0.14.2 (latest) · GitHub Release v0.14.2 · tag b9e3a5c · **fallback v0.14.1**.
 
 ### Sample data removed from the default views (user request, 2026-11-24)
 

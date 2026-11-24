@@ -2,9 +2,9 @@
 
 [English](CHANGELOG.en.md) | 中文
 
-## 0.14.2 (2026-11-24，未发布)
+## 0.14.2 (2026-11-24，已发布)
 
-> **未发布**：本条为候选版本（latest 仍是 0.14.1，回退位 0.14.1）；发布由 github-maintenance-line 执行。
+> **已发布 2026-11-24**：npm dsh-agent-lines@0.14.2（latest）· GitHub Release v0.14.2 · tag 指向 b9e3a5c · **回退位 v0.14.1**。
 
 ### 默认视图移除示意数据（用户 2026-11-24 要求）
 
