@@ -96,6 +96,8 @@ For failed messages (until G1 is fixed): `dsh-agent-lines --json tail --line <li
 | D8 | receipts must carry taskRef verbatim | a receipt without taskRef is not aggregated by byTaskRef, so the board task disappears (user-reported 2026-11-24 09:33); receipts must carry taskRef verbatim | all lines (protocol) |
 | D9 | legacy board keeps sample data | web/board-legacy.html:700-702 still holds 3 sample tasks; 0.14.2 removed it from the main path (default entry no longer routes here) — registered, not fixed in this version; D9 must not be used to excuse fake data on the default board2 path | plugin (0.15.x) |
 
+> **D9 addendum (Lead 12:06, task E conclusion)**: `web/board-legacy.html` is a **human-authored reference baseline** — its only reader is the V10 criterion at `scripts/board2-views-smoke.mjs:41`, it has no writer, it entered the repo in 74b8368 ("S1 infra: legacy frozen"), and its measured sha256 matches the baseline (MATCH=true). So it is **not machine-rewritten**: no `git rm --cached`, no ignore rule, and the file itself is not modified.
+
 ### D6 message-terminal approximation semantics (must know)
 
 - done / in-progress = message-terminal approximation, not task completion state: a task whose messages are all acked is treated as done; tasks with unconfirmed messages are in progress (merged from byTaskRef[].byState).

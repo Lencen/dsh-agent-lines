@@ -96,6 +96,8 @@
 | D8 | 回执须原样带回 taskRef | 回执不带 taskRef → byTaskRef 聚合不到 → 看板任务消失（用户 2026-11-24 09:33 实测）；回执必须原样带回 taskRef | 各线（协议） |
 | D9 | legacy 板保留示意数据 | web/board-legacy.html:700-702 仍有 3 条示意任务；0.14.2 已把它移出主路径（默认入口不再进入），本版不修但必须登记；不得用 D9 给默认 board2 路径的假数据开脱 | 插件（0.15.x） |
 
+> **D9 补充（Lead 12:06 任务E 结论）**：`web/board-legacy.html` 为**人工参照基线**——唯一读方是 `scripts/board2-views-smoke.mjs:41` 的 V10 判据，无任何写方；入库于 74b8368「S1 基建 legacy 冻结」，实测 sha256 与基线一致（MATCH=true）。因此**非机器改写**：不做 `git rm --cached`、不加忽略规则、不改动该文件本身。
+
 ### D6 消息终态近似口径（必须知道）
 
 - **完成 / 进行中 = 按消息终态近似 · 非任务完成态**：任务内消息全部 acked 视为完成，仍有未确认消息视为进行中（由 byTaskRef[].byState 归并）。
